@@ -2,7 +2,6 @@ package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.views.SlotView;
@@ -24,24 +23,22 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 	}
 
 	@Override
-	public List<? extends FilteredTreeNode<D>> getFilteredChildren() {		
+	public List<? extends FilteredTreeNode<D>> getFilteredChildren() {
 		if (bufferedFilteredChildren == null) {
 			getBufferedAllChildren();
 			if ("".equals(getTree().getAppliedFilter())) {
-				bufferedFilteredChildren = bufferedAllChildren;				
+				bufferedFilteredChildren = bufferedAllChildren;
 			} else {				
 				bufferedFilteredChildren = new ArrayList<>();
-				for (FilteredTreeNode<D> node : bufferedAllChildren) {					
+				for (FilteredTreeNode<D> node : bufferedAllChildren) {
 					if (node.isThisNodeAbsolutelyInFilter()) {
 						bufferedFilteredChildren.add(node);
 					} else if (!node.isLeaf()) {
 						bufferedFilteredChildren.add(node);
-					} // else remove the leafs					
-				}				
-				//SlotView view = (SlotView)getData(); // TREE clean up this code
-				//System.out.println("Filtered " + view.getName() + " " + bufferedAllChildren.size() + " " + bufferedFilteredChildren.size() );
+					} // else remove the leafs
+				}
 			}
-			updateRowKeys();			
+			updateRowKeys();
 		}
 		return bufferedFilteredChildren;
 	}
@@ -87,8 +84,8 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 			}
 			((SlotView)newBuffer.get(i).getData()).setFirst(i == 0);
 			((SlotView)newBuffer.get(i).getData()).setLast(i == newBuffer.size()-1);
-		}		
+		}
 		bufferedAllChildren = newBuffer;
-		bufferedFilteredChildren = null;		
+		bufferedFilteredChildren = null;
 	}
 }

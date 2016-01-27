@@ -42,16 +42,16 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         
         final List<Slot> childrenSlots = Lists.newArrayList();
 
-        // find root nodes for the selected sub-tree        
+        // find root nodes for the selected sub-tree
         for (FilteredTreeNode<SlotView> selectedNode : selectedNodes) {
             findRelationRootsForSelectedNode(selectedNode, childrenSlots);
         }
 
         // build the tree
         int order = 0;
-        for (final Slot slot : childrenSlots) {        	
+        for (final Slot slot : childrenSlots) {
             final SlotView levelOneView = new SlotView(slot, getData(), ++order, getTree().slotEJB);
-            levelOneView.setLevel(1);            
+            levelOneView.setLevel(1);
             bufferedAllChildren.add(new FilteredTreeNode<SlotView>(levelOneView, this, getTree()));
         }
 
@@ -70,9 +70,9 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
 		getTree().setSelectedNodesArray(new TreeNode[0]);
 	}
 	
-    private void findRelationRootsForSelectedNode(final FilteredTreeNode<SlotView> containsNode, final List<Slot> rootSlots) {        
+    private void findRelationRootsForSelectedNode(final FilteredTreeNode<SlotView> containsNode, final List<Slot> rootSlots) {
         final Slot nodeSlot = containsNode.getData().getSlot();
-                
+        
         if (getTree().getAllChildren(containsNode).size() > 0   // TREE could be optimized to hasChildren()
         		&& !rootSlots.contains(nodeSlot)) {
         	rootSlots.add(nodeSlot);

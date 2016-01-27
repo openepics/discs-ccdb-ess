@@ -202,7 +202,6 @@ public class RelationshipController implements Serializable {
 
             editedRelationshipView = null;
         }
-        // TREE refresh hierarchiesController.restoreTreeAfterRelationshipPopup();
     }
 
     /** Called when button to delete relationship is clicked */
