@@ -26,6 +26,7 @@ package org.openepics.discs.conf.dl.common;
  */
 public enum ErrorMessage {
     NAME_ALREADY_EXISTS("Entity with this name already exists"),
+    NAME_ALREADY_EXISTS_UNDER_PARENT("Entity with this name already exists under this parent"),
     NOT_AUTHORIZED("You are not authorized to perform this action"),
     COMMAND_NOT_VALID("Command is not valid"),
     RENAME_MISFORMAT("Rename syntax is not correct"),

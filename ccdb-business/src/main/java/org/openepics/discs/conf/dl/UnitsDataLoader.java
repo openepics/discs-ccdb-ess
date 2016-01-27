@@ -19,9 +19,10 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
@@ -54,9 +55,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     private static final Logger LOGGER = Logger.getLogger(UnitsDataLoader.class.getCanonicalName());
 
     // Header column name constants
-    private static final String HDR_NAME = "NAME";
-    private static final String HDR_DESC = "DESCRIPTION";
-    private static final String HDR_SYMBOL = "SYMBOL";
+    protected static final String HDR_NAME = "NAME";
+    protected static final String HDR_DESC = "DESCRIPTION";
+    protected static final String HDR_SYMBOL = "SYMBOL";
 
     private static final int COL_INDEX_NAME = 1;
     private static final int COL_INDEX_DESC = 2;
@@ -77,9 +78,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         super.init();
 
         // Reload unit-cache
-        unitByName = new HashMap<>();
-        for (Unit unit : unitEJB.findAll())
-            unitByName.put(unit.getName(), unit);
+        unitByName = unitEJB.findAll().stream().collect(Collectors.toMap(Unit::getName, Function.identity()));
     }
 
     @Override

@@ -28,6 +28,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.persistence.ApplyScriptAfter;
+import org.jboss.arquillian.persistence.ApplyScriptBefore;
+import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.arquillian.transaction.api.annotation.TransactionMode;
 import org.jboss.arquillian.transaction.api.annotation.Transactional;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -48,22 +51,17 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
  * Integration tests for {@link UnitsDataLoader}
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @RunWith(Arquillian.class)
+@ApplyScriptBefore(value = "update_sequences.sql")
+@ApplyScriptAfter(value = "truncate_database.sql")
 public class UnitsDataLoaderIT {
 
     @Inject @UnitsLoader private DataLoader unitsDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
     @Inject private UnitEJB unitEJB;
-
-    final static private String HDR_NAME = "NAME";
-    final static private String HDR_SYMBOL = "SYMBOL";
-    final static private String HDR_DESC = "DESCRIPTION";
-
-    final static private int NUM_OF_UNITS_IF_FAILURE = 0;
-    final static private int NUM_OF_UNITS_IF_SUCCESS = 18;
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -75,33 +73,148 @@ public class UnitsDataLoaderIT {
         testUtility.loginForTests();
     }
 
+    /////////////////
+    // POSITIVE TESTS
+    /////////////////
+
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void unitsImportRequiredFieldsFailure() throws IOException {
+    public void unitsCreateSucess() throws IOException {
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                            + "units-success-create.test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
+
+        Assert.assertFalse("Failed while importing: " + loaderResult.getMessages(), loaderResult.isError());
+        Assert.assertEquals(18, unitEJB.findAll().size());
+    }
+
+    @Test
+    @UsingDataSet(value = { "unit.xml" })
+    @Transactional(TransactionMode.DISABLED)
+    public void unitsUpdateSucess() throws IOException {
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                                    + "units-success-update.test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
+
+        Assert.assertFalse("Failed while importing: " + loaderResult.getMessages(), loaderResult.isError());
+        Assert.assertEquals("Imperial length", unitEJB.findByName("inch").getDescription());
+        Assert.assertEquals("3d", unitEJB.findByName("cubic-meter").getDescription());
+        Assert.assertEquals("2d", unitEJB.findByName("square-meter").getDescription());
+        Assert.assertEquals("1000ms", unitEJB.findByName("second").getSymbol());
+        Assert.assertEquals("100cm", unitEJB.findByName("meter").getSymbol());
+    }
+
+    @Test
+    @UsingDataSet(value = { "unit.xml" })
+    @Transactional(TransactionMode.DISABLED)
+    public void unitsDeleteSucess() throws IOException {
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                                    + "units-success-delete.test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
+
+        Assert.assertFalse("Failed while importing: " + loaderResult.getMessages(), loaderResult.isError());
+        Assert.assertEquals(0, unitEJB.findAll().size());
+    }
+
+    /////////////////
+    // NEGATIVE TESTS
+    /////////////////
+
+    @Test
+    @UsingDataSet(value = { "unit.xml" })
+    @Transactional(TransactionMode.DISABLED)
+    public void unitsCreateFail() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 11, HDR_NAME, null));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 13, HDR_SYMBOL, null));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 14, HDR_DESC, null));
+        // Error due to trying to create a property that already exist
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 10,
+                                                                                    UnitsDataLoader.HDR_NAME, "meter"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 11,
+                                                                                    UnitsDataLoader.HDR_NAME, "inch"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 12,
+                                                                            UnitsDataLoader.HDR_NAME, "cubic-meter"));
 
         final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
-                                                                        + "units-required-fields-failure-test.xlsx");
+                                                                                    + "units-fail-create.test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
         testDataStream.close();
 
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(NUM_OF_UNITS_IF_FAILURE, unitEJB.findAll().size());
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages,
+                                                                                        loaderResult.getMessages());
+    }
+
+    @Test
+    @UsingDataSet(value = { "unit.xml", "data_types.xml", "property.xml" })
+    @Transactional(TransactionMode.DISABLED)
+    public void unitsDeleteFail() throws IOException {
+         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
+        // Error due to trying to delete a property that does not exist
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 10,
+                                                                            UnitsDataLoader.HDR_NAME, "horse-power"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
+                                                                            UnitsDataLoader.HDR_NAME, "nanometer"));
+        // Error due to trying to delete a property that is currently being used
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DELETE_IN_USE, 12,
+                                                                            UnitsDataLoader.HDR_NAME, "meter"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DELETE_IN_USE, 13,
+                                                                            UnitsDataLoader.HDR_NAME, "square-meter"));
+
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                                    + "units-fail-delete.test.xlsx");
+
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
+
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages,
+                                                                                        loaderResult.getMessages());
+    }
+
+    @Test
+    @UsingDataSet(value = { "unit.xml", "data_types.xml", "property.xml" })
+    @Transactional(TransactionMode.DISABLED)
+    public void unitsUpdateFail() throws IOException {
+        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
+        // Error due to trying to update a property that does not exist
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 10,
+                                                                            UnitsDataLoader.HDR_NAME, "horse-power"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
+                                                                            UnitsDataLoader.HDR_NAME, "nanometer"));
+        // Error due to trying to update a property that is currently being used
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.MODIFY_IN_USE, 12,
+                                                                            UnitsDataLoader.HDR_SYMBOL, "100cm"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.MODIFY_IN_USE, 13,
+                                                                            UnitsDataLoader.HDR_SYMBOL, "10000cm^2"));
+
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                                    + "units-fail-update.test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
+
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages,
+                                                                                        loaderResult.getMessages());
     }
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void unitsImportTest() throws IOException {
+    public void unitsImportRequiredFieldsFailureTest() throws IOException {
+        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
+        // Error due to trying to work with a property without specifying required data
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 11,
+                                                                                    UnitsDataLoader.HDR_NAME, null));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 13,
+                                                                                    UnitsDataLoader.HDR_SYMBOL, null));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 14,
+                                                                                    UnitsDataLoader.HDR_DESC, null));
+
         final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
-                                                                        + "units-test.xlsx");
+                                                                            + "units-fail-required-fields.test.xlsx");
+
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
         testDataStream.close();
 
-        Assert.assertFalse(loaderResult.isError());
-        Assert.assertEquals(NUM_OF_UNITS_IF_SUCCESS, unitEJB.findAll().size());
-    }
-
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages,
+                                                                                        loaderResult.getMessages());
+     }
 }

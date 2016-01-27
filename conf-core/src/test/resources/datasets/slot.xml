@@ -155,4 +155,6 @@
   <slot id="1701" modified_at="2014-11-14 10:24:55.863" modified_by="admin" version="2" description="REA_BTS33" is_hosting_slot="false" name="REA_BTS33" component_type="345"/>
   <slot id="1703" modified_at="2014-11-14 10:24:55.879" modified_by="admin" version="2" description="REA_BTS31" is_hosting_slot="false" name="REA_BTS31" component_type="345"/>
   <slot id="1707" modified_at="2014-11-14 10:24:55.894" modified_by="admin" version="1" description="REA_BTS34" is_hosting_slot="false" name="REA_BTS34" component_type="345"/>
+  
+  <slot id="1709" modified_at="2014-11-14 10:24:54.051" modified_by="admin" version="2" description="Front End" is_hosting_slot="false" name="FE" component_type="343"/>
 </dataset>

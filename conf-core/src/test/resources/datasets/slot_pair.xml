@@ -1,4 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <slot_pair/>
+  <slot_pair id="1711" version="1" slot_order="1" child_slot="1415" parent_slot="1413" slot_relation="42"/>
+  <slot_pair id="1713" version="1" slot_order="2" child_slot="1411" parent_slot="1413" slot_relation="42"/>
 </dataset>

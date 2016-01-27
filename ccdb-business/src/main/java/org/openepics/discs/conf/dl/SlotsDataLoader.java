@@ -520,7 +520,12 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         final Slot newContainer = new Slot(entityNameFld.trim(), false);
         newContainer.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
         newContainer.setDescription(entityDescriptionFld);
-        slotEJB.addSlotToParentWithPropertyDefs(newContainer, parent, false);
+
+        if (!slotEJB.isContainerNameUnique(newContainer.getName(), parent)) {
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS_UNDER_PARENT, HDR_ENTITY_NAME, entityNameFld);
+        } else {
+            slotEJB.addSlotToParentWithPropertyDefs(newContainer, parent, false);
+        }
     }
 
     private Slot getParentSlot(final String parentPath, final String headerName) {
@@ -672,7 +677,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             // setting to null explicitly - we know it will not be used because of error
             slotPropertyValue = null;
         } else if (workingSlot != null) {
-                slotPropertyValue = (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+            slotPropertyValue = (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
         } else {
             // setting to null explicitly - we know it will not be used because of error
             slotPropertyValue = null;
@@ -735,7 +740,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             return;
         }
 
-
         final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(workingSlot);
 
         if (record == null) {
@@ -761,7 +765,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     @Override
     public int getDataWidth() {
-       return 11;
+        return 11;
     }
 
     @Override
