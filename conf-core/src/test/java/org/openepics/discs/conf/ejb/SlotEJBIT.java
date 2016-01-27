@@ -80,9 +80,9 @@ public class SlotEJBIT {
             "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindById() {
-        final Slot slot = slotService.findById( slotService.findByName("FE").getId() );
+        final Slot slot = slotService.findById( slotService.findByName("FE_SRC1").getId() );
         assertNotNull(slot);
-        assertEquals("FE", slot.getName());
+        assertEquals("FE_SRC1", slot.getName());
     }
 
     @Test
@@ -99,9 +99,9 @@ public class SlotEJBIT {
             "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindByName() {
-        final Slot slot = slotService.findByName("FE");
+        final Slot slot = slotService.findByName("FE_SRC1");
         assertNotNull(slot);
-        assertEquals("FE", slot.getName());
+        assertEquals("FE_SRC1", slot.getName());
     }
 
     @Test
