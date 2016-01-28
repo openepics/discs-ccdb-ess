@@ -151,7 +151,7 @@ public abstract class Tree<D> {
 
 	/** Applies the filter. AppliedFilter filed becomes filter field. */
 	public void applyFilter() {
-		this.appliedFilter = filter == null ? "" : filter.toUpperCase();
+		appliedFilter = filter == null ? "" : filter.toUpperCase();
 		getRootNode().cleanFilterCache();
 		unselectAllTreeNodes();
 		// TODO old selection could be kept by fixing getSelectedNodesArray not to return filtered nodes
