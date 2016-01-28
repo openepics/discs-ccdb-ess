@@ -68,6 +68,5 @@ public class UrlValidator implements Validator, ClientValidator {
                     "This is not a valid URL."), e);
         }
     }
-
 }
 

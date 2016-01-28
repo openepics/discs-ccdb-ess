@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2016 European Spallation Source
+ * Copyright (c) 2016 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
@@ -98,9 +117,7 @@ public abstract class Tree<D> {
 		}
 	}
 
-	/**
-	 * Clears the selection globally.
-	 */
+	/** Clears the selection globally. */
     public void unselectAllTreeNodes() {
     	for (final TreeNode node : selectedNodes) {
     		node.setSelected(false);
@@ -132,15 +149,12 @@ public abstract class Tree<D> {
 		return appliedFilter;
 	}
 
-	/**
-	 * Applies the filter. AppliedFilter filed becomes filter field.
-	 */
+	/** Applies the filter. AppliedFilter filed becomes filter field. */
 	public void applyFilter() {
 		this.appliedFilter = filter == null ? "" : filter.toUpperCase();
 		getRootNode().cleanFilterCache();
 		unselectAllTreeNodes();
 		// TODO old selection could be kept by fixing getSelectedNodesArray not to return filtered nodes
-	//	print(0, getRootNode());
 	}
 
 	/**
@@ -187,9 +201,9 @@ public abstract class Tree<D> {
      * @param rootNode the starting node
      */
 	public static void print(int i, TreeNode rootNode) {
-		LOGGER.log(Level.FINE, i+" "+((SlotView)rootNode.getData()).getName());
+		LOGGER.log(Level.FINE, i + " " + ((SlotView)rootNode.getData()).getName());
 		for (TreeNode node : rootNode.getChildren()) {
-			print(i+1, node);
+			print(i + 1, node);
 		}
 	}
 }

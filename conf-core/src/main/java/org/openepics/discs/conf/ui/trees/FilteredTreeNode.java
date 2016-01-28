@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2016 European Spallation Source
+ * Copyright (c) 2016 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
@@ -12,19 +31,18 @@ import org.openepics.discs.conf.views.SlotView;
  * The call to cleanCache() causes the buffers to clear and reload.
  * More elegant is call to refreshCache() which updates added/moved/removed nodes keeping their state,
  * i.e. expanded.
- * 
+ *
  * @author ilist
  *
  * @param <D> type of data
  */
 public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
-
 	protected List<FilteredTreeNode<D>> bufferedAllChildren = null;
 	protected List<FilteredTreeNode<D>> bufferedFilteredChildren = null;
-	
+
 	/**
 	 * Same construction as for the parent class.
-	 * 
+	 *
 	 * @param data data
 	 * @param parent the parent
 	 * @param tree the tree
@@ -43,21 +61,23 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 			getBufferedAllChildren();
 			if ("".equals(getTree().getAppliedFilter())) {
 				bufferedFilteredChildren = bufferedAllChildren;
-			} else {				
+			} else {
 				bufferedFilteredChildren = new ArrayList<>();
 				for (FilteredTreeNode<D> node : bufferedAllChildren) {
 					if (getTree().isNodeInFilter(node)) {
 						bufferedFilteredChildren.add(node);
-					} else if (!node.isLeaf()) { // isLeaf actually calls getFilteredChildren
+					} else if (!node.isLeaf()) {
+					    // isLeaf actually calls getFilteredChildren
 						bufferedFilteredChildren.add(node);
-					} // else remove the leafs
+					}
+					// else remove the leaves
 				}
 			}
 			updateRowKeys();
 		}
 		return bufferedFilteredChildren;
 	}
-		
+
 	/**
 	 * Returns and buffers children.
 	 * @return the children
@@ -69,18 +89,14 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 		}
 		return bufferedAllChildren;
 	}
-    
-    /**
-     * Cleans the cache, so the next time data are reloaded from source.
-     */
+
+    /** Cleans the cache, so the next time data are reloaded from source. */
 	public void cleanCache() {
 		bufferedAllChildren = null;
 		bufferedFilteredChildren = null;
 	}
-	
-	/**
-	 * Cleans filter cache on this node and all descendants. This way next time the filter is reapplied.
-	 */
+
+	/** Cleans filter cache on this node and all descendants. This way next time the filter is reapplied. */
 	public void cleanFilterCache() {
 		bufferedFilteredChildren = null;
 		if (bufferedAllChildren != null) {
@@ -88,7 +104,6 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 				node.cleanFilterCache();
 			}
 		}
-		
 	}
 
 	/**
@@ -100,7 +115,7 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 		List<FilteredTreeNode<D>> oldBuffer = bufferedAllChildren;
 		if (oldBuffer == null) return;
 		ArrayList<FilteredTreeNode<D>> newBuffer = (ArrayList<FilteredTreeNode<D>>)getAllChildren();
-		for (int i = 0; i<newBuffer.size(); i++) {
+		for (int i = 0; i < newBuffer.size(); ++i) {
 			Long id = ((SlotView)newBuffer.get(i).getData()).getId();
 			for (FilteredTreeNode<D> oldNode : oldBuffer) {
 				if (((SlotView)oldNode.getData()).getId().equals(id)) {
@@ -108,7 +123,7 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 				}
 			}
 			((SlotView)newBuffer.get(i).getData()).setFirst(i == 0);
-			((SlotView)newBuffer.get(i).getData()).setLast(i == newBuffer.size()-1);
+			((SlotView)newBuffer.get(i).getData()).setLast(i == (newBuffer.size() -1));
 		}
 		bufferedAllChildren = newBuffer;
 		bufferedFilteredChildren = null;

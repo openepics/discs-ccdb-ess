@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2016 European Spallation Source
+ * Copyright (c) 2016 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
@@ -19,7 +38,6 @@ import com.google.common.collect.Lists;
  * Implements extrinsic method, that return's tree node's children based on given relationship name.
  *
  * @author ilist
- *
  */
 public class SlotRelationshipTree extends Tree<SlotView> {
 	protected SlotRelationName relationship;
@@ -89,7 +107,8 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	}
 
 	/**
-	 * Finds a one instance of the slot in the tree. Only works for "contains" tree, but it could work for any entity based trees.
+	 * Finds a one instance of the slot in the tree. Only works for "contains" tree, but it could work for any entity
+	 * based trees.
 	 * TODO This code could be simplified by turning everything into recursion. Or we could use a similar map mentioned next to Tree.refreshNodeIds
 	 *
 	 * @param slot the slot to find
@@ -128,7 +147,8 @@ public class SlotRelationshipTree extends Tree<SlotView> {
     }
 
 
-    /** The method generates the path from the requested node to the root of the contains hierarchy. If an element has
+    /**
+     * The method generates the path from the requested node to the root of the contains hierarchy. If an element has
      * multiple parents, this method always chooses the first parent it encounters.
      *
      * @param slotOnPath the slot to find the path for
@@ -158,5 +178,4 @@ public class SlotRelationshipTree extends Tree<SlotView> {
         }
         return path;
     }
-
 }

@@ -54,8 +54,7 @@ public class ConnectsManager implements Serializable  {
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
-        final String cableDBStatusStr = properties.getProperty(AppProperties.CABLEDB_STATUS);
-        cableDBStatus = cableDBStatusStr == null ? false : "TRUE".equals(cableDBStatusStr.toUpperCase());
+        cableDBStatus = "TRUE".equalsIgnoreCase(properties.getProperty(AppProperties.CABLEDB_STATUS));
 
         if (cableDBStatus) {
             CableDBClient c = new CableDBClient(null);
@@ -113,16 +112,12 @@ public class ConnectsManager implements Serializable  {
         return r;
     }
 
-
-    /**
-     * @return the cableDBStatus
-     */
+    /** @return the cableDBStatus */
     public boolean getCableDBStatus() {
         return cableDBStatus;
     }
 
-    public String getRelationshipName()
-    {
+    public String getRelationshipName() {
         return "Connects";
     }
 }
