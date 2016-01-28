@@ -21,8 +21,8 @@ package org.openepics.discs.conf.views;
 
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
 import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Objects;
 
@@ -40,7 +40,7 @@ public class SlotRelationshipView {
     private String relationshipName;
     private final SlotPair slotPair;
     private final String usedBy = "";
-    private TreeNode targetNode;
+    private FilteredTreeNode<SlotView> targetNode;
 
     /** Constructs a new slot pair UI view object for the selected {@link Slot} object. The method checks that the
      * <code>selectedSlot</code> is either a parent or a child in the <code>slotPair</code> relationship object.
@@ -110,14 +110,14 @@ public class SlotRelationshipView {
         return targetSlot;
     }
 
-    public TreeNode getTargetNode() {
+    public FilteredTreeNode<SlotView> getTargetNode() {
         return targetNode;
     }
 
-    public void setTargetNode(TreeNode targetNode) {
+    public void setTargetNode(FilteredTreeNode<SlotView> targetNode) {
         if (targetNode != null) {
             this.targetNode = targetNode;
-            targetSlot = ((SlotView)targetNode.getData()).getSlot();
+            targetSlot = targetNode.getData().getSlot();
             targetSlotName = targetSlot.getName();
         }
     }

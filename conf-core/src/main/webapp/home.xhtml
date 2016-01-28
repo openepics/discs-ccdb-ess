@@ -46,9 +46,9 @@
                                         :hierarchies:clipboardOperations"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
                                 <p:tab id="INCLUDES" title="Contains" style="height: 100%">
-                                    <p:inputText id="filterContainsTree" value="#{hierarchiesController.filterContainsTree}"
+                                    <p:inputText id="filterContainsTree" value="#{hierarchiesController.containsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterContainsTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.containsTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -56,8 +56,8 @@
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}"
+                                        <p:treeTable id="tree" value="#{hierarchiesController.containsTree.rootNode}" var="installationSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.containsTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="hierarchyWidget" nodeVar="slotNode">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
@@ -72,8 +72,6 @@
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
                                                         :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:clipboardOperations"
                                                 oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
-    
                                             <p:column id="name" headerText="Name" style="white-space: normal;">
                                                 <h:outputText value="" rendered="#{installationSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"
@@ -104,9 +102,9 @@
                                     </div>                                    
                                 </p:tab>
                                 <p:tab id="CONTROLS" title="Controls" style="height: 100%">
-                                    <p:inputText id="filterControlsTree" value="#{hierarchiesController.filterControlsTree}"
+                                    <p:inputText id="filterControlsTree" value="#{hierarchiesController.controlsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterControlsTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.controlsTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -114,8 +112,8 @@
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}"
+                                        <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsTree.rootNode}" var="ctrlSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.controlsTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="ctrlWidget">
                                                  
@@ -127,8 +125,6 @@
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                             :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
-    
                                             <p:column id="ctrlName" headerText="Name">
                                                 <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"
@@ -149,9 +145,9 @@
                                     </div>
                                 </p:tab>
                                 <p:tab id="POWERS" title="Powers" style="height: 100%">
-                                    <p:inputText id="filterPowersTree" value="#{hierarchiesController.filterPowersTree}"
+                                    <p:inputText id="filterPowersTree" value="#{hierarchiesController.powersTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterPowersTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.powersTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -160,8 +156,8 @@
                                     </p:inputText>
                                 
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}"
+                                        <p:treeTable id="powersTree" value="#{hierarchiesController.powersTree.rootNode}" var="powerSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.powersTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="powersWidget">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
@@ -172,8 +168,6 @@
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                             :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
-    
                                             <p:column id="powersName" headerText="Name">
                                                 <h:outputText value="" rendered="#{powerSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"
@@ -194,9 +188,9 @@
 	                               </div>
                                 </p:tab>
                                 <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}">
-                                    <p:inputText id="filterConnectsTree" value="#{hierarchiesController.filterConnectsTree}"
+                                    <p:inputText id="filterConnectsTree" value="#{hierarchiesController.connectsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterConnectsTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.connectsTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -204,8 +198,8 @@
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>                                
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
+                                        <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsTree.rootNode}" var="connectsSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.connectsTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="connectsWidget">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
@@ -216,8 +210,6 @@
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                             :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onConnectsExpand}" />
-    
                                             <p:column id="connectsName" headerText="Name">
                                                 <h:outputText value="" rendered="#{connectsSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"
@@ -263,13 +255,13 @@
                                     title="Put Selected Items to Clipboard for Copying"
                                     action="#{hierarchiesController.copyTreeNodes}" oncomplete="hierarchiesResizeAll();"
                                     disabled="#{not hierarchiesController.includesActive or
-                                                    empty hierarchiesController.selectedIncludesNodes}"
+                                                    empty hierarchiesController.containsTree.selectedNodes}"
                                     update=":hierarchies:hierarchyTabs:tree :hierarchies:clipboardOperations" />
                                 <p:menuitem value="Cut" id="cutButton" icon="ui-icon-scissors"
                                     title="Put Selected Items to Clipboard for Moving"
                                     action="#{hierarchiesController.cutTreeNodes}" oncomplete="hierarchiesResizeAll();"
                                     disabled="#{not hierarchiesController.includesActive or
-                                                    empty hierarchiesController.selectedIncludesNodes}"
+                                                    empty hierarchiesController.containsTree.selectedNodes}"
                                     update=":hierarchies:hierarchyTabs:tree :hierarchies:clipboardOperations" />
                                 <p:menuitem value="Paste" id="pasteButton" icon="ui-icon-clipboard"
                                     title="Paste Into the Selected Parent" oncomplete="PF('pasteSlots').show();"
@@ -298,7 +290,7 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteSlots').show();"
                                 disabled="#{not hierarchiesController.includesActive
-                                                or empty hierarchiesController.selectedIncludesNodes
+                                                or empty hierarchiesController.containsTree.selectedNodes
                                                 or not securityPolicy.getUIHint('HIERARCHY_DELETE')}"
                                 update=":deleteSlotsForm" actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move Down"
@@ -307,7 +299,7 @@
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:downButton :hierarchies:upButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
                                                 or not hierarchiesController.includesActive
-                                                or not empty hierarchiesController.filterContainsTree
+                                                or not empty hierarchiesController.containsTree.filter
                                                 or hierarchiesController.singleSelectedSlotView.last
                                                 or not securityPolicy.getUIHint('MOVE_SLOT')}"
                                 actionListener="#{hierarchiesController.moveSlotDown()}" />
@@ -317,7 +309,7 @@
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:upButton :hierarchies:downButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
                                                 or not hierarchiesController.includesActive
-                                                or not empty hierarchiesController.filterContainsTree
+                                                or not empty hierarchiesController.containsTree.filter
                                                 or hierarchiesController.singleSelectedSlotView.first
                                                 or not securityPolicy.getUIHint('MOVE_SLOT')}"
                                 actionListener="#{hierarchiesController.moveSlotUp()}" />

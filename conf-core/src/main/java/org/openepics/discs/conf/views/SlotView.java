@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.util.Objects;
+
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
@@ -30,13 +32,12 @@ import org.openepics.discs.conf.util.CCDBRuntimeException;
  * View of container used to compose and manipulate with container presentation in tree view
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class SlotView {
     private final Long id;
     private String name;
     private String description;
-    private boolean isDeletable;
     private final SlotView parentNode;
     private final boolean isHostingSlot;
     private String deviceTypeName;
@@ -46,7 +47,7 @@ public class SlotView {
     private boolean isLast;
     private boolean isInitialzed;
     private int level;
-    final private SlotEJB slotEJB;
+    private final SlotEJB slotEJB;
     private String cableNumber;
 
     /** Simpler constructor, used in the new Hierarchy builder.
@@ -76,14 +77,6 @@ public class SlotView {
 
     public String getDescription() {
         return description;
-    }
-
-    public boolean isDeletable() {
-        return isDeletable;
-    }
-
-    public void setDeletable(boolean isDeletable) {
-        this.isDeletable = isDeletable;
     }
 
     public SlotView getParentNode() {
@@ -180,37 +173,25 @@ public class SlotView {
                                         parentSlot.getName() + ")");
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SlotView) {
+            SlotView slotView = (SlotView)obj;
+            return id.equals(slotView.id) && Objects.equals(parentNode, slotView.parentNode);
+        }
+        return false;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((cableNumber == null) ? 0 : cableNumber.hashCode());
-        result = prime * result
-                + ((description == null) ? 0 : description.hashCode());
-        result = prime * result
-                + ((deviceTypeName == null) ? 0 : deviceTypeName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + (isDeletable ? 1231 : 1237);
-        result = prime * result + (isFirst ? 1231 : 1237);
-        result = prime * result + (isHostingSlot ? 1231 : 1237);
-        result = prime * result + (isInitialzed ? 1231 : 1237);
-        result = prime * result + (isLast ? 1231 : 1237);
-        result = prime * result + level;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + order;
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SlotView) return id.equals((((SlotView)obj).id));
-        return false;
+    public String toString() {
+        return getName() + "[id=" + getId() + (parentNode != null ? ", parent_id=" + parentNode.getId() : "") + "]";
     }
 }

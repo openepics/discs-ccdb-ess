@@ -20,7 +20,9 @@
 package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
@@ -43,12 +46,13 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
+import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -64,6 +68,7 @@ public class RelationshipController implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Inject private transient SlotEJB slotEJB;
+    @Inject private transient InstallationEJB installationEJB;
     @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
     @Inject private transient ConnectsManager connectsManager;
@@ -79,6 +84,7 @@ public class RelationshipController implements Serializable {
     private List<String> relationshipTypesForDialog;
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
 
+    private SlotRelationshipTree containsTree;
 
     public RelationshipController() {}
 
@@ -86,6 +92,10 @@ public class RelationshipController implements Serializable {
     @PostConstruct
     public void init() {
         relationshipTypes = buildRelationshipTypeList();
+        
+    	SlotView rootView = new SlotView(slotEJB.getRootNode(), null, 1, slotEJB);
+    	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB, installationEJB);
+    	containsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, containsTree));
     }
 
     /** Tell this bean which {@link HierarchiesController} is its "master"
@@ -193,7 +203,6 @@ public class RelationshipController implements Serializable {
 
             editedRelationshipView = null;
         }
-        hierarchiesController.restoreTreeAfterRelationshipPopup();
     }
 
     /** Called when button to delete relationship is clicked */
@@ -210,8 +219,7 @@ public class RelationshipController implements Serializable {
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship deleted.");
                 selectedRelationship = null;
-                hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(childSlotId), isContainsRemoved);
-                hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(parentSlotId), isContainsRemoved);
+                hierarchiesController.refreshTrees(new HashSet<>(Arrays.asList(childSlotId, parentSlotId)));
             }
             selectedRelationships = null;
         } else {
@@ -245,13 +253,12 @@ public class RelationshipController implements Serializable {
     /** Prepares data for editing new relationship */
     public void prepareEditRelationshipPopup() {
         Preconditions.checkState((selectedRelationships != null) && (selectedRelationships.size() == 1));
-        hierarchiesController.prepareTreeForRelationshipsPopup();
 
         // setups the dialog
         SlotRelationshipView v = selectedRelationships.get(0);
         editedRelationshipView = new SlotRelationshipView(v.getSlotPair(), v.getSourceSlot());
 
-        TreeNode node = hierarchiesController.findNode(editedRelationshipView.getTargetSlot());
+        FilteredTreeNode<SlotView> node = containsTree.findNode(editedRelationshipView.getTargetSlot());
         node.setSelected(true);
         editedRelationshipView.setTargetNode(node);
 
@@ -264,8 +271,6 @@ public class RelationshipController implements Serializable {
     public void prepareAddRelationshipPopup() {
         Preconditions.checkNotNull(hierarchiesController.getSelectedNodeSlot());
         Preconditions.checkState(hierarchiesController.isSingleNodeSelected());
-
-        hierarchiesController.prepareTreeForRelationshipsPopup();
 
         // clear the previous dialog selection in case the dialog was already used before
         editedRelationshipView = new SlotRelationshipView(null, hierarchiesController.getSelectedNodeSlot());
@@ -292,11 +297,11 @@ public class RelationshipController implements Serializable {
             final Slot parentSlot;
             final Slot childSlot;
             if (slotRelation.getNameAsString().equals(editedRelationshipView.getRelationshipName())) {
-                childSlot = ((SlotView) editedRelationshipView.getTargetNode().getData()).getSlot();
+                childSlot =  editedRelationshipView.getTargetNode().getData().getSlot();
                 parentSlot = editedRelationshipView.getSourceSlot();
             } else {
                 childSlot = editedRelationshipView.getSourceSlot();
-                parentSlot = ((SlotView) editedRelationshipView.getTargetNode().getData()).getSlot();
+                parentSlot = editedRelationshipView.getTargetNode().getData().getSlot();
             }
 
             if (childSlot.equals(parentSlot)) {
@@ -353,10 +358,7 @@ public class RelationshipController implements Serializable {
             }
 
             final boolean isContainsAdded = (slotRelation.getName() == SlotRelationName.CONTAINS);
-            hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(childSlot.getId()),
-                                                                isContainsAdded || isContainsRemoved);
-            hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(parentSlot.getId()),
-                                                                isContainsAdded || isContainsRemoved);
+            hierarchiesController.refreshTrees(new HashSet<>(Arrays.asList(childSlot.getId(), parentSlot.getId())));
 
             if (isContainsAdded && (parentSlot == hierarchiesController.getSelectedNodeSlot())) {
                 hierarchiesController.expandFirstSelectedNode();
@@ -365,6 +367,7 @@ public class RelationshipController implements Serializable {
             onRelationshipPopupClose();
         }
     }
+    
 
     /** @return The list of relationships for the currently selected slot. */
     public List<SlotRelationshipView> getRelationships() {
@@ -410,4 +413,9 @@ public class RelationshipController implements Serializable {
     public SlotRelationshipView getEditedRelationshipView() {
         return editedRelationshipView;
     }
+
+    /**@return the contains tree */
+	public SlotRelationshipTree getContainsTree() {
+		return containsTree;
+	}
 }
