@@ -1,9 +1,10 @@
 package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.views.SlotView;
@@ -20,6 +21,7 @@ import org.primefaces.model.TreeNode;
  * @param <D> the class of the elements used to build a tree of
  */
 public abstract class Tree<D> {
+    private static final Logger LOGGER = Logger.getLogger(Tree.class.getCanonicalName());
 	private List<FilteredTreeNode<D>> selectedNodes = new ArrayList<>();
 	private String filter = "";
 	private String appliedFilter = "";
@@ -185,7 +187,7 @@ public abstract class Tree<D> {
      * @param rootNode the starting node
      */
 	public static void print(int i, TreeNode rootNode) {
-		System.out.println(i+" "+((SlotView)rootNode.getData()).getName());
+		LOGGER.log(Level.FINE, i+" "+((SlotView)rootNode.getData()).getName());
 		for (TreeNode node : rootNode.getChildren()) {
 			print(i+1, node);
 		}

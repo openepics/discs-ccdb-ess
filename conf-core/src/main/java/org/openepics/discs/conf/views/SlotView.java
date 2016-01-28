@@ -38,7 +38,6 @@ public class SlotView {
     private final Long id;
     private String name;
     private String description;
-    private boolean isDeletable;
     private final SlotView parentNode;
     private final boolean isHostingSlot;
     private String deviceTypeName;
@@ -78,14 +77,6 @@ public class SlotView {
 
     public String getDescription() {
         return description;
-    }
-
-    public boolean isDeletable() {
-        return isDeletable;
-    }
-
-    public void setDeletable(boolean isDeletable) {
-        this.isDeletable = isDeletable;
     }
 
     public SlotView getParentNode() {
@@ -195,11 +186,7 @@ public class SlotView {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((cableNumber == null) ? 0 : cableNumber.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + order;
-        result = prime * result + ((parentNode == null) ? 0 : parentNode.hashCode());
         return result;
     }
 

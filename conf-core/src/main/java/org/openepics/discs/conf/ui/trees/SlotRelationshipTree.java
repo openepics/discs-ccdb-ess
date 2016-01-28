@@ -1,7 +1,6 @@
 package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -17,8 +16,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 /**
- * Implements extrinsic method, that return's tree node's children based on given relationship name. 
- * 
+ * Implements extrinsic method, that return's tree node's children based on given relationship name.
+ *
  * @author ilist
  *
  */
@@ -35,11 +34,11 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	 * @param installationEJB installationEJB
 	 */
 	public SlotRelationshipTree(SlotRelationName relationship, SlotEJB slotEJB, InstallationEJB installationEJB) {
-		super(slotEJB);		
-		this.relationship = relationship;		
+		super(slotEJB);
+		this.relationship = relationship;
 		this.installationEJB = installationEJB;
 	}
-	
+
 	/**
 	 * Containers and nodes containing the filter string are present.
 	 * @param node the node
@@ -50,7 +49,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 		Slot slot = node.getData().getSlot();
 		return !slot.isHostingSlot() || slot.getName().toUpperCase().contains(getAppliedFilter());
 	}
-	
+
 	/**
 	 * Returns all children. Takes care of correct order and initialization of them.
 	 * @param parent the parent node
@@ -59,42 +58,40 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	public List<? extends BasicTreeNode<SlotView>> getAllChildren(BasicTreeNode<SlotView> parent) {
 		final SlotView slotView = parent.getData();
 		final List<BasicTreeNode<SlotView>> allChildren = new ArrayList<>();
-		
-		final List<SlotPair> slotChildren = slotView.getSlot().getPairsInWhichThisSlotIsAParentList();    
-	    
+
+		final List<SlotPair> slotChildren = slotView.getSlot().getPairsInWhichThisSlotIsAParentList();
+
 		for (SlotPair pair : slotChildren) {
-	    	if (pair.getSlotRelation().getName().equals(relationship)) {
+	    	if (pair.getSlotRelation().getName() == relationship) {
 	    		final Slot childSlot = pair.getChildSlot();
 	            final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(), slotEJB);
-	            
+
 	            childSlotView.setLevel(slotView.getLevel()+1);
-	            childSlotView.setDeletable(true);
-	            if (childSlotView.isHostingSlot() && installationEJB != null) {
-	                final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slotView.getSlot());
-	                if (record != null) {
-	                    slotView.setInstalledDevice(record.getDevice());
-	                }
-	            }
+	            assignInstalledDeviceToView(childSlotView);
 	            allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
 	    	}
 	    }
 		if (!allChildren.isEmpty()) {
-			allChildren.sort(new Comparator<BasicTreeNode<SlotView>>() {
-				@Override
-				public int compare(BasicTreeNode<SlotView> o1, BasicTreeNode<SlotView> o2) {
-					return o1.getData().getOrder() - o2.getData().getOrder();
-				}
-			});
+			allChildren.sort((o1, o2) -> {return o1.getData().getOrder() - o2.getData().getOrder();});
 			allChildren.get(0).getData().setFirst(true);
 			allChildren.get(allChildren.size()-1).getData().setLast(true);
 		}
 		return allChildren;
 	}
-	
+
+	private void assignInstalledDeviceToView(final SlotView slotView) {
+        if (slotView.isHostingSlot() && installationEJB != null) {
+            final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slotView.getSlot());
+            if (record != null) {
+                slotView.setInstalledDevice(record.getDevice());
+            }
+        }
+	}
+
 	/**
 	 * Finds a one instance of the slot in the tree. Only works for "contains" tree, but it could work for any entity based trees.
 	 * TODO This code could be simplified by turning everything into recursion. Or we could use a similar map mentioned next to Tree.refreshNodeIds
-	 * 
+	 *
 	 * @param slot the slot to find
 	 * @return one of it's tree nodes
 	 */
@@ -115,7 +112,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
                     // the sought TreeNode found. Process it.
                     soughtChildFound = true;
                     node = child;
-                    if (!node.isLeaf()) {
+                    if (!node.isLeaf() && (soughtSlot != slot)) {
                         node.setExpanded(true);
                     }
                     break;
@@ -127,13 +124,13 @@ public class SlotRelationshipTree extends Tree<SlotView> {
                         " does not CONTAINS slot " + soughtSlot.getName());
             }
         }
-        return node;        
+        return node;
     }
 
-    
+
     /** The method generates the path from the requested node to the root of the contains hierarchy. If an element has
      * multiple parents, this method always chooses the first parent it encounters.
-     * 
+     *
      * @param slotOnPath the slot to find the path for
      * @return the path from requested node (first element) to the root of the hierarchy (last element).
      */

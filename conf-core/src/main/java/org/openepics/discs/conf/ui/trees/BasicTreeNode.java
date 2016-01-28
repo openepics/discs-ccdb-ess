@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ui.trees;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.primefaces.model.TreeNode;
 
@@ -9,7 +10,7 @@ import org.primefaces.model.TreeNode;
  * <p>
  * Be careful with PF implementation. Rowkeys are used to find the nodes in tree.
  * So rowkeys need to be updated every time children change.
- * 
+ *
  * @author ilist
  *
  * @param <D> type of the data it contains
@@ -21,44 +22,44 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 	private BasicTreeNode<D> parent;
 	private D data;
 	private boolean expanded;
-    private boolean selected;    
-    private boolean selectable = true;    
+    private boolean selected;
+    private boolean selectable = true;
     private int rowKey;
-	
+
 	public BasicTreeNode(D data, BasicTreeNode<D> parent) {
-        this.type = DEFAULT_TYPE;       
-        this.data = data;        
+        this.type = DEFAULT_TYPE;
+        this.data = data;
         this.parent = parent;
     }
-	
+
 	public abstract List<? extends BasicTreeNode<D>> getAllChildren();
 	public abstract List<? extends BasicTreeNode<D>> getFilteredChildren();
-	
+
 	@Override @Deprecated
 	public List<TreeNode> getChildren() {
 		return (List<TreeNode>)(List<?>)getFilteredChildren();
 	}
-		
+
 	@Override
 	public String getType() {
 		return type;
 	}
-	
+
 	@Override
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	@Override
 	public D getData() {
 		return data;
 	}
-	
+
 	@Override
 	public BasicTreeNode<D> getParent() {
 		return parent;
 	}
-	
+
 	@Override
 	public void setParent(TreeNode parent) {
 		//nothing
@@ -66,10 +67,9 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 
 	@Override
 	public void clearParent() {
-		//nothing		
+		//nothing
 	}
 
-	
 	@Override
 	public boolean isExpanded() {
 		return expanded;
@@ -99,12 +99,12 @@ public abstract class BasicTreeNode<D> implements TreeNode {
     public void setSelectable(boolean selectable) {
         this.selectable = selectable;
     }
-    
+
     @Override
 	public int getChildCount() {
-		return getChildren().size();
+		return getFilteredChildren().size();
 	}
-	
+
 	@Override
 	public boolean isLeaf() {
 		return getChildCount() == 0;
@@ -114,10 +114,10 @@ public abstract class BasicTreeNode<D> implements TreeNode {
     public String getRowKey() {
 		if (parent == null) return "root";
 		else if (parent.parent == null) return String.valueOf(rowKey);
-		else return parent.getRowKey()+"_"+String.valueOf(rowKey);
+		else return parent.getRowKey() + "_" + String.valueOf(rowKey);
     }
-	
-	protected void updateRowKeys() {		
+
+	protected void updateRowKeys() {
 		int i = 0;
 		for (BasicTreeNode<D> node : getFilteredChildren()) {
 			node.setRowKey(i);
@@ -127,9 +127,9 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 
 	@Override
 	public void setRowKey(String rowKey) {
-		
+        //nothing
 	}
-	
+
     protected void setRowKey(int rowKey) {
         this.rowKey = rowKey;
     }
@@ -138,7 +138,9 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		// data already takes care of hashing the entire path
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
+		result = prime * result + rowKey;
 		return result;
 	}
 
@@ -150,15 +152,9 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 			return false;
 		if(getClass() != obj.getClass())
 			return false;
-		
+
 		BasicTreeNode<D> other = (BasicTreeNode<D>) obj;
-		if (data == null) {
-			if (other.data != null)
-				return false;
-		} else if (!data.equals(other.data))
-			return false;
-		
-		return true;
+		return Objects.equals(data, other.data);
 	}
 
 	@Override
@@ -167,7 +163,7 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 			return data.toString();
 		else
 			return super.toString();
-	}	
+	}
 
 	@Override
     public boolean isPartialSelected() {
