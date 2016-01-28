@@ -91,8 +91,13 @@ public abstract class Tree<D> {
 	public void setSelectedNodesArray(TreeNode[] selectedNodes)
 	{
 		this.selectedNodes.clear();
-		if (selectedNodes != null)
-			this.selectedNodes.addAll((List<FilteredTreeNode<D>>)(List<?>)Arrays.asList(selectedNodes));
+		if (selectedNodes != null) {
+			for (TreeNode node : selectedNodes) {
+				if (node != null) {
+					this.selectedNodes.add((FilteredTreeNode<D>)node);
+				}
+			}
+		}
 	}
 
 	/**
@@ -102,7 +107,7 @@ public abstract class Tree<D> {
     	for (final TreeNode node : selectedNodes) {
     		node.setSelected(false);
         }
-        selectedNodes = new ArrayList<>();
+        selectedNodes.clear();
     }
 	
 	/**
@@ -135,6 +140,8 @@ public abstract class Tree<D> {
 	public void applyFilter() {
 		this.appliedFilter = filter == null ? "" : filter.toUpperCase();
 		((FilteredTreeNode<D>)getRootNode()).cleanFilterCache();
+		unselectAllTreeNodes();
+		// TODO old selection could be kept by fixing getSelectedNodesArray not to return filtered nodes
 	//	print(0, getRootNode());
 	}
 
