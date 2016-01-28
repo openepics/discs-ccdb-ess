@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.ui.trees;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +37,8 @@ import org.primefaces.model.TreeNode;
  */
 public abstract class BasicTreeNode<D> implements TreeNode {
 	public static final String DEFAULT_TYPE = "default";
-
+	public static final int LOAD_AFTER_LEVEL = 3;
+	
 	private String type;
 	private BasicTreeNode<D> parent;
 	private D data;
@@ -44,19 +46,37 @@ public abstract class BasicTreeNode<D> implements TreeNode {
     private boolean selected;
     private boolean selectable = true;
     private int rowKey;
-
+    private int level;
+    
 	public BasicTreeNode(D data, BasicTreeNode<D> parent) {
         this.type = DEFAULT_TYPE;
         this.data = data;
         this.parent = parent;
+        this.level = parent == null ? 0 : parent.level+1;
+        
+        // expanded also takes care of loading, so we want to have root node expanded
+        if (parent == null) {
+        	expanded = true;
+        }
     }
 
 	public abstract List<? extends BasicTreeNode<D>> getAllChildren();
 	public abstract List<? extends BasicTreeNode<D>> getFilteredChildren();
 
+
+    /**
+     * Method returns the children only when the node is expanded or deep enough.
+     * 
+     * @deprecated This method is deprecated to prevent incidental use. Instead use getAllChildren or getFilteredChildren. 
+     * @return The displayed children.
+     */
 	@Override @Deprecated
 	public List<TreeNode> getChildren() {
-		return (List<TreeNode>)(List<?>)getFilteredChildren();
+		if (expanded || level >= LOAD_AFTER_LEVEL) {
+			return (List<TreeNode>)(List<?>)getFilteredChildren();
+		} else {
+			return Arrays.asList();
+		}
 	}
 
 	@Override
@@ -119,14 +139,28 @@ public abstract class BasicTreeNode<D> implements TreeNode {
         this.selectable = selectable;
     }
 
-    @Override
-	public int getChildCount() {
-		return getFilteredChildren().size();
+    /**
+     * Method returns the number proper number of children only when the node is expanded or deep enough.
+     * 
+     * @deprecated This method is deprecated to prevent incidental use. Instead use getAllChildren or getFilteredChildren.
+     * @return Number of displayed children
+     */
+    @Override @Deprecated
+	public int getChildCount() {    
+    	if (expanded || level >= LOAD_AFTER_LEVEL) {
+    		return getFilteredChildren().size();
+    	} else {
+    		return 0;
+    	}
 	}
 
+    /**
+     * This method properly returns if this node is a leaf. In the process it loads one level of the tree.
+     * Primefaces uses this method to display 'the carrot' icon.
+     */
 	@Override
 	public boolean isLeaf() {
-		return getChildCount() == 0;
+		return getFilteredChildren().size() == 0;
 	}
 
 	@Override
@@ -135,14 +169,6 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 		else if (parent.parent == null) return String.valueOf(rowKey);
 		else return parent.getRowKey() + "_" + String.valueOf(rowKey);
     }
-
-	protected void updateRowKeys() {
-		int i = 0;
-		for (BasicTreeNode<D> node : getFilteredChildren()) {
-			node.setRowKey(i);
-			++i;
-		}
-	}
 
 	@Override
 	public void setRowKey(String rowKey) {
@@ -193,4 +219,12 @@ public abstract class BasicTreeNode<D> implements TreeNode {
     public void setPartialSelected(boolean value) {
         //nothing
     }
+
+	/**
+	 * Returns the level in the tree this node is on, i.e (0 is root, 1 root's children)
+	 * @return the level
+	 */
+	public int getLevel() {
+		return level;
+	}
 }

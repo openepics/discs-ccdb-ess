@@ -73,11 +73,25 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 					// else remove the leaves
 				}
 			}
-			updateRowKeys();
+			updateRowKeys(bufferedFilteredChildren);
+			// do a forceful load and buffering after certain level
+			if (getLevel() >= LOAD_AFTER_LEVEL) { 
+				for (BasicTreeNode<D> node : bufferedFilteredChildren) {
+					node.getFilteredChildren();
+				}
+			}
 		}
 		return bufferedFilteredChildren;
 	}
 
+	private void updateRowKeys( List<? extends FilteredTreeNode<D>> bufferedFilteredChildren) {
+		int i = 0;
+		for (BasicTreeNode<D> node : bufferedFilteredChildren) {
+			node.setRowKey(i);
+			++i;
+		}
+	}
+	
 	/**
 	 * Returns and buffers children.
 	 * @return the children

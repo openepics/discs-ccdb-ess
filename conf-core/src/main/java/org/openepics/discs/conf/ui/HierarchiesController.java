@@ -673,7 +673,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         for (final FilteredTreeNode<SlotView> node : selectedTree.getSelectedNodes()) {
             final SlotView nodeSlot = node.getData();
-            if ((node.getChildCount() > 0) || (nodeSlot.getInstalledDevice() != null)) {
+            if (!node.isLeaf() || (nodeSlot.getInstalledDevice() != null)) {
                 return false;
             }
         }

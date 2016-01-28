@@ -82,8 +82,7 @@ public class ConnectsTree extends Tree<SlotView> {
 				parentSlotView.setCableNumber(connectsManager.getCables(parentSlot, child).get(0).getNumber());
 				continue;
 			}
-			final SlotView childSlotView = new SlotView(child, parentSlotView, 0, slotEJB);
-	        childSlotView.setLevel(parentSlotView.getLevel()+1);
+			final SlotView childSlotView = new SlotView(child, parentSlotView, 0, slotEJB);	        
 	        allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
 
 	        // points to parent

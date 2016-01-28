@@ -84,7 +84,6 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	    		final Slot childSlot = pair.getChildSlot();
 	            final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(), slotEJB);
 
-	            childSlotView.setLevel(slotView.getLevel()+1);
 	            assignInstalledDeviceToView(childSlotView);
 	            allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
 	    	}
