@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.util.Objects;
+
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
@@ -30,7 +32,7 @@ import org.openepics.discs.conf.util.CCDBRuntimeException;
  * View of container used to compose and manipulate with container presentation in tree view
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class SlotView {
     private final Long id;
@@ -46,7 +48,7 @@ public class SlotView {
     private boolean isLast;
     private boolean isInitialzed;
     private int level;
-    final private SlotEJB slotEJB;
+    private final SlotEJB slotEJB;
     private String cableNumber;
 
     /** Simpler constructor, used in the new Hierarchy builder.
@@ -180,16 +182,29 @@ public class SlotView {
                                         parentSlot.getName() + ")");
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SlotView) return id.equals((((SlotView)obj).id));
+        if (obj instanceof SlotView) {
+            SlotView slotView = (SlotView)obj;
+            return id.equals(slotView.id) && Objects.equals(parentNode, slotView.parentNode);
+        }
         return false;
     }
-    
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((cableNumber == null) ? 0 : cableNumber.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + order;
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.hashCode());
+        return result;
+    }
+
+    @Override
     public String toString() {
-    	return getName()+"[id="+getId()+"]";
+        return getName() + "[id=" + getId() + (parentNode != null ? ", parent_id=" + parentNode.getId() : "") + "]";
     }
 }
