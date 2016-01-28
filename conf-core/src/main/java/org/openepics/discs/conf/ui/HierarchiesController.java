@@ -643,7 +643,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private void removeDeletedFromClipboard() {
         if (!Utility.isNullOrEmpty(clipboardSlots)) {
             for (final FilteredTreeNode<SlotView> deleteCandidate : nodesToDelete) {
-                clipboardSlots.remove(deleteCandidate.getData());
+                clipboardSlots.remove(deleteCandidate);
             }
         }
     }
