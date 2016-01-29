@@ -40,6 +40,7 @@ import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -189,10 +190,30 @@ public class SlotEJB extends DAO<Slot> {
     }
 
     /**
+     * Deletes the {@link Slot} and uninstalls a {@link Device} if one is installed.
+     *
+     * @see org.openepics.discs.conf.ejb.DAO#delete(java.lang.Object)
+     */
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
+    @Authorized
+    @Override
+    public void delete(Slot entity) {
+        // uninstall device if one is installed
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(entity);
+        if (record != null) {
+            record.setUninstallDate(new Date());
+            installationEJB.save(record);
+        }
+        super.delete(entity);
+    }
+
+    /**
      * This method removed all needless property values in a single transaction. All the removals are only logged once.
      *
      * @param slot the {@link Slot} to work on
      * @param deleteList property values to delete
+     * @deprecated As of release 1.3.3-business, replaced by {@link #changeSlotType(Slot, ComponentType)}
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
@@ -211,6 +232,7 @@ public class SlotEJB extends DAO<Slot> {
      *
      * @param slot the {@link Slot} to work on
      * @param newComponentType the new {@link ComponentType} to add the properties on
+     * @deprecated As of release 1.3.3-business, replaced by {@link #changeSlotType(Slot, ComponentType)}
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
