@@ -73,9 +73,23 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 					// else remove the leaves
 				}
 			}
-			updateRowKeys();
+			updateRowKeys(bufferedFilteredChildren);
+			// do a forceful load and buffering after certain level
+			if (getLevel() >= LOAD_AFTER_LEVEL) {
+				for (FilteredTreeNode<D> node : bufferedFilteredChildren) {
+				    node.getFilteredChildren();
+				}
+			}
 		}
 		return bufferedFilteredChildren;
+	}
+
+	private void updateRowKeys( List<? extends FilteredTreeNode<D>> bufferedFilteredChildren) {
+		int i = 0;
+		for (BasicTreeNode<D> node : bufferedFilteredChildren) {
+			node.setRowKey(i);
+			++i;
+		}
 	}
 
 	/**
@@ -108,7 +122,6 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 
 	/**
 	 * Refreshes cache in a smart way to keep the old state of the nodes.
-	 * TODO SlotView cast is used on data to compare the Slots.
 	 */
 	@SuppressWarnings("unchecked")
 	public void refreshCache() {
@@ -116,14 +129,13 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 		if (oldBuffer == null) return;
 		ArrayList<FilteredTreeNode<D>> newBuffer = (ArrayList<FilteredTreeNode<D>>)getAllChildren();
 		for (int i = 0; i < newBuffer.size(); ++i) {
-			Long id = ((SlotView)newBuffer.get(i).getData()).getId();
 			for (FilteredTreeNode<D> oldNode : oldBuffer) {
-				if (((SlotView)oldNode.getData()).getId().equals(id)) {
+				if (oldNode.getData().equals(newBuffer.get(i).getData())) {
 					newBuffer.set(i, oldNode);
 				}
 			}
 			((SlotView)newBuffer.get(i).getData()).setFirst(i == 0);
-			((SlotView)newBuffer.get(i).getData()).setLast(i == (newBuffer.size() -1));
+			((SlotView)newBuffer.get(i).getData()).setLast(i == (newBuffer.size() - 1));
 		}
 		bufferedAllChildren = newBuffer;
 		bufferedFilteredChildren = null;

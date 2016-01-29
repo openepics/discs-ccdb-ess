@@ -115,6 +115,7 @@ public abstract class Tree<D> {
 				}
 			}
 		}
+		print(0, (FilteredTreeNode<SlotView>)getRootNode());
 	}
 
 	/** Clears the selection globally. */
@@ -175,7 +176,6 @@ public abstract class Tree<D> {
     	refreshIds(getRootNode(), ids);
     }
 
-
     /**
      * Traverses the tree and refreshes given IDs.
      * TODO possible optimizations:
@@ -200,10 +200,14 @@ public abstract class Tree<D> {
      * @param i the starting level
      * @param rootNode the starting node
      */
-	public static void print(int i, TreeNode rootNode) {
-		LOGGER.log(Level.FINE, i + " " + ((SlotView)rootNode.getData()).getName());
-		for (TreeNode node : rootNode.getChildren()) {
-			print(i + 1, node);
+	private static void print(int i, FilteredTreeNode<SlotView> rootNode) {
+		LOGGER.log(Level.FINEST, String.format("%" + (i + 1) + "s%s", "", rootNode.getData().getName()));
+		if (rootNode.bufferedAllChildren == null) {
+			LOGGER.log(Level.FINEST, String.format("%" + (i + 2) + "s%s", "", "children not yet loaded"));
+		} else {
+			for (FilteredTreeNode<SlotView> node : rootNode.getFilteredChildren()) {
+				print(i + 1, node);
+			}
 		}
 	}
 }

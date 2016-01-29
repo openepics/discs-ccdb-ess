@@ -44,9 +44,7 @@ public class SlotView {
     private Device installedDevice;
     private final int order;
     private boolean isFirst;
-    private boolean isLast;
-    private boolean isInitialzed;
-    private int level;
+    private boolean isLast;    
     private final SlotEJB slotEJB;
     private String cableNumber;
 
@@ -128,22 +126,6 @@ public class SlotView {
     }
     public void setLast(boolean isLast) {
         this.isLast = isLast;
-    }
-
-    public boolean isInitialzed() {
-        return isInitialzed;
-    }
-
-    public void setInitialzed(boolean isInitialzed) {
-        this.isInitialzed = isInitialzed;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
     }
 
     /**

@@ -87,8 +87,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         // 2. build the tree
         int order = 0;
         for (final Slot slot : childrenSlots) {
-            final SlotView levelOneView = new SlotView(slot, getData(), ++order, getTree().slotEJB);
-            levelOneView.setLevel(1);
+            final SlotView levelOneView = new SlotView(slot, getData(), ++order, getTree().slotEJB);            
             bufferedAllChildren.add(new FilteredTreeNode<SlotView>(levelOneView, this, getTree()));
         }
 

@@ -659,19 +659,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         nodesToDelete.remove(node);
     }
 
-    public boolean isNodesDeletable() {
-        if (Utility.isNullOrEmpty(selectedTree.getSelectedNodes())) {
-            return false;
-        }
-        for (final FilteredTreeNode<SlotView> node : selectedTree.getSelectedNodes()) {
-            final SlotView nodeSlot = node.getData();
-            if ((node.getChildCount() > 0) || (nodeSlot.getInstalledDevice() != null)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void initHierarchies() {
     	SlotView rootView = new SlotView(slotEJB.getRootNode(), null, 1, slotEJB);
 
