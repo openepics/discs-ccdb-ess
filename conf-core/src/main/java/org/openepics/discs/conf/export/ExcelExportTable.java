@@ -113,9 +113,13 @@ public class ExcelExportTable implements ExportTable {
 
     @Override
     public InputStream exportTable() {
+        File temporaryFile;
         try {
-            final File temporaryFile = File.createTempFile("ccdb_table_exp", "xlsx");
-            final FileOutputStream outputStream = new FileOutputStream(temporaryFile);
+            temporaryFile = File.createTempFile("ccdb_table_exp", "xlsx");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try (final FileOutputStream outputStream = new FileOutputStream(temporaryFile)) {
             wb.write(outputStream);
             outputStream.close();
             return new DeleteOnCloseFileInputStream(temporaryFile);

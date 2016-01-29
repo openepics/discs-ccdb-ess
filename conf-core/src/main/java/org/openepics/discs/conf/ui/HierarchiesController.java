@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,8 +56,6 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
@@ -143,12 +140,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------
-    private Tree<SlotView> selectedTree;
+    private transient Tree<SlotView> selectedTree;
 
-    private SlotRelationshipTree containsTree;
-    private SlotRelationshipTree powersTree;
-    private SlotRelationshipTree controlsTree;
-    private ConnectsTree connectsTree;
+    private transient SlotRelationshipTree containsTree;
+    private transient SlotRelationshipTree powersTree;
+    private transient SlotRelationshipTree controlsTree;
+    private transient ConnectsTree connectsTree;
 
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
@@ -211,11 +208,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         nameList = detectNamingStatus ? names.getAllNames() : new HashMap<>();
         namesForAutoComplete = ImmutableList.copyOf(nameList.keySet());
+        namingRedirectionUrl = null;
+
+        if (!detectNamingStatus) {
+            return;
+        }
 
         final String namingUrl = properties.getProperty(AppProperties.NAMING_APPLICATION_URL);
 
         if (Strings.isNullOrEmpty(namingUrl)) {
-            namingRedirectionUrl = null;
             if (detectNamingStatus) {
                 LOGGER.log(Level.WARNING, AppProperties.NAMING_APPLICATION_URL + " not defined.");
             }
@@ -318,10 +319,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public boolean linkToNaming(final SlotView slot) {
-        if (namingRedirectionUrl == null) return false;
-        if (!detectNamingStatus) return false;
-        if (slot == null) return false;
-        return NamingStatus.ACTIVE.equals(getNamingStatus(slot.getName()));
+        return (namingRedirectionUrl != null) && detectNamingStatus && (slot != null) &&
+                (NamingStatus.MISSING != getNamingStatus(slot.getName()));
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -464,7 +463,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event the event
      */
     public void onTabChange(TabChangeEvent event) {
-    	final List<FilteredTreeNode<SlotView>> masterNodes = containsTree.getSelectedNodes().size() > 0
+    	final List<FilteredTreeNode<SlotView>> masterNodes = !containsTree.getSelectedNodes().isEmpty()
                 ? containsTree.getSelectedNodes() : Arrays.asList(containsTree.getRootNode());
 
     	ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
@@ -653,14 +652,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final FilteredTreeNode<SlotView> parentTreeNode = (FilteredTreeNode<SlotView>)node.getParent();
         final SlotView slotViewToDelete = node.getData();
         final Slot slotToDelete = slotViewToDelete.getSlot();
-        // uninstall device if one is installed
-        // TODO move uninstall to business layer
-        final Device deviceToUninstall = slotViewToDelete.getInstalledDevice();
-        if (deviceToUninstall != null) {
-            final InstallationRecord deviceRecord = installationEJB.getActiveInstallationRecordForDevice(deviceToUninstall);
-            deviceRecord.setUninstallDate(new Date());
-            installationEJB.save(deviceRecord);
-        }
+        // delete uninstalls device as well
         slotEJB.delete(slotToDelete);
         // update UI data as well
         parentTreeNode.refreshCache();
@@ -685,7 +677,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB, installationEJB);
     	containsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, containsTree));
-
 
     	controlsTree = new SlotRelationshipTree(SlotRelationName.CONTROLS, slotEJB, installationEJB);
     	controlsTree.setRootNode(new RootNodeWithChildren(rootView, controlsTree));
@@ -737,7 +728,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         description = selectedSlotView.getDescription();
         deviceType = selectedSlotView.getSlot().getComponentType().getId();
         parentName = selectedSlotView.getParentNode().getParentNode() == null ? "" : selectedSlotView.getParentNode().getName();
-        hasDevice = installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) != null;
+        hasDevice = selectedSlotView.getInstalledDevice() != null;
     }
 
     /** Prepares fields that are used in pop up for adding a new container */

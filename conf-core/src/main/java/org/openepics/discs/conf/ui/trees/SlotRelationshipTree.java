@@ -64,8 +64,8 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	 */
 	@Override
 	public boolean isNodeInFilter(BasicTreeNode<SlotView> node) {
-		Slot slot = node.getData().getSlot();
-		return !slot.isHostingSlot() || slot.getName().toUpperCase().contains(getAppliedFilter());
+		final SlotView slotView = node.getData();
+		return !slotView.isHostingSlot() || slotView.getName().toUpperCase().contains(getAppliedFilter());
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
             boolean soughtChildFound = false;
             for (FilteredTreeNode<SlotView> child : node.getBufferedAllChildren()) {
                 final SlotView slotView = child.getData();
-                if (slotView.getSlot().equals(soughtSlot)) {
+                if (slotView.getId().equals(soughtSlot.getId())) {
                     // the sought TreeNode found. Process it.
                     soughtChildFound = true;
                     node = child;

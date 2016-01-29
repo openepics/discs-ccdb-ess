@@ -55,8 +55,8 @@ public class ConnectsTree extends Tree<SlotView> {
 	 */
 	@Override
 	public boolean isNodeInFilter(BasicTreeNode<SlotView> node) {
-		Slot slot = node.getData().getSlot();
-		return !slot.isHostingSlot() || slot.getName().toUpperCase().contains(getAppliedFilter());
+		final SlotView slotView = node.getData();
+		return !slotView.isHostingSlot() || slotView.getName().toUpperCase().contains(getAppliedFilter());
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ConnectsTree extends Tree<SlotView> {
 
 		// points to first child
 		// TODO lazy loading may introduce bugs here
-		if (allChildren.size() > 0) {
+		if (!allChildren.isEmpty()) {
 			parentSlotView.setCableNumber(connectsManager.getCables(parentSlot,
 			                                                allChildren.get(0).getData().getSlot()).get(0).getNumber());
 		}

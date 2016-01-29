@@ -167,17 +167,17 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         final Property prop = dialogProperty.getProperty();
 
         if (propView.getBatchSaveStage().equals(BatchSaveStage.VALIDATION)) {
-            String batchPropertyConflicts = "";
+            StringBuilder batchPropertyConflicts = new StringBuilder();
             for (String batchNumber : propView) {
                 final String propertyName = prop.getName().replace("{i}", batchNumber);
                 if (propertyEJB.findByName(propertyName) != null) {
-                    batchPropertyConflicts += propertyName + CRLF;
+                    batchPropertyConflicts.append(propertyName).append(CRLF);
                 }
             }
-            if (batchPropertyConflicts.isEmpty()) {
+            if (batchPropertyConflicts.length() == 0) {
                 propView.setBatchSaveStage(BatchSaveStage.CREATION);
             } else {
-                propView.setBatchPropertyConflicts(batchPropertyConflicts);
+                propView.setBatchPropertyConflicts(batchPropertyConflicts.toString());
                 RequestContext.getCurrentInstance().update("batchConflictForm");
                 RequestContext.getCurrentInstance().execute("PF('batchConflict').show();");
                 return false;

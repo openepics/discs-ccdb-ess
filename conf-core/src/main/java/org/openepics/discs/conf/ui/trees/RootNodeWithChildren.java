@@ -121,7 +121,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
 
         // getTree().getAllChildren returns children in our hierarchy
         // this is the condition for the node to appear in the new tree
-        if (getTree().getAllChildren(containsNode).size() > 0   // TREE could be optimized to hasChildren()
+        if (!getTree().getAllChildren(containsNode).isEmpty()   // TREE could be optimized to hasChildren()
         		&& !rootSlots.contains(nodeSlot)) {
         	rootSlots.add(nodeSlot);
         }

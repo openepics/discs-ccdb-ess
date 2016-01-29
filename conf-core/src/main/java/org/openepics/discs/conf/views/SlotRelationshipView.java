@@ -35,7 +35,7 @@ public class SlotRelationshipView {
     private final String id;
     private final Slot sourceSlot;
     private final String sourceSlotName;
-    private  Slot targetSlot;
+    private Slot targetSlot;
     private String targetSlotName;
     private String relationshipName;
     private final SlotPair slotPair;
