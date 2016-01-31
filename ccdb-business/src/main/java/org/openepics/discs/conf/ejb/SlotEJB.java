@@ -21,7 +21,6 @@ package org.openepics.discs.conf.ejb;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +39,9 @@ import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
@@ -83,7 +80,6 @@ public class SlotEJB extends DAO<Slot> {
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private transient BlobStore blobStore;
-    @Inject private InstallationEJB installationEJB;
 
     /**
      * Queries database for slots by partial name
@@ -187,25 +183,6 @@ public class SlotEJB extends DAO<Slot> {
         } else {
             return isContainerNameUnique(newSlot.getName(), parentSlot);
         }
-    }
-
-    /**
-     * Deletes the {@link Slot} and uninstalls a {@link Device} if one is installed.
-     *
-     * @see org.openepics.discs.conf.ejb.DAO#delete(java.lang.Object)
-     */
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
-    @Audit
-    @Authorized
-    @Override
-    public void delete(Slot entity) {
-        // uninstall device if one is installed
-        final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(entity);
-        if (record != null) {
-            record.setUninstallDate(new Date());
-            installationEJB.save(record);
-        }
-        super.delete(entity);
     }
 
     /**
@@ -467,30 +444,70 @@ public class SlotEJB extends DAO<Slot> {
      * @return the list of all {@link Slot}s that were affected by this deletion.
      */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    // This method potentially deletes many slots, this is why each deletion is logged explicitly
     @Authorized
     public List<Slot> deleteWithChildren(final Slot slotToDelete) {
         final List<Long> parentRefreshList = Lists.newArrayList();
-        deleteWithChildren(slotToDelete, parentRefreshList);
-
+        final Map<Long, List<SlotPair>> removedRelations = new HashMap<>();
+        deleteWithChildren(slotToDelete, parentRefreshList, removedRelations);
         return parentRefreshList.stream().map(id -> findById(id)).collect(Collectors.toList());
     }
 
-    private void deleteWithChildren(final Slot slotToDelete, final List<Long> parentRefreshList) {
+    private void deleteWithChildren(final Slot slotToDelete, final List<Long> parentRefreshList,
+                                                                final Map<Long, List<SlotPair>> removedRelations) {
         // delete all the children
-        final Long deleteSlotId = slotToDelete.getId();
-
         final List<SlotPair> containsChildrenPairs = slotToDelete.getPairsInWhichThisSlotIsAParentList().stream().
                 filter(pair -> pair.getSlotRelation().getName() == SlotRelationName.CONTAINS).
                 collect(Collectors.toList());
         for (final Slot child : containsChildrenPairs.stream().map(SlotPair::getChildSlot).collect(Collectors.toList())) {
-            deleteWithChildren(child, parentRefreshList);
+            deleteWithChildren(child, parentRefreshList, removedRelations);
         }
 
-        // remove pairs that their children were just deleted - the pairs were removed from child were remove
-        for (final SlotPair childPair : containsChildrenPairs) {
-            slotToDelete.getPairsInWhichThisSlotIsAParentList().remove(childPair);
-        }
+        cleanupRelationshipsForDelete(slotToDelete, removedRelations);
+        updateParentRefreshList(slotToDelete, parentRefreshList);
 
+        Slot freshSlot = findById(slotToDelete.getId());
+        // audit log the deletion of this slot
+        explicitAuditLog(freshSlot, EntityTypeOperation.DELETE);
+        // and delete the slot
+        delete(freshSlot);
+    }
+
+    private void cleanupRelationshipsForDelete(final Slot slotToDelete,
+                                                                    final Map<Long, List<SlotPair>> removedRelations) {
+        final Long deleteSlotId = slotToDelete.getId();
+        // remove pairs for this slot that were already deleted by the other side of relationship
+        final List<SlotPair> pairDeleteList = removedRelations.get(deleteSlotId);
+        if (pairDeleteList != null) {
+            for (final SlotPair pair : pairDeleteList) {
+                slotToDelete.getPairsInWhichThisSlotIsAParentList().remove(pair);
+                slotToDelete.getPairsInWhichThisSlotIsAChildList().remove(pair);
+            }
+            // remove the relations for this Slot from the cache, since it was just processed
+            pairDeleteList.remove(deleteSlotId);
+        }
+        // the relations that remain will be deleted when this slot is deleted, we need to put them in the deleted list
+        for (final SlotPair pair : slotToDelete.getPairsInWhichThisSlotIsAParentList()) {
+            addPairToHashList(removedRelations, pair.getChildSlot().getId(), pair);
+        }
+        for (final SlotPair pair : slotToDelete.getPairsInWhichThisSlotIsAChildList()) {
+            addPairToHashList(removedRelations, pair.getParentSlot().getId(), pair);
+        }
+    }
+
+    private void addPairToHashList(final Map<Long, List<SlotPair>> pairsToRemove, final Long id,
+                                                                                            final SlotPair pair) {
+        List<SlotPair> pairList = pairsToRemove.get(id);
+        if (pairList != null) {
+            pairList.add(pair);
+        } else {
+            pairList = Lists.newArrayList(pair);
+            pairsToRemove.put(id, pairList);
+        }
+    }
+
+    private void updateParentRefreshList(final Slot slotToDelete, final List<Long> parentRefreshList) {
+        final Long deleteSlotId = slotToDelete.getId();
         // update the parent refresh list for the current slot
         final List<SlotPair> containsParentPairs = slotToDelete.getPairsInWhichThisSlotIsAChildList().stream().
                 filter(pair -> pair.getSlotRelation().getName() == SlotRelationName.CONTAINS).
@@ -502,24 +519,10 @@ public class SlotEJB extends DAO<Slot> {
             slotPairEJB.delete(parentPair);
         }
 
-        Slot freshSlot = findById(deleteSlotId);
-
-        // uninstall device that may be installed
-        final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(freshSlot);
-        if (record != null) {
-            record.setUninstallDate(new Date());
-            installationEJB.save(record);
-        }
-
         // remove the slot that is about to be deleted from the parent refresh list
         while (parentRefreshList.contains(deleteSlotId)) {
             parentRefreshList.remove(deleteSlotId);
         }
-
-        // audit log the deletion of this slot
-        explicitAuditLog(freshSlot, EntityTypeOperation.DELETE);
-        // and delete the slot
-        delete(freshSlot);
     }
 
     private void copySlotsToParent(final List<Slot> sourceSlots, final Slot parentSlot,
