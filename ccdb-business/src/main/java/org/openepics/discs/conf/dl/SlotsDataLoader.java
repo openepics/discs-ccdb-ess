@@ -521,7 +521,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         newContainer.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
         newContainer.setDescription(entityDescriptionFld);
 
-        if (!slotEJB.isContainerNameUnique(newContainer.getName(), parent)) {
+        if (!slotEJB.isContainerNameUnique(newContainer.getName(), parent, newContainer)) {
             result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS_UNDER_PARENT, HDR_ENTITY_NAME, entityNameFld);
         } else {
             slotEJB.addSlotToParentWithPropertyDefs(newContainer, parent, false);

@@ -181,7 +181,7 @@ public class SlotEJB extends DAO<Slot> {
         if (newSlot.isHostingSlot()) {
             return isInstallationSlotNameUnique(newSlot.getName());
         } else {
-            return isContainerNameUnique(newSlot.getName(), parentSlot);
+            return isContainerNameUnique(newSlot.getName(), parentSlot, newSlot);
         }
     }
 
@@ -316,14 +316,17 @@ public class SlotEJB extends DAO<Slot> {
      *
      * @param newContainerName the name of the container we're about to add to the parent
      * @param parentSlot the parent for the new container
+     * @param slotToRename the slot that we're trying to name, <code>null</code> for new {@link Slot}
      * @return <code>true</code> if the container's parent does not contain a equally named child,
      * <code>false</code> otherwise.
      */
-    public boolean isContainerNameUnique(final String newContainerName, final @Nullable Slot parentSlot) {
+    public boolean isContainerNameUnique(final String newContainerName, final @Nullable Slot parentSlot,
+            final @Nullable Slot slotToRename) {
         Preconditions.checkNotNull(newContainerName);
         final Slot actualParentSlot = (parentSlot != null) ? parentSlot : getRootNode();
         final long equalyNamedSiblings = actualParentSlot.getPairsInWhichThisSlotIsAParentList().stream().
-                                            filter(e -> e.getChildSlot().getName().equalsIgnoreCase(newContainerName)).
+                                            filter(e -> !e.getChildSlot().equals(slotToRename)
+                                                    && e.getChildSlot().getName().equalsIgnoreCase(newContainerName)).
                                             count();
         return equalyNamedSiblings == 0;
     }
