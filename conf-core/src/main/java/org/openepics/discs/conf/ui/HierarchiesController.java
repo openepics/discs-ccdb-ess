@@ -1001,7 +1001,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             } else {
                 // check uniqueness only for the parent
                 final Slot slotParent = selectedSlotView != null ? selectedSlotView.getSlot() : slotEJB.getRootNode();
-                if (!slotEJB.isContainerNameUnique(valueStr, slotParent))
+                if (!slotEJB.isContainerNameUnique(valueStr, slotParent, null))
                         throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                                 UiUtility.MESSAGE_SUMMARY_ERROR, "Parent alread contains equally named child."));
             }
@@ -1015,7 +1015,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             } else {
                 // check uniqueness only for the parent
                 if (!name.equals(valueStr)
-                        && !slotEJB.isContainerNameUnique(valueStr, selectedSlotView.getParentNode().getSlot()))
+                        && !slotEJB.isContainerNameUnique(valueStr, selectedSlotView.getParentNode().getSlot(),
+                                selectedSlotView.getSlot()))
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             UiUtility.MESSAGE_SUMMARY_ERROR, "Parent alread contains equally named child."));
             }
