@@ -31,6 +31,7 @@
         <dependency>
             <groupId>org.openepics.discs</groupId>
             <artifactId>ccdb-business</artifactId>
+            <version>1.3.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
