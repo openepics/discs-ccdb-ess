@@ -22,6 +22,7 @@ package org.openepics.discs.conf.ui.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class ConnectsManager implements Serializable  {
         if (cableDBStatus) {
             CableDBClient c = new CableDBClient(null);
             CableResource cr = c.createCableResource();
-            cables = cr.getAllCables();
+            cables = cr.getAllCables(Collections.emptyList(), "");
         } else {
             cables = Arrays.asList();
         }
