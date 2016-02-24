@@ -66,14 +66,14 @@ public class SlotAttributeController
         implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient InstallationEJB installationEJB;
-    @Inject private transient PropertyEJB propertyEJB;
+    @Inject private SlotEJB slotEJB;
+    @Inject private InstallationEJB installationEJB;
+    @Inject private PropertyEJB propertyEJB;
 
     private transient HierarchiesController hierarchiesController;
 
     // ------ variables for attribute manipulation ------
-    private transient List<Property> filteredProperties;
+    private List<Property> filteredProperties;
 
     public SlotAttributeController() {}
 

@@ -70,15 +70,15 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private static final long serialVersionUID = 5504821804362597703L;
     private static final Logger LOGGER = Logger.getLogger(UnitManager.class.getCanonicalName());
 
-    @Inject private transient  UnitEJB unitEJB;
-    @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @UnitsLoader private transient DataLoader unitsDataLoader;
+    @Inject private UnitEJB unitEJB;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @UnitsLoader private DataLoader unitsDataLoader;
 
-    private transient List<UnitView> unitViews;
-    private transient List<UnitView> filteredUnits;
-    private transient List<UnitView> selectedUnits;
-    private transient List<UnitView> usedUnits;
-    private transient List<UnitView> filteredDialogUnits;
+    private List<UnitView> unitViews;
+    private List<UnitView> filteredUnits;
+    private List<UnitView> selectedUnits;
+    private List<UnitView> usedUnits;
+    private List<UnitView> filteredDialogUnits;
 
     private UnitView dialogUnit;
 

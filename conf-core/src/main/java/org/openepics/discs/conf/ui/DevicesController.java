@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.PostActivate;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -202,6 +203,11 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    @PostActivate
+    public void postActivate() {
+        deviceAttributesController.setUIParent(this);
     }
 
     /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#doImport() */

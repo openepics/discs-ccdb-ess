@@ -59,8 +59,8 @@ public class DeviceAttributesController
 
     private static final long serialVersionUID = 1L;
 
-    @Inject private transient DeviceEJB deviceEJB;
-    @Inject private transient InstallationEJB installationEJB;
+    @Inject private DeviceEJB deviceEJB;
+    @Inject private InstallationEJB installationEJB;
 
     private transient DevicesController devicesController;
 

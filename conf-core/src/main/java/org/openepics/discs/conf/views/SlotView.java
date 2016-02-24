@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -34,7 +35,9 @@ import org.openepics.discs.conf.util.CCDBRuntimeException;
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class SlotView {
+public class SlotView implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final Long id;
     private String name;
     private String description;
@@ -44,7 +47,7 @@ public class SlotView {
     private Device installedDevice;
     private final int order;
     private boolean isFirst;
-    private boolean isLast;    
+    private boolean isLast;
     private final SlotEJB slotEJB;
     private String cableNumber;
 

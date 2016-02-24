@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,7 +38,9 @@ import org.openepics.discs.conf.util.BuiltInDataType;
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class PropertyView {
+public class PropertyView implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final Property prop;
     private final boolean beingAdded;
     private String usedBy;

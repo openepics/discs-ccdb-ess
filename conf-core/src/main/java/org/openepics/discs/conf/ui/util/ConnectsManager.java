@@ -30,8 +30,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 
 import org.openepics.cable.client.CableDBClient;
-import org.openepics.cable.jaxb.CableElement;
-import org.openepics.cable.jaxb.CableResource;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.util.AppProperties;
@@ -45,8 +43,8 @@ import org.openepics.discs.conf.util.AppProperties;
 public class ConnectsManager implements Serializable  {
     private static final long serialVersionUID = 1615712215239730844L;
 
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient AppProperties properties;
+    @Inject private SlotEJB slotEJB;
+    @Inject private AppProperties properties;
 
     private List<CableElement> cables = null;
     private boolean cableDBStatus = false;

@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.PostActivate;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -107,21 +108,21 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private static final String     CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
 
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient SlotPairEJB slotPairEJB;
-    @Inject private transient InstallationEJB installationEJB;
-    @Inject private transient ComptypeEJB comptypeEJB;
+    @Inject private SlotEJB slotEJB;
+    @Inject private SlotPairEJB slotPairEJB;
+    @Inject private InstallationEJB installationEJB;
+    @Inject private ComptypeEJB comptypeEJB;
     @Inject private Names names;
-    @Inject private transient ConnectsManager connectsManager;
-    @Inject private transient InstallationController installationController;
-    @Inject private transient RelationshipController relationshipController;
-    @Inject private transient SlotAttributeController slotAttributeController;
+    @Inject private ConnectsManager connectsManager;
+    @Inject private InstallationController installationController;
+    @Inject private RelationshipController relationshipController;
+    @Inject private SlotAttributeController slotAttributeController;
 
-    @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
-    @Inject @SlotsLoader private transient DataLoader slotsDataLoader;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @SignalsLoader private DataLoader signalsDataLoader;
+    @Inject @SlotsLoader private DataLoader slotsDataLoader;
 
-    @Inject private transient AppProperties properties;
+    @Inject private AppProperties properties;
 
     private enum ActiveTab {
         INCLUDES, POWERS, CONTROLS, CONNECTS,
@@ -140,7 +141,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------
-    private transient Tree<SlotView> selectedTree;
+    private Tree<SlotView> selectedTree;
 
     private transient SlotRelationshipTree containsTree;
     private transient SlotRelationshipTree powersTree;
@@ -150,15 +151,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
     /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
-    private transient SlotView selectedSlotView;
+    private SlotView selectedSlotView;
     private ActiveTab activeTab;
     private transient List<FilteredTreeNode<SlotView>> clipboardSlots;
-    private transient List<SlotView> pasteErrors;
+    private List<SlotView> pasteErrors;
     private ClipboardOperations clipboardOperation;
     private String pasteErrorReason;
     private transient List<FilteredTreeNode<SlotView>> nodesToDelete;
-    private transient List<SlotView> slotsToDelete;
-    private transient List<SlotView> filteredSlotsToDelete;
+    private List<SlotView> slotsToDelete;
+    private List<SlotView> filteredSlotsToDelete;
     private boolean detectNamingStatus;
     private boolean restrictToConventionNames;
 
@@ -197,6 +198,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         } catch (Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    @PostActivate
+    public void postActivate() {
+        relationshipController.setUIParent(this);
+        slotAttributeController.setUIParent(this);
+        initNamingInformation();
+        initHierarchies();
     }
 
     private void initNamingInformation() {

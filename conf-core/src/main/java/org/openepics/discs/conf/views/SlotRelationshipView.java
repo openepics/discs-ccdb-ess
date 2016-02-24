@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
+
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
@@ -30,7 +32,8 @@ import com.google.common.base.Objects;
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class SlotRelationshipView {
+public class SlotRelationshipView implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final String id;
     private final Slot sourceSlot;

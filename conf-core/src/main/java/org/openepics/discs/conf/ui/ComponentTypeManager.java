@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.PostActivate;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -76,9 +77,9 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
     private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
     @Inject private transient ComptypeEJB comptypeEJB;
-    @Inject private transient ComptypeAttributesController comptypeAttributesController;
-    @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoader private transient DataLoader compTypesDataLoader;
+    @Inject private ComptypeAttributesController comptypeAttributesController;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @ComponentTypesLoader private DataLoader compTypesDataLoader;
 
     private ExcelSingleFileImportUI excelSingleFileImportUI;
 
@@ -170,6 +171,11 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    @PostActivate
+    public void postActivate() {
+        comptypeAttributesController.setUIParent(this);
     }
 
     /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#doImport() */

@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -40,7 +41,9 @@ import com.google.common.base.Preconditions;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
-public class UserEnumerationView {
+public class UserEnumerationView implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final DataType enumeration;
     private String usedBy;
     private final boolean enumerationBeingAdded;

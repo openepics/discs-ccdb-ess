@@ -83,10 +83,10 @@ public class ComptypeAttributesController
 
     private static enum DefinitionTarget { SLOT, DEVICE }
 
-    @Inject private transient ComptypeEJB comptypeEJB;
-    @Inject private transient PropertyEJB propertyEJB;
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient DeviceEJB deviceEJB;
+    @Inject private ComptypeEJB comptypeEJB;
+    @Inject private PropertyEJB propertyEJB;
+    @Inject private SlotEJB slotEJB;
+    @Inject private DeviceEJB deviceEJB;
     private transient ComponentTypeManager componentTypeManager;
 
     private List<Property> filteredProperties;

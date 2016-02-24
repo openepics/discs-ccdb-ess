@@ -51,16 +51,16 @@ import com.google.common.collect.Lists;
 public class InstallationController implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Inject private transient InstallationEJB installationEJB;
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient SlotAttributeController slotAttributeController;
+    @Inject private InstallationEJB installationEJB;
+    @Inject private SlotEJB slotEJB;
+    @Inject private SlotAttributeController slotAttributeController;
 
-    private transient List<InstallationView> selectedInstallationViews;
-    private transient List<InstallationView> installationRecords;
-    private transient List<InstallationView> filteredInstallationRecords;
+    private List<InstallationView> selectedInstallationViews;
+    private List<InstallationView> installationRecords;
+    private List<InstallationView> filteredInstallationRecords;
 
-    private transient List<Device> uninstalledDevices;
-    private transient List<Device> filteredUninstalledDevices;
+    private List<Device> uninstalledDevices;
+    private List<Device> filteredUninstalledDevices;
     private Device deviceToInstall;
 
     /** Adds the installation information connected to one {@link Slot} to the installation list.

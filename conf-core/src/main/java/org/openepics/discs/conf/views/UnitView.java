@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -30,7 +32,9 @@ import org.openepics.discs.conf.ent.Unit;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
-public class UnitView {
+public class UnitView implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final Unit unit;
     private final boolean unitAdd;
     private String usedBy;
