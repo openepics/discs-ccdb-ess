@@ -92,7 +92,7 @@ public class RelationshipController implements Serializable {
     @PostConstruct
     public void init() {
         relationshipTypes = buildRelationshipTypeList();
-        
+
     	SlotView rootView = new SlotView(slotEJB.getRootNode(), null, 1, slotEJB);
     	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB, installationEJB);
     	containsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, containsTree));
@@ -311,8 +311,6 @@ public class RelationshipController implements Serializable {
             }
 
             final SlotPair newSlotPair;
-            final boolean isContainsRemoved = (editedRelationshipView.getSlotPair() != null)
-                            && editedRelationshipView.getSlotPair().getSlotRelation().equals(SlotRelationName.CONTAINS);
             if (editedRelationshipView.getSlotPair() != null) {
                 newSlotPair = editedRelationshipView.getSlotPair();
                 if (newSlotPair.getChildSlot().equals(childSlot) &&
@@ -367,7 +365,7 @@ public class RelationshipController implements Serializable {
             onRelationshipPopupClose();
         }
     }
-    
+
 
     /** @return The list of relationships for the currently selected slot. */
     public List<SlotRelationshipView> getRelationships() {

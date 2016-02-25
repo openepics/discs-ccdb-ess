@@ -86,7 +86,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private List<PropertyView> usedProperties;
     private List<PropertyView> filteredDialogProperties;
 
-    private PropertyView dialogProperty;
+    private transient PropertyView dialogProperty;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
 

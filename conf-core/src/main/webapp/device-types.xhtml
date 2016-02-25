@@ -193,26 +193,29 @@
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="saveMultiplePropertyValues" />
+            <ui:param name="valueStr" value="Value" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
         </ui:include>
 
-        <ui:include src="/resources/dialogs/property-definition.xhtml" >
+        <ui:include src="/resources/dialogs/multi-property-value.xhtml" >
             <ui:param name="formId" value="installationSlotPropertyForm" />
             <ui:param name="dialogTitle" value="Add Properties" />
             <ui:param name="widgetName" value="installationSlotProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
+            <ui:param name="valueStr" value="Default Value" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
         </ui:include>
 
-        <ui:include src="/resources/dialogs/property-definition.xhtml" >
+        <ui:include src="/resources/dialogs/multi-property-value.xhtml" >
             <ui:param name="formId" value="deviceInstancePropertyForm" />
             <ui:param name="dialogTitle" value="Add Properties" />
             <ui:param name="widgetName" value="deviceInstanceProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
+            <ui:param name="valueStr" value="Default Value" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
         </ui:include>
 

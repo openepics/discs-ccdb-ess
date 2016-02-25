@@ -4,7 +4,7 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:remoteCommand name="updateToggle" actionListener="#{comptypeAttributesController.updateToggle()}" 
+        <p:remoteCommand name="#{formId}_updateToggle" actionListener="#{comptypeAttributesController.updateToggle()}" 
             update=":#{formId}:propertySelect:toggleAll" />
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
                 dynamic="true" styleClass="property-selection">
@@ -22,18 +22,18 @@
                         filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">                        
                     <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" 
                         update=":#{formId}:propertySelect" />
-                    <p:ajax event="filter" oncomplete="updateToggle();" />
+                    <p:ajax event="filter" oncomplete="#{formId}_updateToggle();" />
 
                     <p:column id="rowSelection" width="4%">
                         <f:facet name="header">
                             <p:selectBooleanCheckbox id="toggleAll" value="#{comptypeAttributesController.selectAllRows}">
                                 <p:ajax listener="#{comptypeAttributesController.handleToggleAll}" 
                                     update=":#{formId}:propertySelect" 
-                                    oncomplete="updateToggle();"/>
+                                    oncomplete="#{formId}_updateToggle();"/>
                             </p:selectBooleanCheckbox>
                         </f:facet>
                         <p:selectBooleanCheckbox value="#{prop.selected}">
-                            <p:ajax update=":#{formId}:propertySelect" oncomplete="updateToggle();" 
+                            <p:ajax update=":#{formId}:propertySelect" oncomplete="#{formId}_updateToggle();" 
                                 listener="#{comptypeAttributesController.rowSelectListener(prop)}"/>
                         </p:selectBooleanCheckbox>
                     </p:column>
@@ -45,7 +45,7 @@
                             filterBy="#{prop.description}" filterMatchMode="contains">
                         <h:outputText value="#{prop.description}" />
                     </p:column>
-                    <p:column headerText="Data type" width="10%" sortBy="#{prop.dataType.name}" 
+                    <p:column headerText="Data Type" width="10%" sortBy="#{prop.dataType.name}" 
                             filterBy="#{prop.dataType.name}" filterMatchMode="contains">
                         <h:outputText value="#{prop.dataType.name}" />
                     </p:column>
@@ -53,7 +53,7 @@
                             filterBy="#{prop.unit.name}" filterMatchMode="contains">
                         <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
                     </p:column>
-                    <p:column headerText="Value" width="20%">
+                    <p:column headerText="#{valueStr}" width="20%">
                         <p:cellEditor rendered="#{prop.selected}">
                             <f:facet name="output">
                                 <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" />
