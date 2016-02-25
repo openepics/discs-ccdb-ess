@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIForm;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
@@ -95,9 +97,9 @@ public class ComptypeAttributesController
     private boolean isPropertyDefinition;
     private DefinitionTarget definitionTarget;
 
-    private transient List<MultiPropertyValueView> filteredPropertyValues;
-    private transient List<MultiPropertyValueView> selectedPropertyValues;
-    private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
+    private List<MultiPropertyValueView> filteredPropertyValues;
+    private List<MultiPropertyValueView> selectedPropertyValues;
+    private List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
     /** Java EE post construct life-cycle method. */
@@ -143,11 +145,7 @@ public class ComptypeAttributesController
         T propValueToDelete = null;
         for (final T entityPropValue : entityProperties) {
                 if (entityPropValue.getProperty().equals(propertyToDelete)) {
-                    if (entityPropValue.getPropValue() == null) {
-                        // value not defined, safe to delete
-                        propValueToDelete = entityPropValue;
-                    }
-                    // attribute found
+                    propValueToDelete = entityPropValue;
                     break;
                 }
         }
@@ -211,10 +209,7 @@ public class ComptypeAttributesController
 
     @Override
     public boolean canEdit(EntityAttributeView<ComponentType> attribute) {
-        final EntityAttributeViewKind attributeKind = attribute.getKind();
-        return attributeKind != EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
-                && attributeKind != EntityAttributeViewKind.DEVICE_PROPERTY
-                && attributeKind != EntityAttributeViewKind.DEVICE_TYPE_TAG;
+        return (attribute.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG);
     }
 
     /** Prepares the data for device type property creation */
@@ -231,14 +226,14 @@ public class ComptypeAttributesController
     public void prepareForSlotPropertyAdd() {
         definitionTarget = DefinitionTarget.SLOT;
         isPropertyDefinition = true;
-        filterProperties();
+        prepareForPropertyValueAdd();
     }
 
     /** Prepares the data for device property (definition) creation */
     public void prepareForDevicePropertyAdd() {
         definitionTarget = DefinitionTarget.DEVICE;
         isPropertyDefinition = true;
-        filterProperties();
+        prepareForPropertyValueAdd();
     }
 
     /** The event handler for when user clicks on the check-box in the "Add property values" dialog.
@@ -335,12 +330,14 @@ public class ComptypeAttributesController
                 comptypeEJB.checkPropertyValueUnique(createPropertyValue(editedPropVal.getProperty(), val));
                 editedPropVal.setValue(val);
             } catch (ValidatorException e) {
+                final String formName = getFormId(event.getComponent());
                 editedPropVal.setUiValue(oldValue == null ? null : getEditEventValue(oldValue, null));
-                FacesContext.getCurrentInstance().addMessage("addPropertyValueForm:inputValidationFail", e.getFacesMessage());
+                FacesContext.getCurrentInstance().addMessage(formName + ":inputValidationFail", e.getFacesMessage());
                 FacesContext.getCurrentInstance().validationFailed();
             } catch (EJBException e) {
                 if (UiUtility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
-                    FacesContext.getCurrentInstance().addMessage("addPropertyValueForm:inputValidationFail",
+                    final String formName = getFormId(event.getComponent());
+                    FacesContext.getCurrentInstance().addMessage(formName + ":inputValidationFail",
                             new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                     "Value is not unique."));
                     FacesContext.getCurrentInstance().validationFailed();
@@ -349,6 +346,14 @@ public class ComptypeAttributesController
                 }
             }
         }
+    }
+
+    private String getFormId(final UIComponent input) {
+        UIComponent cmp = input;
+        while ((cmp != null) && !(cmp instanceof UIForm)) {
+            cmp = cmp.getParent();
+        }
+        return cmp != null ? cmp.getId() : "addPropertyValueForm";
     }
 
     private String getEditEventValue(final Object val, final PropertyValueUIElement propValueUIElement) {
@@ -386,14 +391,15 @@ public class ComptypeAttributesController
      * type and property values to already existing installation slots or device instances.
      */
     public void addNewPropertyValueDefs() {
-        for (Property selectedProperty : selectedProperties) {
+        int created = 0;
+        for (final MultiPropertyValueView pv : selectedPropertyValues) {
             final ComptypePropertyValue newPropertyValueInstance = newPropertyValue();
             newPropertyValueInstance.setInRepository(false);
-            newPropertyValueInstance.setProperty(selectedProperty);
-            newPropertyValueInstance.setPropValue(null);
+            newPropertyValueInstance.setProperty(pv.getProperty());
+            newPropertyValueInstance.setPropValue(pv.getValue());
             newPropertyValueInstance.setPropertiesParent(getSelectedEntity());
 
-            if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
+            if (isPropertyDefinition) {
                 final ComptypePropertyValue ctPropValueInstance = newPropertyValueInstance;
                 ctPropValueInstance.setPropertyDefinition(true);
                 if (definitionTarget == DefinitionTarget.SLOT) {
@@ -405,7 +411,11 @@ public class ComptypeAttributesController
             comptypeEJB.addChild(newPropertyValueInstance);
             componentTypeManager.refreshSelectedComponent();
             addPropertyValueBasedOnDef(newPropertyValueInstance);
+            ++created;
         }
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                "Created " + created + (definitionTarget == DefinitionTarget.SLOT ? " installation slot" : " device") +
+                " properties.");
         resetFields();
         populateAttributesList();
     }
@@ -417,6 +427,7 @@ public class ComptypeAttributesController
                     final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
                     newSlotProperty.setProperty(definition.getProperty());
                     newSlotProperty.setSlot(slot);
+                    newSlotProperty.setPropValue(definition.getPropValue());
                     slotEJB.addChild(newSlotProperty);
                 } else {
                     LOGGER.log(Level.FINE, "Type: " + componentTypeManager.getSelectedComponent().getName()
@@ -434,6 +445,7 @@ public class ComptypeAttributesController
                     final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
                     newDeviceProperty.setProperty(definition.getProperty());
                     newDeviceProperty.setDevice(device);
+                    newDeviceProperty.setPropValue(definition.getPropValue());
                     deviceEJB.addChild(newDeviceProperty);
                 } else {
                     LOGGER.log(Level.FINE, "Type: " + componentTypeManager.getSelectedComponent().getName()

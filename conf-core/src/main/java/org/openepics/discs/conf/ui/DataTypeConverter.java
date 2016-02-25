@@ -19,11 +19,11 @@
  */
 package org.openepics.discs.conf.ui;
 
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
@@ -32,16 +32,13 @@ import org.openepics.discs.conf.ent.DataType;
  *
  * @author vuppala
  */
-@ManagedBean
+@Named
 public class DataTypeConverter implements Converter {
 
-    @EJB
-    private DataTypeEJB dataTypeEJB;
-    /**
-     * Creates a new instance of DataTypeConverter
-     */
-    public DataTypeConverter() {
-    }
+    @Inject private DataTypeEJB dataTypeEJB;
+
+    /** Creates a new instance of DataTypeConverter */
+    public DataTypeConverter() {}
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {

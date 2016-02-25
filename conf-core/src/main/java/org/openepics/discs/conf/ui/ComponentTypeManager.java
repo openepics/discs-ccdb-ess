@@ -76,7 +76,7 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
     private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
-    @Inject private transient ComptypeEJB comptypeEJB;
+    @Inject private ComptypeEJB comptypeEJB;
     @Inject private ComptypeAttributesController comptypeAttributesController;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoader private DataLoader compTypesDataLoader;

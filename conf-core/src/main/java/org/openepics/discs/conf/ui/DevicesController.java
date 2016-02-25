@@ -85,20 +85,20 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     private static final Logger LOGGER = Logger.getLogger(DevicesController.class.getCanonicalName());
     private static final String CRLF = "\r\n";
 
-    @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @DevicesLoader private transient DataLoader devicesDataLoader;
-    @Inject private transient ComptypeEJB componentTypesEJB;
-    @Inject private transient InstallationEJB installationEJB;
-    @Inject private transient DeviceEJB deviceEJB;
-    @Inject private transient DeviceAttributesController deviceAttributesController;
+    @Inject private  DataLoaderHandler dataLoaderHandler;
+    @Inject @DevicesLoader private  DataLoader devicesDataLoader;
+    @Inject private  ComptypeEJB componentTypesEJB;
+    @Inject private  InstallationEJB installationEJB;
+    @Inject private  DeviceEJB deviceEJB;
+    @Inject private  DeviceAttributesController deviceAttributesController;
 
     private Device device;
 
-    private transient List<DeviceView> devices;
-    private transient List<DeviceView> filteredDevices;
-    private transient List<DeviceView> selectedDevices;
-    private transient List<DeviceView> usedDevices;
-    private transient List<DeviceView> filteredDialogDevices;
+    private List<DeviceView> devices;
+    private List<DeviceView> filteredDevices;
+    private List<DeviceView> selectedDevices;
+    private List<DeviceView> usedDevices;
+    private List<DeviceView> filteredDialogDevices;
 
     // Add/Edit device dialog
     private ComponentType selectedComponentType;
@@ -118,7 +118,7 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
-    private ExcelSingleFileImportUI excelSingleFileImportUI;
+    private transient ExcelSingleFileImportUI excelSingleFileImportUI;
 
     private class ExcelSingleFileImportUI extends AbstractExcelSingleFileImportUI {
         /** Construct the file import UI for the device data loader. */

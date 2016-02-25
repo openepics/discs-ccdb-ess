@@ -136,8 +136,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         ACTIVE, OBSOLETE, DELETED, MISSING
     }
 
-    private transient HashSet<Long> selectedNodeIds;
-    private transient HashSet<Long> displayedAttributeNodeIds;
+    private HashSet<Long> selectedNodeIds;
+    private HashSet<Long> displayedAttributeNodeIds;
     private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------

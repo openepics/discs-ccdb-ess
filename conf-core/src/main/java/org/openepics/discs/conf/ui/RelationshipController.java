@@ -210,8 +210,6 @@ public class RelationshipController implements Serializable {
         if (canRelationshipBeDeleted()) {
             for (SlotRelationshipView selectedRelationship : selectedRelationships) {
                 final SlotPair slotPairToBeRemoved = selectedRelationship.getSlotPair();
-                final boolean isContainsRemoved =
-                        (slotPairToBeRemoved.getSlotRelation().getName() == SlotRelationName.CONTAINS);
                 final Long parentSlotId = slotPairToBeRemoved.getParentSlot().getId();
                 final Long childSlotId = slotPairToBeRemoved.getChildSlot().getId();
                 relationships.remove(selectedRelationship);
@@ -311,8 +309,6 @@ public class RelationshipController implements Serializable {
             }
 
             final SlotPair newSlotPair;
-            final boolean isContainsRemoved = (editedRelationshipView.getSlotPair() != null)
-                            && editedRelationshipView.getSlotPair().getSlotRelation().equals(SlotRelationName.CONTAINS);
             if (editedRelationshipView.getSlotPair() != null) {
                 newSlotPair = editedRelationshipView.getSlotPair();
                 if (newSlotPair.getChildSlot().equals(childSlot) &&

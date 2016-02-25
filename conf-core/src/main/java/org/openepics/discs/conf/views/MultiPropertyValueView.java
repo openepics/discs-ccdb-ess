@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.openepics.discs.conf.ent.DataType;
@@ -35,7 +36,8 @@ import com.google.common.collect.Lists;
  * The class stores view reprepsentarion of property values used in the device type add multiple property values dialog
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class MultiPropertyValueView {
+public class MultiPropertyValueView implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final Property property;
     private final List<String> enumValues;
