@@ -172,6 +172,7 @@ public class SlotEJB extends DAO<Slot> {
                 final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
                 slotPropertyValue.setProperty(propertyDefinition.getProperty());
                 slotPropertyValue.setSlot(newSlot);
+                slotPropertyValue.setPropValue(propertyDefinition.getPropValue());
                 addChild(slotPropertyValue);
             }
         }
@@ -487,7 +488,7 @@ public class SlotEJB extends DAO<Slot> {
                 slotToDelete.getPairsInWhichThisSlotIsAChildList().remove(pair);
             }
             // remove the relations for this Slot from the cache, since it was just processed
-            pairDeleteList.remove(deleteSlotId);
+            removedRelations.remove(deleteSlotId);
         }
         // the relations that remain will be deleted when this slot is deleted, we need to put them in the deleted list
         for (final SlotPair pair : slotToDelete.getPairsInWhichThisSlotIsAParentList()) {

@@ -95,6 +95,7 @@ public class DeviceEJB extends DAO<Device> {
                 final DevicePropertyValue devicePropertyValue = new DevicePropertyValue(false);
                 devicePropertyValue.setProperty(propertyDefinition.getProperty());
                 devicePropertyValue.setDevice(device);
+                devicePropertyValue.setPropValue(propertyDefinition.getPropValue());
                 addChild(devicePropertyValue);
             }
         }

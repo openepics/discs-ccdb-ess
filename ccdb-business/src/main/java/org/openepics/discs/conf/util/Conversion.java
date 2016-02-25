@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.util;
 
+import java.io.InputStream;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -94,8 +95,8 @@ public class Conversion {
     private static final String MESSAGES_PROPERTIES_FILE = "/messages.properties";
 
     static {
-        try {
-            messagesProperties.load(Conversion.class.getResourceAsStream(MESSAGES_PROPERTIES_FILE));
+        try (final InputStream msgProperties = Conversion.class.getResourceAsStream(MESSAGES_PROPERTIES_FILE)) {
+            messagesProperties.load(msgProperties);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not load " + MESSAGES_PROPERTIES_FILE, e);
         }
