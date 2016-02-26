@@ -89,7 +89,7 @@ public class ComptypeAttributesController
     @Inject private PropertyEJB propertyEJB;
     @Inject private SlotEJB slotEJB;
     @Inject private DeviceEJB deviceEJB;
-    private transient ComponentTypeManager componentTypeManager;
+    @Inject private ComponentTypeManager componentTypeManager;
 
     private List<Property> filteredProperties;
     private List<Property> selectedProperties;
@@ -107,10 +107,6 @@ public class ComptypeAttributesController
     public void init() {
         setDao(comptypeEJB);
         resetFields();
-    }
-
-    protected void setUIParent(ComponentTypeManager componentTypeManager) {
-        this.componentTypeManager = componentTypeManager;
     }
 
     @Override

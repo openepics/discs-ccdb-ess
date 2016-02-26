@@ -188,9 +188,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             super.init();
             activeTab = ActiveTab.INCLUDES;
 
-            relationshipController.setUIParent(this);
-            slotAttributeController.setUIParent(this);
-
             initHierarchies();
             initNamingInformation();
 
@@ -202,8 +199,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     @PostActivate
     public void postActivate() {
-        relationshipController.setUIParent(this);
-        slotAttributeController.setUIParent(this);
         initNamingInformation();
         initHierarchies();
     }

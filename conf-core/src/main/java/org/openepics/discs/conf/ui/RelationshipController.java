@@ -72,7 +72,7 @@ public class RelationshipController implements Serializable {
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private ConnectsManager connectsManager;
-    private transient HierarchiesController hierarchiesController;
+    @Inject private HierarchiesController hierarchiesController;
 
     private List<SlotRelationshipView> relationships;
     private List<SlotRelationshipView> filteredRelationships;
@@ -96,13 +96,6 @@ public class RelationshipController implements Serializable {
     	SlotView rootView = new SlotView(slotEJB.getRootNode(), null, 1, slotEJB);
     	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB, installationEJB);
     	containsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, containsTree));
-    }
-
-    /** Tell this bean which {@link HierarchiesController} is its "master"
-     * @param hierarchiesController the {@link HierarchiesController} master bean
-     */
-    protected void setUIParent(HierarchiesController hierarchiesController) {
-        this.hierarchiesController = hierarchiesController;
     }
 
     private List<SelectItem> buildRelationshipTypeList() {

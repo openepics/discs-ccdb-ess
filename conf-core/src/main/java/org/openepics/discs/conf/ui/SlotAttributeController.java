@@ -70,7 +70,7 @@ public class SlotAttributeController
     @Inject private InstallationEJB installationEJB;
     @Inject private PropertyEJB propertyEJB;
 
-    private transient HierarchiesController hierarchiesController;
+    @Inject private HierarchiesController hierarchiesController;
 
     // ------ variables for attribute manipulation ------
     private List<Property> filteredProperties;
@@ -81,13 +81,6 @@ public class SlotAttributeController
     @PostConstruct
     public void init() {
         setDao(slotEJB);
-    }
-
-    /** Tell this bean which {@link HierarchiesController} is its "master"
-     * @param hierarchiesController the {@link HierarchiesController} master bean
-     */
-    protected void setUIParent(HierarchiesController hierarchiesController) {
-        this.hierarchiesController = hierarchiesController;
     }
 
     @Override

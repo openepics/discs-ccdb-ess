@@ -62,16 +62,12 @@ public class DeviceAttributesController
     @Inject private DeviceEJB deviceEJB;
     @Inject private InstallationEJB installationEJB;
 
-    private transient DevicesController devicesController;
+    @Inject private DevicesController devicesController;
 
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         setDao(deviceEJB);
-    }
-
-    protected void setUIParent(DevicesController devicesController) {
-        this.devicesController = devicesController;
     }
 
     @Override
