@@ -67,18 +67,18 @@ import com.google.common.collect.Lists;
 public class RelationshipController implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient InstallationEJB installationEJB;
-    @Inject private transient SlotRelationEJB slotRelationEJB;
-    @Inject private transient SlotPairEJB slotPairEJB;
-    @Inject private transient ConnectsManager connectsManager;
-    private transient HierarchiesController hierarchiesController;
+    @Inject private SlotEJB slotEJB;
+    @Inject private InstallationEJB installationEJB;
+    @Inject private SlotRelationEJB slotRelationEJB;
+    @Inject private SlotPairEJB slotPairEJB;
+    @Inject private ConnectsManager connectsManager;
+    @Inject private HierarchiesController hierarchiesController;
 
-    private transient List<SlotRelationshipView> relationships;
-    private transient List<SlotRelationshipView> filteredRelationships;
-    private transient List<SelectItem> relationshipTypes;
+    private List<SlotRelationshipView> relationships;
+    private List<SlotRelationshipView> filteredRelationships;
+    private List<SelectItem> relationshipTypes;
 
-    private transient List<SlotRelationshipView> selectedRelationships;
+    private List<SlotRelationshipView> selectedRelationships;
 
     private SlotRelationshipView editedRelationshipView;
     private List<String> relationshipTypesForDialog;

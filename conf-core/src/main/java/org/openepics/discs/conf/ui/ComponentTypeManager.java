@@ -75,12 +75,12 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
     private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
-    @Inject private transient ComptypeEJB comptypeEJB;
-    @Inject private transient ComptypeAttributesController comptypeAttributesController;
-    @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoader private transient DataLoader compTypesDataLoader;
+    @Inject private ComptypeEJB comptypeEJB;
+    @Inject private ComptypeAttributesController comptypeAttributesController;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @ComponentTypesLoader private DataLoader compTypesDataLoader;
 
-    private ExcelSingleFileImportUI excelSingleFileImportUI;
+    private transient ExcelSingleFileImportUI excelSingleFileImportUI;
 
     private ComponentTypeView selectedComponent;
 
@@ -148,7 +148,6 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
         try {
             excelSingleFileImportUI = new ExcelSingleFileImportUI();
             simpleTableExporterDialog = new ExportSimpleDevTypeTableDialog();
-            comptypeAttributesController.setUIParent(this);
             reloadDeviceTypes();
             resetFields();
 

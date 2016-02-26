@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.annotation.Nullable;
@@ -33,7 +34,9 @@ import com.google.common.base.Preconditions;
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class InstallationView {
+public class InstallationView implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private InstallationRecord record;
     private Slot slot;
     private final String usedBy = "";

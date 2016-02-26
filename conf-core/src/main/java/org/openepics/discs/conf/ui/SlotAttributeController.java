@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -62,18 +61,17 @@ import com.google.common.collect.Lists;
 @Named
 @ViewScoped
 public class SlotAttributeController
-        extends AbstractAttributesController<Slot, SlotPropertyValue, SlotArtifact>
-        implements Serializable {
+        extends AbstractAttributesController<Slot, SlotPropertyValue, SlotArtifact> {
     private static final long serialVersionUID = 1L;
 
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient InstallationEJB installationEJB;
-    @Inject private transient PropertyEJB propertyEJB;
+    @Inject private SlotEJB slotEJB;
+    @Inject private InstallationEJB installationEJB;
+    @Inject private PropertyEJB propertyEJB;
 
-    private transient HierarchiesController hierarchiesController;
+    @Inject private HierarchiesController hierarchiesController;
 
     // ------ variables for attribute manipulation ------
-    private transient List<Property> filteredProperties;
+    private List<Property> filteredProperties;
 
     public SlotAttributeController() {}
 
@@ -81,13 +79,6 @@ public class SlotAttributeController
     @PostConstruct
     public void init() {
         setDao(slotEJB);
-    }
-
-    /** Tell this bean which {@link HierarchiesController} is its "master"
-     * @param hierarchiesController the {@link HierarchiesController} master bean
-     */
-    protected void setUIParent(HierarchiesController hierarchiesController) {
-        this.hierarchiesController = hierarchiesController;
     }
 
     @Override

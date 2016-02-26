@@ -19,11 +19,11 @@
  */
 package org.openepics.discs.conf.ui;
 
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
@@ -32,16 +32,13 @@ import org.openepics.discs.conf.ent.Unit;
  *
  * @author vuppala
  */
-@ManagedBean
+@Named
 public class UnitConverter implements Converter {
 
-    @EJB
-    private UnitEJB unitEJB;
-    /**
-     * Creates a new instance of UnitConverter
-     */
-    public UnitConverter() {
-    }
+    @Inject private UnitEJB unitEJB;
+
+    /** Creates a new instance of UnitConverter */
+    public UnitConverter() {}
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {

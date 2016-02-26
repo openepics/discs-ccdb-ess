@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
@@ -54,24 +53,18 @@ import org.openepics.discs.conf.views.EntityAttributeViewKind;
 @Named
 @ViewScoped
 public class DeviceAttributesController
-        extends AbstractAttributesController<Device, DevicePropertyValue, DeviceArtifact>
-        implements Serializable {
-
+        extends AbstractAttributesController<Device, DevicePropertyValue, DeviceArtifact> {
     private static final long serialVersionUID = 1L;
 
-    @Inject private transient DeviceEJB deviceEJB;
-    @Inject private transient InstallationEJB installationEJB;
+    @Inject private DeviceEJB deviceEJB;
+    @Inject private InstallationEJB installationEJB;
 
-    private transient DevicesController devicesController;
+    @Inject private DevicesController devicesController;
 
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         setDao(deviceEJB);
-    }
-
-    protected void setUIParent(DevicesController devicesController) {
-        this.devicesController = devicesController;
     }
 
     @Override

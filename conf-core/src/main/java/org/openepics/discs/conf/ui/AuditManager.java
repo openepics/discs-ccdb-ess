@@ -40,6 +40,7 @@ import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -55,7 +56,7 @@ public class AuditManager implements Serializable, SimpleTableExporter {
 
     private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
 
-    @Inject private transient AuditRecordEJB auditRecordEJB;
+    @Inject private AuditRecordEJB auditRecordEJB;
 
     private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;

@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -28,7 +30,9 @@ import org.openepics.discs.conf.ent.ComponentType;
  * The Component view to show in the Device Type screen.
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class ComponentTypeView {
+public class ComponentTypeView implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private ComponentType componentType;
     private String usedBy;
 

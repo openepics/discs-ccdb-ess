@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
+
 import javax.annotation.Nullable;
 
 import org.openepics.discs.conf.ent.ConfigurationEntity;
@@ -37,7 +39,9 @@ import org.openepics.discs.conf.ent.Unit;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
-public abstract class EntityAttributeView<E extends ConfigurationEntity & NamedEntity> {
+public abstract class EntityAttributeView<E extends ConfigurationEntity & NamedEntity> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final E parentEntity;
     private final String usedBy;
     private EntityAttributeViewKind kind;

@@ -36,6 +36,8 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
  * @param <E> the type of the view parent entity
  */
 public class EntityAttrTagView<E extends ConfigurationEntity & NamedEntity> extends EntityAttributeView<E> {
+    private static final long serialVersionUID = 1L;
+
     private Tag entity;
 
     /**

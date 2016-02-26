@@ -75,10 +75,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private static final long serialVersionUID = 1056645993595744719L;
     private static final String CRLF = "\r\n";
 
-    @Inject private transient PropertyEJB propertyEJB;
+    @Inject private PropertyEJB propertyEJB;
 
-    @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @PropertiesLoader private transient DataLoader propertiesDataLoader;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @PropertiesLoader private DataLoader propertiesDataLoader;
 
     private List<PropertyView> properties;
     private List<PropertyView> filteredProperties;
@@ -86,7 +86,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private List<PropertyView> usedProperties;
     private List<PropertyView> filteredDialogProperties;
 
-    private transient PropertyView dialogProperty;
+    private PropertyView dialogProperty;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
 

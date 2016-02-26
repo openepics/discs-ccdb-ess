@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,7 +82,8 @@ import com.google.common.collect.Lists;
 public abstract class AbstractAttributesController
         <C extends ConfigurationEntity & NamedEntity & EntityWithTags & EntityWithArtifacts,
         T extends PropertyValue,
-        S extends Artifact> {
+        S extends Artifact> implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Inject protected BlobStore blobStore;
     @Inject protected TagEJB tagEJB;

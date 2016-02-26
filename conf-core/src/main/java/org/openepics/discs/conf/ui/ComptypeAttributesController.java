@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,18 +77,17 @@ import com.google.common.collect.Lists;
 @Named
 @ViewScoped
 public class ComptypeAttributesController
-        extends AbstractAttributesController<ComponentType, ComptypePropertyValue, ComptypeArtifact>
-        implements Serializable {
+        extends AbstractAttributesController<ComponentType, ComptypePropertyValue, ComptypeArtifact> {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(ComptypeAttributesController.class.getCanonicalName());
 
     private static enum DefinitionTarget { SLOT, DEVICE }
 
-    @Inject private transient ComptypeEJB comptypeEJB;
-    @Inject private transient PropertyEJB propertyEJB;
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient DeviceEJB deviceEJB;
-    private transient ComponentTypeManager componentTypeManager;
+    @Inject private ComptypeEJB comptypeEJB;
+    @Inject private PropertyEJB propertyEJB;
+    @Inject private SlotEJB slotEJB;
+    @Inject private DeviceEJB deviceEJB;
+    @Inject private ComponentTypeManager componentTypeManager;
 
     private List<Property> filteredProperties;
     private List<Property> selectedProperties;
@@ -97,9 +95,9 @@ public class ComptypeAttributesController
     private boolean isPropertyDefinition;
     private DefinitionTarget definitionTarget;
 
-    private transient List<MultiPropertyValueView> filteredPropertyValues;
-    private transient List<MultiPropertyValueView> selectedPropertyValues;
-    private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
+    private List<MultiPropertyValueView> filteredPropertyValues;
+    private List<MultiPropertyValueView> selectedPropertyValues;
+    private List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
     /** Java EE post construct life-cycle method. */
@@ -107,10 +105,6 @@ public class ComptypeAttributesController
     public void init() {
         setDao(comptypeEJB);
         resetFields();
-    }
-
-    protected void setUIParent(ComponentTypeManager componentTypeManager) {
-        this.componentTypeManager = componentTypeManager;
     }
 
     @Override

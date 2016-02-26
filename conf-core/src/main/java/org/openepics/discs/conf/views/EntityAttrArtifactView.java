@@ -43,6 +43,8 @@ import com.google.common.io.ByteStreams;
  * @param <E> the type of the view parent entity
  */
 public class EntityAttrArtifactView<E extends ConfigurationEntity & NamedEntity> extends EntityAttributeView<E> {
+    private static final long serialVersionUID = 1L;
+
     private final Artifact entity;
     protected byte[] importData;
 

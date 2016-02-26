@@ -69,15 +69,15 @@ import com.google.common.collect.Lists;
 public class DataTypeManager extends AbstractExcelSingleFileImportUI implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = -7538356350403365152L;
 
-    @Inject private transient  DataTypeEJB dataTypeEJB;
-    @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @DataTypeLoader private transient DataLoader enumsDataLoader;
+    @Inject private DataTypeEJB dataTypeEJB;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @DataTypeLoader private DataLoader enumsDataLoader;
 
-    private transient List<UserEnumerationView> dataTypeViews;
-    private transient List<UserEnumerationView> filteredDataTypesViews;
-    private transient List<UserEnumerationView> selectedEnums;
-    private transient List<UserEnumerationView> usedEnums;
-    private transient List<UserEnumerationView> filteredDialogEnums;
+    private List<UserEnumerationView> dataTypeViews;
+    private List<UserEnumerationView> filteredDataTypesViews;
+    private List<UserEnumerationView> selectedEnums;
+    private List<UserEnumerationView> usedEnums;
+    private List<UserEnumerationView> filteredDialogEnums;
     private List<DataType> dataTypes;
     private List<String> builtInDataTypeNames;
 

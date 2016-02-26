@@ -34,6 +34,8 @@ import org.openepics.discs.conf.util.BatchSaveStage;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class NewPropertyView extends PropertyView implements Iterable<String> {
+    private static final long serialVersionUID = 1L;
+
     // ---- batch property creation
     private boolean isBatchCreation;
     private int batchStartIndex;

@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -33,7 +34,9 @@ import com.google.common.base.Preconditions;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
-public class DeviceView {
+public class DeviceView implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String inventoryId;
     private final String installedIn;
     private final String installedSlotId;

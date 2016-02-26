@@ -53,6 +53,8 @@ import com.google.common.base.Preconditions;
  * @param <E> the type of the view parent entity
  */
 public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEntity> extends EntityAttributeView<E> {
+    private static final long serialVersionUID = 1L;
+
     private static final String MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
 
     private PropertyValue propertyValue;
