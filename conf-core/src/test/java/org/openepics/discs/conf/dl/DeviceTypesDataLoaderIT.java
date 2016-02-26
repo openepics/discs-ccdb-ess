@@ -47,6 +47,7 @@ import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.values.DblValue;
 import org.openepics.discs.conf.testutil.TestUtility;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 
@@ -160,12 +161,18 @@ public class DeviceTypesDataLoaderIT {
         Assert.assertNotEquals(null, TestUtility.getProperty(BPM1Properties, "ALIAS"));
         Assert.assertNotEquals(null, TestUtility.getProperty(BPM1Properties, "APERTURE"));
         Assert.assertEquals("1st BPM", TestUtility.getProperty(BPM1Properties, "ALIAS").getPropValue().toString());
+        // check the default value
+        Assert.assertEquals(Double.valueOf(1.23),
+                    ((DblValue)TestUtility.getProperty(BPM1Properties, "ACENPOS").getPropValue()).getDblValue());
 
         final List<ComptypePropertyValue> BPM2Properties = compTypeEJB.findByName("BPM2").getComptypePropertyList();
         Assert.assertNotEquals(null, TestUtility.getProperty(BPM2Properties, "ACENPOS"));
         Assert.assertNotEquals(null, TestUtility.getProperty(BPM2Properties, "ALIAS"));
         Assert.assertNotEquals(null, TestUtility.getProperty(BPM2Properties, "APERTURE"));
         Assert.assertEquals("2nd BPM", TestUtility.getProperty(BPM2Properties, "ALIAS").getPropValue().toString());
+        // check the default value
+        Assert.assertEquals(Double.valueOf(3.45),
+                ((DblValue)TestUtility.getProperty(BPM2Properties, "APERTURE").getPropValue()).getDblValue());
     }
 
     /**
@@ -193,9 +200,16 @@ public class DeviceTypesDataLoaderIT {
 
         final List<ComptypePropertyValue> BPM1Properties = compTypeEJB.findByName("BPM1").getComptypePropertyList();
         Assert.assertEquals("BPM1", TestUtility.getProperty(BPM1Properties, "ALIAS").getPropValue().toString());
+        // check the default value
+        Assert.assertEquals(Double.valueOf(1.23),
+                    ((DblValue)TestUtility.getProperty(BPM1Properties, "ACENPOS").getPropValue()).getDblValue());
+
         // Deleted properties
         final List<ComptypePropertyValue> BPM2Properties = compTypeEJB.findByName("BPM2").getComptypePropertyList();
         Assert.assertEquals(null, TestUtility.getProperty(BPM2Properties, "ALIAS"));
+        // check the default value
+        Assert.assertEquals(Double.valueOf(3.45),
+                ((DblValue)TestUtility.getProperty(BPM2Properties, "APERTURE").getPropValue()).getDblValue());
 
         final List<ComptypePropertyValue> PRGProperties = compTypeEJB.findByName("PRG").getComptypePropertyList();
         Assert.assertEquals(null, TestUtility.getProperty(PRGProperties, "ALIAS"));
@@ -330,16 +344,11 @@ public class DeviceTypesDataLoaderIT {
         // error due to: trying to update property to device type property which doesn't exist.
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 15,
                                                             ComponentTypesDataLoader.HDR_PROP_NAME, "ACCEPT"));
-        // error due to: trying to update device instance or slot property
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, 16,
-                                                            ComponentTypesDataLoader.HDR_PROP_TYPE, null));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, 17,
-                                                            ComponentTypesDataLoader.HDR_PROP_TYPE, null));
         // error due to: trying to delete a device type without name specified
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 18,
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 16,
                                                             ComponentTypesDataLoader.HDR_NAME, null));
         // error due to: trying to delete a device type property without name specified
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 19,
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 17,
                                                             ComponentTypesDataLoader.HDR_PROP_NAME, null));
 
         // Trying to load

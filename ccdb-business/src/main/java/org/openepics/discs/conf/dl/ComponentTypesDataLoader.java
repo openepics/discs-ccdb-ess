@@ -112,11 +112,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                                 (ComptypePropertyValue) getPropertyValue(componentTypeToUpdate, propNameFld,
                                                                             HDR_PROP_NAME);
                         if (comptypePropertyValue != null) {
-                            if (!comptypePropertyValue.isPropertyDefinition()) {
-                                addOrUpdateProperty(componentTypeToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
-                            } else {
-                                result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE, propTypeFld);
-                            }
+                            addOrUpdateProperty(componentTypeToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
                         }
                     } else {
                         result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
@@ -244,13 +240,14 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
         final ComptypePropertyValue propertyValue = new ComptypePropertyValue(false);
         propertyValue.setProperty(property);
         propertyValue.setComponentType(comptypeToUpdate);
+        // Slot and device property values can have defaults
+        propertyValue.setPropValue(Conversion.stringToValue(propValueFld, property.getDataType()));
         switch (propTypeFld) {
             case DataLoader.PROP_TYPE_DEV_TYPE:
                 if (Strings.isNullOrEmpty(propValueFld)) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_VALUE);
                     return;
                 }
-                propertyValue.setPropValue(Conversion.stringToValue(propValueFld, property.getDataType()));
                 break;
             case DataLoader.PROP_TYPE_SLOT:
                 propertyValue.setPropertyDefinition(true);
