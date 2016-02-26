@@ -67,6 +67,8 @@ public interface DataLoader {
     public static final String ENTITY_TYPE_SLOT = "SLOT";
     public static final String ENTITY_TYPE_CONTAINER = "CONTAINER";
 
+    public static final String PATH_SEPARATOR_PATTERN = ">>";
+
     /**
      * Saves data read from input file to the database
      *

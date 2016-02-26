@@ -79,6 +79,7 @@ public class SlotsDataLoaderIT {
     @Test
     @UsingDataSet(value= {"unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml", "basic_slot.xml",
             "basic_comptype_property_value.xml", "device.xml"})
+    @ApplyScriptAfter(value = "truncate_database.sql")
     @Transactional(TransactionMode.DISABLED)
     public void slotsImportSuccess() throws IOException {
         final String slotsImportFileName = "slots-import-creation.xlsx";
@@ -90,6 +91,7 @@ public class SlotsDataLoaderIT {
     @Test
     @UsingDataSet(value = { "unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml",
             "basic_slot.xml", "basic_comptype_property_value.xml", "device.xml" })
+    @ApplyScriptAfter(value = "truncate_database.sql")
     @Transactional(TransactionMode.DISABLED)
     public void slotsImportCreationFails() throws IOException {
         final String slotsImportFileName = "slots-import-creation-fails.xlsx";
@@ -199,7 +201,7 @@ public class SlotsDataLoaderIT {
     @UsingDataSet(value = { "unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml",
             "basic_slot.xml", "basic_comptype_property_value.xml", "device.xml", "slot.xml" })
     @ApplyScriptAfter(value = "truncate_database.sql")
-     @Transactional(TransactionMode.DISABLED)
+    @Transactional(TransactionMode.DISABLED)
     public void slotsUpdateSuccess() throws IOException {
         final String slotsImportFileName = "slots-success-update.test.xlsx";
         final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
@@ -300,8 +302,8 @@ public class SlotsDataLoaderIT {
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 15,
                                                                     SlotsDataLoader.HDR_ENTITY_DEVICE_TYPE, "BSLOT"));
         // Trying to create slot without parent
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ORPHAN_SLOT, 16,
-                                                                    SlotsDataLoader.HDR_ENTITY_NAME, "Slot5"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 16,
+                                                                    SlotsDataLoader.HDR_ENTITY_PARENT, null));
         // Trying to create slot that already exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 17,
                                                                     SlotsDataLoader.HDR_ENTITY_NAME, "FE_BTS"));

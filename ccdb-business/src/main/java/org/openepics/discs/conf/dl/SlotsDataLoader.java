@@ -74,7 +74,6 @@ import com.google.common.collect.ImmutableMap;
 public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<SlotPropertyValue> implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
-    private static final String LINE_SEPARATOR_PATTERN = "\r\n|\r|\n";
 
     protected static final String HDR_ENTITY_TYPE = "ENTITY TYPE";
     protected static final String HDR_ENTITY_DEVICE_TYPE = "ENTITY DEVICE TYPE";
@@ -538,7 +537,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 return slotEJB.getRootNode();
             }
         }
-        final String[] parents = parentPath.split(LINE_SEPARATOR_PATTERN);
+        final String[] parents = parentPath.split(DataLoader.PATH_SEPARATOR_PATTERN);
         if (parents.length == 1) {
             // find parent if only one in the database
             final String theParent = parents[0].trim();
