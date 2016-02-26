@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ccdb-ws</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>${app.version}-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>ccdb-ws</name>
 
@@ -66,6 +66,7 @@
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>persistance.xml</exclude>
+                    <exclude>messages.properties</exclude>
                 </excludes>
                 <filtering>false</filtering>
             </resource>
@@ -77,6 +78,13 @@
                     <exclude>glassfish-web.xml</exclude>
                 </excludes>
                 <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>messages.properties</include>
+                </includes>
+                <filtering>true</filtering>
             </resource>
         </resources>
         <plugins>
