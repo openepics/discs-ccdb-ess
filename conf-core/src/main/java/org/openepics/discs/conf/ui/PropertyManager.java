@@ -103,7 +103,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         @Override
         protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Name", "Description", "Unit", "Data Type");
+            exportTable.addHeaderRow("Operation", "Name", "Description", "Data Type", "Unit", "Uniqueness");
         }
 
         @Override
@@ -111,8 +111,19 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
             final List<PropertyView> exportData = filteredProperties;
             for (final PropertyView prop : exportData) {
                 final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : null;
-                exportTable.addDataRow(prop.getName(), prop.getDescription(), unitName, prop.getDataType().getName());
+                exportTable.addDataRow(DataLoader.CMD_UPDATE, prop.getName(), prop.getDescription(),
+                        prop.getDataType().getName(), unitName, prop.getValueUniqueness().name());
             }
+        }
+
+        @Override
+        protected String getExcelTemplatePath() {
+            return "/resources/templates/ccdb_properties.xlsx";
+        }
+
+        @Override
+        protected int getExcelDataStartRow() {
+            return 9;
         }
     }
 

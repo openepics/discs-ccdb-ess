@@ -63,6 +63,8 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.ui.trees.BasicTreeNode;
 import org.openepics.discs.conf.ui.trees.ConnectsTree;
 import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
@@ -70,6 +72,7 @@ import org.openepics.discs.conf.ui.trees.RootNodeWithChildren;
 import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
 import org.openepics.discs.conf.ui.trees.Tree;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
+import org.openepics.discs.conf.ui.util.ExportSimpleSlotsTableDialog;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.ui.util.names.Names;
 import org.openepics.discs.conf.util.AppProperties;
@@ -91,7 +94,8 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class HierarchiesController extends AbstractExcelSingleFileImportUI implements Serializable {
+public class HierarchiesController extends AbstractExcelSingleFileImportUI implements SimpleTableExporter,
+        Serializable {
     private static final long       serialVersionUID = 2743408661782529373L;
 
     private static final Logger     LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
@@ -180,6 +184,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private SlotView linkSlot;
 
+    private transient ExportSimpleSlotsTableDialog simpleTableExporterDialog;
+
     /** Java EE post construct life-cycle method. */
     @Override
     @PostConstruct
@@ -192,6 +198,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             initNamingInformation();
 
             navigateToUrlSelectedSlot();
+
+            simpleTableExporterDialog = new ExportSimpleSlotsTableDialog(containsTree, slotEJB.getRootNode(),
+                                                    installationEJB);
         } catch (Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
@@ -201,6 +210,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void postActivate() {
         initNamingInformation();
         initHierarchies();
+        simpleTableExporterDialog = new ExportSimpleSlotsTableDialog(containsTree, slotEJB.getRootNode(),
+                                                    installationEJB);
     }
 
     private void initNamingInformation() {
@@ -359,7 +370,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    /** Remove attributes, relationships and installation information for slots no longer selected */
+    /* Remove attributes, relationships and installation information for slots no longer selected */
     private void removeUnselectedRelatedInformation() {
         for (final Iterator<Long> iter = displayedAttributeNodeIds.iterator(); iter.hasNext(); ) {
             final Long id = iter.next();
@@ -374,7 +385,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    /** Add attributes, relationships and installation information for slots that are missing */
+    /* Add attributes, relationships and installation information for slots that are missing */
     private void addRelatedInformationForNewSlots() {
         for (final Long selectedId : selectedNodeIds) {
             if (!displayedAttributeNodeIds.contains(selectedId)) {
@@ -402,7 +413,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * Below: Callback methods called from the main UI screen. E.g.: methods that are called when user user selects
      *        a line in a table.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /** Clears all slot related information when user deselects the slots in the hierarchy. */
+    /* Clears all slot related information when user deselects the slots in the hierarchy. */
     private void clearRelatedInformation() {
         selectedSlotView = null;
         selectedSlot = null;
@@ -1232,5 +1243,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             return Collections.emptyList();
         else
             return selectedTree.getSelectedNodes().stream().map(e -> e.getData().getSlot()).collect(Collectors.toList());
+    }
+
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
+    }
+
+    public boolean isContainsEmpy() {
+        return containsTree.getRootNode().getBufferedAllChildren().isEmpty();
     }
 }

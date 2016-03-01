@@ -95,6 +95,18 @@ public class AuditManager implements Serializable, SimpleTableExporter {
                         record.getEntry());
             }
         }
+
+        @Override
+        protected String getExcelTemplatePath() {
+            // audit log does not have a template
+            return null;
+        }
+
+        @Override
+        protected int getExcelDataStartRow() {
+            // audit log does not have a template
+            return 0;
+        }
     }
 
 

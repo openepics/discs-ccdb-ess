@@ -100,16 +100,26 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         @Override
         protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Name", "Description", "Definition");
+            exportTable.addHeaderRow("Operation", "Name", "Description", "Definition");
         }
 
         @Override
         protected void addData(ExportTable exportTable) {
             final List<UserEnumerationView> exportData = filteredDataTypesViews;
             for (final UserEnumerationView enumeration : exportData) {
-                exportTable.addDataRow(enumeration.getName(), enumeration.getDescription(),
-                        enumeration.getDisplayDefinition());
+                exportTable.addDataRow(DataLoader.CMD_UPDATE, enumeration.getName(), enumeration.getDescription(),
+                        String.join(", ",  enumeration.getDefinitionList()));
             }
+        }
+
+        @Override
+        protected String getExcelTemplatePath() {
+            return "/resources/templates/ccdb_enumerations.xlsx";
+        }
+
+        @Override
+        protected int getExcelDataStartRow() {
+            return 9;
         }
     }
 

@@ -29,7 +29,7 @@ import org.primefaces.model.StreamedContent;
  * An abstract class that implements common methods for exporting a simple table into an Excel or CSV format.
  * The class provides support for an Export data dialog, which behaves the same whenever user wants to export tabular
  * data. The implementing classes just need to implement methods that fill the file with the actual data.
- * 
+ *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public abstract class ExportSimpleTableDialog {
@@ -70,7 +70,7 @@ public abstract class ExportSimpleTableDialog {
         final String fileName;
 
         if (ExportTable.FILE_FORMAT_EXCEL.equals(fileFormat)) {
-            exportTable = new ExcelExportTable();
+            exportTable = new ExcelExportTable(getExcelTemplatePath(), getExcelDataStartRow());
             mimeType = ExportTable.MIME_TYPE_EXCEL;
             fileName = getFileName() + ".xlsx";
         } else {
@@ -105,4 +105,10 @@ public abstract class ExportSimpleTableDialog {
      * @param exportTable the table to add the data rows to
      */
     protected abstract void addData(ExportTable exportTable);
+
+    /** @return The path to the Excel template file inside the WAR to use for export */
+    protected abstract String getExcelTemplatePath();
+
+    /** @return the 0 based index of the first data row in the excel table file */
+    protected abstract int getExcelDataStartRow();
 }

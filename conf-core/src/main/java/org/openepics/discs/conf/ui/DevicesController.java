@@ -49,6 +49,7 @@ import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
@@ -153,7 +154,8 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
 
         @Override
         protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Type", "Inventory ID", "Installed in", "Installation timestamp");
+            exportTable.addHeaderRow("Operation", "Type", "Inventory ID", "Property Name", "Property Value",
+                    "Installed In", "Installation Timestamp");
         }
 
         @Override
@@ -161,11 +163,26 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
             final List<DeviceView> exportData = Utility.isNullOrEmpty(filteredDevices) ? devices
                     : filteredDevices;
             for (final DeviceView deviceInstance : exportData) {
-                exportTable.addDataRow(deviceInstance.getDevice().getComponentType().getName(),
-                        deviceInstance.getInventoryId(),
+                exportTable.addDataRow(DataLoader.CMD_UPDATE_DEVICE,
+                        deviceInstance.getDevice().getComponentType().getName(), deviceInstance.getInventoryId(),
+                        null, null,
                         "-".equals(deviceInstance.getInstalledIn()) ? null : deviceInstance.getInstalledIn(),
                         deviceInstance.getInstallationTimestamp());
+                for (final DevicePropertyValue pv : deviceInstance.getDevice().getDevicePropertyList()) {
+                    exportTable.addDataRow(DataLoader.CMD_UPDATE_PROPERTY, null, deviceInstance.getInventoryId(),
+                            pv.getProperty().getName(), pv.getPropValue());
+                }
             }
+        }
+
+        @Override
+        protected String getExcelTemplatePath() {
+            return "/resources/templates/ccdb_devices.xlsx";
+        }
+
+        @Override
+        protected int getExcelDataStartRow() {
+            return 10;
         }
     }
 

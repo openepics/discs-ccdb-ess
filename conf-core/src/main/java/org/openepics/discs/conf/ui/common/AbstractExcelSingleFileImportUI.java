@@ -53,6 +53,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
     protected transient DataLoader dataLoader;
 
     private ExportSimpleErrorsTableDialog errorsTableDialog;
+
     private class ExportSimpleErrorsTableDialog extends ExportSimpleTableDialog {
         public ExportSimpleErrorsTableDialog() {
         }
@@ -80,6 +81,18 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
             for (final ValidationMessage message : exportData) {
                 exportTable.addDataRow(message.getRow(), message.getColumn(), message.getMessage().toString());
             }
+        }
+
+        @Override
+        protected String getExcelTemplatePath() {
+            // Error reports do not have a template
+            return null;
+        }
+
+        @Override
+        protected int getExcelDataStartRow() {
+            // Error reports do not have a template
+            return 0;
         }
     }
 

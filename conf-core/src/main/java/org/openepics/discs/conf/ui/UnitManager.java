@@ -99,15 +99,25 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         @Override
         protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Name", "Description", "Symbol");
+            exportTable.addHeaderRow("Operation", "Name", "Description", "Symbol");
         }
 
         @Override
         protected void addData(ExportTable exportTable) {
             final List<UnitView> exportData = filteredUnits;
             for (final UnitView unit : exportData) {
-                exportTable.addDataRow(unit.getName(), unit.getDescription(), unit.getSymbol());
+                exportTable.addDataRow(DataLoader.CMD_UPDATE,  unit.getName(), unit.getDescription(), unit.getSymbol());
             }
+        }
+
+        @Override
+        protected String getExcelTemplatePath() {
+            return "/resources/templates/ccdb_units.xlsx";
+        }
+
+        @Override
+        protected int getExcelDataStartRow() {
+            return 9;
         }
     }
 

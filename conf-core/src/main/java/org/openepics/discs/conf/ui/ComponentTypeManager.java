@@ -42,6 +42,7 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -126,7 +127,8 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
         @Override
         protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Name", "Description");
+            exportTable.addHeaderRow("Operation", "Device Type Name", "Device Type Description", "Property Type",
+                    "Property Name", "Property Value");
         }
 
         @Override
@@ -135,8 +137,32 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
                                                             ? deviceTypes
                                                             : filteredDeviceTypes;
             for (final ComponentTypeView devType : exportData) {
-                exportTable.addDataRow(devType.getName(), devType.getDescription());
+                exportTable.addDataRow(DataLoader.CMD_UPDATE_DEVICE_TYPE, devType.getName(), devType.getDescription());
+                for (final ComptypePropertyValue pv : devType.getComponentType().getComptypePropertyList()) {
+                    exportTable.addDataRow(DataLoader.CMD_UPDATE_PROPERTY, devType.getName(), null, getPropertyType(pv),
+                            pv.getProperty().getName(), pv.getPropValue());
+                }
             }
+        }
+
+        private String getPropertyType(final ComptypePropertyValue pv) {
+            if (!pv.isPropertyDefinition()) {
+                return DataLoader.PROP_TYPE_DEV_TYPE;
+            } else if (pv.isDefinitionTargetSlot()) {
+                return DataLoader.PROP_TYPE_SLOT;
+            } else {
+                return DataLoader.PROP_TYPE_DEV_INSTANCE;
+            }
+        }
+
+        @Override
+        protected String getExcelTemplatePath() {
+            return "/resources/templates/ccdb_device_types.xlsx";
+        }
+
+        @Override
+        protected int getExcelDataStartRow() {
+            return 10;
         }
     }
 

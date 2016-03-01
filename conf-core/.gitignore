@@ -19,3 +19,6 @@ src/main/resources/META-INF/persistence.xml
 src/main/webapp/WEB-INF/beans.xml
 src/main/webapp/WEB-INF/jboss-all.xml
 src/main/webapp/WEB-INF/jboss-web.xml
+
+!src/main/webapp/*.pdf
+!src/main/webapp/**/*.pdf

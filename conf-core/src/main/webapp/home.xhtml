@@ -34,16 +34,16 @@
                 <p:row>
                     <p:column rowspan="4" id="treeColumn">
                         <p:fieldset id="treeFieldSet" legend="Slots" style="box-sizing: border-box; height: calc(100vh - 7em)">
-                        <div style="height: calc(100% - 3em)">
-                            <p:tabView id="hierarchyTabs" style="width: 48em; height: 100%">
+                        <div style="height: calc(100% - 5.5em)">
+                            <p:tabView id="hierarchyTabs" style="width: 33em; height: 100%">
                                 <p:ajax event="tabChange" listener="#{hierarchiesController.onTabChange}"
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                         :hierarchies:installationDetails :hierarchies:slotAttributes
                                         :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree
-                                        :hierarchies:hierarchyTabs:connectsTree
-                                        :hierarchies:clipboardOperations"                                    
+                                        :hierarchies:hierarchyTabs:connectsTree :hierarchies:clipboardOperations
+                                        :hierarchies:slotExport"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
                                 <p:tab id="INCLUDES" title="Contains" style="height: 100%">
                                     <p:inputText id="filterContainsTree" value="#{hierarchiesController.containsTree.filter}"
@@ -233,7 +233,58 @@
                                 </p:tab>
                             </p:tabView>
                         </div>
-                            <p:menuButton value="+/-" id="expandColapseOp" style="float: right; margin-top: 1em;">
+                        <div style="height: 3.0em;">
+                            <p:commandButton id="slotExport" value="Export" title="Export Installation Slots" 
+                                    icon="ui-icon-disk" style="float: right; margin: 1em 0 0 0;"
+                                    oncomplete="PF('exportSlots').show();" update=":exportSlotsForm:exportSlots" 
+                                    disabled="#{not hierarchiesController.includesActive or hierarchiesController.containsEmpy}" 
+                                    actionListener="#{hierarchiesController.simpleTableDialog.prepareTableExportPopup}" />
+                            <p:menuButton value="Import" id="import" style="float: right; margin: 1em 1ex 0 0;"
+                                    disabled="#{not hierarchiesController.includesActive}"
+                                    title="Import Slots and Signals">
+                                <p:menuitem value="Slots" id="importSlots" icon="ui-icon-arrowthickstop-1-n"
+                                    title="Import Slots" oncomplete="PF('importSlots').show();"
+                                    action="#{hierarchiesController.prepareImportSlotPopup()}" 
+                                    disabled="#{not hierarchiesController.includesActive and 
+                                                not securityPolicy.getUIHint('HIERARCHY_ALL')}"
+                                    update=":importSlotsForm" />
+                                <p:menuitem value="Signals List" id="importSignals" icon="ui-icon-signal"
+                                    title="Import Signals List" oncomplete="PF('importSignals').show();"
+                                    action="#{hierarchiesController.prepareImportSignalPopup()}" 
+                                    disabled="#{not hierarchiesController.includesActive and 
+                                                not securityPolicy.getUIHint('IMPORT_SIGNALS')}"
+                                    update=":importSignalsForm" />
+                            </p:menuButton>
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteSlots').show();"
+                                disabled="#{not hierarchiesController.includesActive
+                                                or empty hierarchiesController.containsTree.selectedNodes
+                                                or not securityPolicy.getUIHint('HIERARCHY_DELETE')}"
+                                update=":deleteSlotsForm" actionListener="#{hierarchiesController.prepareDeletePopup()}" />
+                            <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit"
+                                style="float: right; margin: 1em 1ex 0 0;" update=":editSlotForm:editSlotDialog"
+                                disabled="#{not hierarchiesController.singleNodeSelected 
+                                            or not hierarchiesController.includesActive
+                                            or not securityPolicy.getUIHint('HIERARCHY_MODIFY')}"
+                                oncomplete="PF('editSlotDialog').show();"
+                                actionListener="#{hierarchiesController.prepareEditPopup()}" />
+
+                            <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;"
+                                    disabled="#{not hierarchiesController.includesActive
+                                                or hierarchiesController.multipleNodesSelected
+                                                or not securityPolicy.getUIHint('HIERARCHY_CREATE')}">
+                                <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();"
+                                        actionListener="#{hierarchiesController.prepareContainerAddPopup}"
+                                        update=":addSlotForm"
+                                        disabled="#{hierarchiesController.multipleNodesSelected
+                                                        or hierarchiesController.selectedNodeSlot.hostingSlot}" />
+                                <p:menuitem value="Installation Slot" oncomplete="PF('addSlotDialog').show();"
+                                        actionListener="#{hierarchiesController.prepareInstallationSlotPopup}"
+                                        update=":addSlotForm" disabled="#{not hierarchiesController.singleNodeSelected}" />
+                            </p:menuButton>
+                        </div>
+                        <div style="height: 2.75em;">
+                            <p:menuButton value="+/-" id="expandColapseOp" style="float: right; margin-top: 0.25em;">
                                 <p:menuitem value="Expand" id="expandButton" icon="ui-icon-plus"
                                     title="Expand Selected Items"
                                     action="#{hierarchiesController.expandTreeNodes}" oncomplete="hierarchiesResizeAll();"                                   
@@ -247,7 +298,7 @@
                                             :hierarchies:hierarchyTabs:powersTree
                                             :hierarchies:hierarchyTabs:connectsTree" />                            
                             </p:menuButton>
-                            <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin: 1em 1ex 0 0;"
+                            <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin: 0.25em 1ex 0 0;"
                                     disabled="#{not hierarchiesController.includesActive 
                                                 or not securityPolicy.getUIHint('HIERARCHY_CREATE')}"
                                     title="Clipboard Operations">
@@ -271,30 +322,8 @@
                                     action="#{hierarchiesController.checkPasteAction}"
                                     update=":pasteSlotsForm:pasteSlots" />
                             </p:menuButton>
-                            <p:menuButton value="Import" id="import" style="float: right; margin: 1em 1ex 0 0;"
-                                    disabled="#{not hierarchiesController.includesActive}"
-                                    title="Import Slots and Signals">
-                                <p:menuitem value="Slots" id="importSlots" icon="ui-icon-arrowthickstop-1-n"
-                                    title="Import Slots" oncomplete="PF('importSlots').show();"
-                                    action="#{hierarchiesController.prepareImportSlotPopup()}" 
-                                    disabled="#{not hierarchiesController.includesActive and 
-                                                not securityPolicy.getUIHint('HIERARCHY_ALL')}"
-                                    update=":importSlotsForm" />
-                                <p:menuitem value="Signals List" id="importSignals" icon="ui-icon-signal"
-                                    title="Import Signals List" oncomplete="PF('importSignals').show();"
-                                    action="#{hierarchiesController.prepareImportSignalPopup()}" 
-                                    disabled="#{not hierarchiesController.includesActive and 
-                                                not securityPolicy.getUIHint('IMPORT_SIGNALS')}"
-                                    update=":importSignalsForm" />
-                            </p:menuButton>
-                            <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
-                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteSlots').show();"
-                                disabled="#{not hierarchiesController.includesActive
-                                                or empty hierarchiesController.containsTree.selectedNodes
-                                                or not securityPolicy.getUIHint('HIERARCHY_DELETE')}"
-                                update=":deleteSlotsForm" actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move Down"
-                                style="float: right; margin: 1em 1ex 0 0;"
+                                style="float: right; margin: 0.25em 1ex 0 0;"
                                 oncomplete="hierarchiesResizeAll(); scrollSelectedIntoView(PF('hierarchyWidget'));"
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:downButton :hierarchies:upButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
@@ -304,7 +333,7 @@
                                                 or not securityPolicy.getUIHint('MOVE_SLOT')}"
                                 actionListener="#{hierarchiesController.moveSlotDown()}" />
                             <p:commandButton id="upButton" icon="ui-icon-arrowthick-1-n" value="Up" title="Move Up"
-                                style="float: right; margin: 1em 1ex 0 0;"
+                                style="float: right; margin: 0.25em 1ex 0 0;"
                                 oncomplete="hierarchiesResizeAll(); scrollSelectedIntoView(PF('hierarchyWidget'));"
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:upButton :hierarchies:downButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
@@ -313,27 +342,7 @@
                                                 or hierarchiesController.singleSelectedSlotView.first
                                                 or not securityPolicy.getUIHint('MOVE_SLOT')}"
                                 actionListener="#{hierarchiesController.moveSlotUp()}" />
-                            <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit"
-                                style="float: right; margin: 1em 1ex 0 0;" update=":editSlotForm:editSlotDialog"
-                                disabled="#{not hierarchiesController.singleNodeSelected 
-                                            or not hierarchiesController.includesActive
-                                            or not securityPolicy.getUIHint('HIERARCHY_MODIFY')}"
-                                oncomplete="PF('editSlotDialog').show();"
-                                actionListener="#{hierarchiesController.prepareEditPopup()}" />
-
-                            <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;"
-                                    disabled="#{not hierarchiesController.includesActive
-                                                or hierarchiesController.multipleNodesSelected
-                                                or not securityPolicy.getUIHint('HIERARCHY_CREATE')}">
-                                <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();"
-                                        actionListener="#{hierarchiesController.prepareContainerAddPopup}"
-                                        update=":addSlotForm"
-                                        disabled="#{hierarchiesController.multipleNodesSelected
-                                                        or hierarchiesController.selectedNodeSlot.hostingSlot}" />
-                                <p:menuitem value="Installation Slot" oncomplete="PF('addSlotDialog').show();"
-                                        actionListener="#{hierarchiesController.prepareInstallationSlotPopup}"
-                                        update=":addSlotForm" disabled="#{not hierarchiesController.singleNodeSelected}" />
-                            </p:menuButton>
+                        </div>
                         </p:fieldset>
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
@@ -678,6 +687,15 @@
             <ui:param name="widgetName" value="cannotFindSlot" />
             <ui:param name="dialogTitle" value="Cannot Find the Requested Installation Slot" />
             <ui:param name="message" value="The requested installation slot '#{hierarchiesController.requestedSlot}' could not be located in the database." />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportSlotsForm" />
+            <ui:param name="widgetName" value="exportSlots" />
+            <ui:param name="dialogTitle" value="Export Slots" />
+            <ui:param name="fileFormatSelection" value="#{hierarchiesController.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{hierarchiesController.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{hierarchiesController.simpleTableDialog.exportedTable}" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/add-relationship.xhtml" />
