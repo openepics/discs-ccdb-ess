@@ -60,7 +60,13 @@ public class ExcelExportTable implements ExportTable {
     private final String templateName;
     final ServletContext servletContext;
 
-    /** Constructs an Excel file exporter. */
+    /**
+     * Constructs an Excel file exporter.
+     *
+     * @param templateName the path to the Excel file inside the WAR archive to use when exporting data.
+     * <code>null</code> means create an empty file.
+     * @param startRow the 0 based index of the row to start the export at.
+     */
     public ExcelExportTable(final String templateName, final int startRow) {
         servletContext = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).
                                                                                     getServletContext();
