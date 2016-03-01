@@ -81,7 +81,7 @@ public class DeviceAttributesController
             final ComponentType parent = attrDevice.getComponentType();
 
             for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
-                if (parentProp.getPropValue() != null) {
+                if (!parentProp.isPropertyDefinition()) {
                     attributes.add(new EntityAttrPropertyValueView<Device>(parentProp, attrDevice, parent));
                 }
             }
