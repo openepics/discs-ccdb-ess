@@ -25,10 +25,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.openepics.cable.client.CableDBClient;
 import org.openepics.cable.jaxb.CableElement;
@@ -42,14 +45,16 @@ import org.openepics.discs.conf.util.AppProperties;
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovic</a>
  */
+@Named
 @ViewScoped
 public class ConnectsManager implements Serializable  {
-    private static final long serialVersionUID = 1615712215239730844L;
+    private static final long   serialVersionUID = 1615712215239730844L;
+    private static final Logger LOGGER = Logger.getLogger(ConnectsManager.class.getCanonicalName());
 
     @Inject private SlotEJB slotEJB;
     @Inject private AppProperties properties;
 
-    private List<CableElement> cables = null;
+    private List<CableElement> cables = new ArrayList<>();
     private boolean cableDBStatus = false;
 
     /** Java EE post construct life-cycle method. */
@@ -58,9 +63,19 @@ public class ConnectsManager implements Serializable  {
         cableDBStatus = "TRUE".equalsIgnoreCase(properties.getProperty(AppProperties.CABLEDB_STATUS));
 
         if (cableDBStatus) {
-            CableDBClient c = new CableDBClient(null);
-            CableResource cr = c.createCableResource();
-            cables = cr.getAllCables(Collections.emptyList(), "");
+            try {
+                LOGGER.log(Level.INFO, "Obtaining the cable information.");
+                CableDBClient c = new CableDBClient(null);
+                CableResource cr = c.createCableResource();
+                cables = cr.getAllCables(Collections.emptyList(), "");
+                if (cables == null) {
+                    LOGGER.log(Level.SEVERE, "Got 'null' cables.");
+                    cables = Arrays.asList();
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error obtaining the CABLE information.", e);
+                cables = Arrays.asList();
+            }
         } else {
             cables = Arrays.asList();
         }
