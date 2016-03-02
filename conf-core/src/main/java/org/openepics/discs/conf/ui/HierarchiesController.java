@@ -73,6 +73,7 @@ import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
 import org.openepics.discs.conf.ui.trees.Tree;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.ui.util.ExportSimpleSlotsTableDialog;
+import org.openepics.discs.conf.ui.util.SlotRelationshipManager;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.ui.util.names.Names;
 import org.openepics.discs.conf.util.AppProperties;
@@ -95,7 +96,7 @@ import com.google.common.collect.Lists;
 @Named
 @ViewScoped
 public class HierarchiesController extends AbstractExcelSingleFileImportUI implements SimpleTableExporter,
-        Serializable {
+        SlotRelationshipManager, Serializable {
     private static final long       serialVersionUID = 2743408661782529373L;
 
     private static final Logger     LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
@@ -199,8 +200,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
             navigateToUrlSelectedSlot();
 
-            simpleTableExporterDialog = new ExportSimpleSlotsTableDialog(containsTree, slotEJB.getRootNode(),
-                                                    installationEJB);
+            simpleTableExporterDialog = new ExportSimpleSlotsTableDialog(this, slotEJB.getRootNode(), installationEJB);
         } catch (Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
@@ -210,8 +210,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void postActivate() {
         initNamingInformation();
         initHierarchies();
-        simpleTableExporterDialog = new ExportSimpleSlotsTableDialog(containsTree, slotEJB.getRootNode(),
-                                                    installationEJB);
+        simpleTableExporterDialog = new ExportSimpleSlotsTableDialog(this, slotEJB.getRootNode(), installationEJB);
     }
 
     private void initNamingInformation() {
@@ -1252,5 +1251,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public boolean isContainsEmpy() {
         return containsTree.getRootNode().getBufferedAllChildren().isEmpty();
+    }
+
+    @Override
+    public SlotRelationshipTree getContainsRelationshipTree() {
+        return containsTree;
     }
 }
