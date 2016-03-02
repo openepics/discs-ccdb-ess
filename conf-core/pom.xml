@@ -92,6 +92,7 @@
         <dependency>
             <groupId>org.openepics</groupId>
             <artifactId>CableDB-client-api</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>se.esss.ics.rbac</groupId>
@@ -214,13 +215,6 @@
             <properties>
                 <as.specific.source>development</as.specific.source>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.openepics</groupId>
-                    <artifactId>CableDB-client-api</artifactId>
-                    <version>1.1.0</version>
-                </dependency>
-            </dependencies>
         </profile>
 
         <profile>
@@ -251,13 +245,6 @@
             <properties>
                 <as.specific.source>stage</as.specific.source>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.openepics</groupId>
-                    <artifactId>CableDB-client-api</artifactId>
-                    <version>1.1.0</version>
-                </dependency>
-            </dependencies>
         </profile>
 
         <profile>

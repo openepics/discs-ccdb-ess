@@ -71,6 +71,8 @@ public class ConnectsManager implements Serializable  {
                 if (cables == null) {
                     LOGGER.log(Level.SEVERE, "Got 'null' cables.");
                     cables = Arrays.asList();
+                } else {
+                    LOGGER.log(Level.FINER, "Got " + cables.size() + " cables.");
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error obtaining the CABLE information.", e);
