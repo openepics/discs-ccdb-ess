@@ -327,7 +327,7 @@ public class SlotEJB extends DAO<Slot> {
         final Slot actualParentSlot = (parentSlot != null) ? parentSlot : getRootNode();
         final long equalyNamedSiblings = actualParentSlot.getPairsInWhichThisSlotIsAParentList().stream().
                                             filter(e -> !e.getChildSlot().equals(slotToRename)
-                                                    && e.getChildSlot().getName().equalsIgnoreCase(newContainerName)).
+                                                    && e.getChildSlot().getName().equals(newContainerName)).
                                             count();
         return equalyNamedSiblings == 0;
     }
