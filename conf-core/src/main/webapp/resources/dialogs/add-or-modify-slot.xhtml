@@ -22,6 +22,7 @@
                             <h:panelGroup>
                                 <p:selectOneMenu id="compTypeSelect" value="#{hierarchiesController.deviceType}" 
                                         required="true" tabindex="1" requiredMessage="Please select a device type" 
+                                        filter="true" filterMatchMode="contains" 
                                         disabled="#{not hierarchiesController.newSlot 
                                                 and hierarchiesController.hasDevice}">
                                     <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />

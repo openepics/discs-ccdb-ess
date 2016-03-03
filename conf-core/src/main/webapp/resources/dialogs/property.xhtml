@@ -53,7 +53,7 @@
                         <p:column>
                             <p:selectOneMenu id="propertyDataType" value="#{propertyManager.dialogProperty.dataType}" 
                                     var="dt" tabindex="3" converter="#{dataTypeConverter}" required="true" 
-                                    requiredMessage="Please select data type" 
+                                    requiredMessage="Please select data type" filter="true" filterMatchMode="contains" 
                                     disabled="#{not empty propertyManager.dialogProperty.usedBy}">
                                 <p:ajax update=":#{formId}:propertyUnit"/>
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
@@ -73,7 +73,7 @@
                         </p:column>
                         <p:column>
                             <p:selectOneMenu id="propertyUnit" value="#{propertyManager.dialogProperty.unit}" var="u" 
-                                    converter="#{unitConverter}" tabindex="4" 
+                                    converter="#{unitConverter}" tabindex="4" filter="true" filterMatchMode="contains" 
                                     disabled="#{not propertyManager.dialogProperty.unitComboEnabled or 
                                                 not empty propertyManager.dialogProperty.usedBy}">
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />

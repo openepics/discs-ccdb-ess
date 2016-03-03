@@ -19,7 +19,7 @@
                     <h:panelGroup>
                         <p:selectOneMenu id="deviceTypeSelection" required="true" tabindex="1" 
                                 value="#{devicesController.deviceTypeSelection}" 
-                                requiredMessage="Please select a device type." 
+                                requiredMessage="Please select a device type." filter="true" filterMatchMode="contains" 
                                 disabled="#{not batchCreation and 
                                     not empty devicesController.selectedDevices.get(0).installationTimestamp}">
                             <f:selectItem itemLabel="&lt;Select type&gt;" itemValue="" noSelectionOption="true" />

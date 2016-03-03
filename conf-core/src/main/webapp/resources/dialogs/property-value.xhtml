@@ -22,7 +22,8 @@
                             rendered="#{controller.dialogAttrPropertyValue.propertyNameChangeDisabled}" />
                     <h:panelGroup rendered="#{not controller.dialogAttrPropertyValue.propertyNameChangeDisabled}">
                         <p:selectOneMenu id="propertySelect" value="#{controller.dialogAttrPropertyValue.property}" 
-                                var="prop" converter="#{propertyConverter}" required="true" requiredMessage="Please select a property" 
+                                var="prop" converter="#{propertyConverter}" required="true" 
+                                requiredMessage="Please select a property" filter="true" filterMatchMode="contains" 
                                 disabled="#{controller.dialogAttrPropertyValue.propertyNameChangeDisabled}">
                             <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType :#{formId}:valueInputGroup"/>
                             <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
