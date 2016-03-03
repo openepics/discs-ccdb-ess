@@ -26,7 +26,7 @@
                         <p:column>
                             <p:inputText id="unitName" value="#{unitManager.dialogUnit.name}" required="true" tabindex="1" 
                                 requiredMessage="Please enter a name" validator="#{unitManager.nameValidator}"
-                                disabled="#{not empty unitManager.dialogUnit.usedBy and not unitManager.dialogUnit.unitAdd}"/>
+                                disabled="#{not securityPolicy.getUIHint('UNIT_MODIFY') and not unitManager.dialogUnit.unitAdd}"/>
                             <p:message for="unitName" />
                         </p:column>
                     </p:row>
@@ -51,7 +51,7 @@
                         <p:column>
                             <p:inputText id="unitSymbol" value="#{unitManager.dialogUnit.symbol}" required="true" 
                                 requiredMessage="Please enter a symbol" tabindex="3" 
-                                disabled="#{not empty unitManager.dialogUnit.usedBy and not unitManager.dialogUnit.unitAdd}"/>
+                                disabled="#{not securityPolicy.getUIHint('UNIT_MODIFY') and not unitManager.dialogUnit.unitAdd}"/>
                             <p:message for="unitSymbol" />
                         </p:column>
                     </p:row>
