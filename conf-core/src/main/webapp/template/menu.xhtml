@@ -28,7 +28,7 @@
             <p:menuitem value="Devices" title="View devices" url="/devices.xhtml" icon="ui-icon-gear" 
                 styleClass="#{request.requestURI.endsWith('devices.xhtml') ? 'menu-selected' : ''}" />
 
-            <p:menuitem value="Device types" title="View device types" url="/device-types.xhtml" icon="ui-icon-wrench" 
+            <p:menuitem value="Device Types" title="View device types" url="/device-types.xhtml" icon="ui-icon-wrench" 
                 styleClass="#{request.requestURI.endsWith('device-types.xhtml') ? 'menu-selected' : ''}" />
 
             <p:menuitem value="Properties" title="View property definitions" url="/properties.xhtml"
@@ -44,9 +44,13 @@
                 styleClass="#{request.requestURI.endsWith('log.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Templates" icon="ui-icon-calculator">
+                <p:menuitem value="Installation Slots" title="Download installation slots import Excel template"
+                    url="/resources/templates/ccdb_slots.xlsx" />
+                <p:menuitem value="Signals List" title="Download signals list import Excel template"
+                    url="/resources/templates/ccdb_signals_list.xlsx" />
                 <p:menuitem value="Devices" title="Download devices import Excel template"
                     url="/resources/templates/ccdb_devices.xlsx" />
-                <p:menuitem value="Device types" title="Download device types import Excel template"
+                <p:menuitem value="Device Types" title="Download device types import Excel template"
                     url="/resources/templates/ccdb_device_types.xlsx" />
                 <p:menuitem value="Properties" title="Download properties import Excel template"
                     url="/resources/templates/ccdb_properties.xlsx" />
@@ -54,14 +58,10 @@
                     url="/resources/templates/ccdb_enumerations.xlsx" />
                 <p:menuitem value="Units" title="Download units import Excel template"
                     url="/resources/templates/ccdb_units.xlsx" />
-                <p:menuitem value="Signals list" title="Download signals list import Excel template"
-                    url="/resources/templates/ccdb_signals_list.xlsx" />
-                <p:menuitem value="Installation slots" title="Download installation slots import Excel template"
-                    url="/resources/templates/ccdb_slots.xlsx" />
             </p:submenu>
 
             <p:submenu label="Help" icon="ui-icon-help">
-                <p:menuitem value="CCDB conventions" title="Download CCDB conventions" 
+                <p:menuitem value="CCDB Conventions" title="Download CCDB conventions" 
                     url="/resources/help/ccdb_conventions.pdf" target="_blank"/>
             </p:submenu>
 
@@ -74,7 +74,7 @@
     <h:panelGroup rendered="#{request.requestURI.endsWith('units.xhtml')}">
         <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importUnitsForm" />
-            <ui:param name="dialogTitle" value="Units import" />
+            <ui:param name="dialogTitle" value="Import Units" />
             <ui:param name="widgetName" value="importUnits" />
             <ui:param name="controller" value="#{request.requestURI.endsWith('units.xhtml') ? unitManager : null}" />
         </ui:include>
@@ -83,7 +83,7 @@
     <h:panelGroup rendered="#{request.requestURI.endsWith('properties.xhtml')}">
         <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importPropertiesForm" />
-            <ui:param name="dialogTitle" value="Properties import" />
+            <ui:param name="dialogTitle" value="Import Properties" />
             <ui:param name="widgetName" value="importProperties" />
             <ui:param name="controller" value="#{request.requestURI.endsWith('properties.xhtml') ? propertyManager : null}" />
         </ui:include>
@@ -92,7 +92,7 @@
     <h:panelGroup rendered="#{request.requestURI.endsWith('device-types.xhtml')}">
         <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importCompTypesForm" />
-            <ui:param name="dialogTitle" value="Device types import" />
+            <ui:param name="dialogTitle" value="Import Device Types" />
             <ui:param name="widgetName" value="importCompTypes" />
             <ui:param name="controller" value="#{request.requestURI.endsWith('device-types.xhtml') ? componentTypeManager : null}" />
         </ui:include>
@@ -101,7 +101,7 @@
     <h:panelGroup rendered="#{request.requestURI.endsWith('devices.xhtml')}">
         <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importDevicesForm" />
-            <ui:param name="dialogTitle" value="Devices import" />
+            <ui:param name="dialogTitle" value="Import Devices" />
             <ui:param name="widgetName" value="importDevices" />
             <ui:param name="controller" value="#{request.requestURI.endsWith('devices.xhtml') ? devicesController : null}" />
         </ui:include>
@@ -110,7 +110,7 @@
     <h:panelGroup rendered="#{request.requestURI.endsWith('enums.xhtml')}">
         <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importEnumsForm" />
-            <ui:param name="dialogTitle" value="Enumerations import" />
+            <ui:param name="dialogTitle" value="Import Enumerations" />
             <ui:param name="widgetName" value="importEnums" />
             <ui:param name="controller" value="#{request.requestURI.endsWith('enums.xhtml') ? dataTypeManager : null}" />
         </ui:include>
@@ -119,13 +119,13 @@
     <h:panelGroup rendered="#{request.requestURI.endsWith('home.xhtml')}">
         <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importSignalsForm" />
-            <ui:param name="dialogTitle" value="Signals import" />
+            <ui:param name="dialogTitle" value="Import Signals" />
             <ui:param name="widgetName" value="importSignals" />
             <ui:param name="controller" value="#{request.requestURI.endsWith('home.xhtml') ? hierarchiesController : null}" />
         </ui:include>
         <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importSlotsForm" />
-            <ui:param name="dialogTitle" value="Slots import" />
+            <ui:param name="dialogTitle" value="Import Slots" />
             <ui:param name="widgetName" value="importSlots" />
             <ui:param name="controller" value="#{request.requestURI.endsWith('home.xhtml') ? hierarchiesController : null}" />
         </ui:include>

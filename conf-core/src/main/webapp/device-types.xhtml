@@ -100,12 +100,12 @@
                                 <p:menuitem value="Device Type Property" oncomplete="PF('addPropertyValue').show();"
                                     actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}"
                                     update=":addPropertyValueForm:addPropertyValue" />
-                                <p:menuitem value="Installation Slot Property" oncomplete="PF('installationSlotProperty').show();"
-                                    actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd()}"
-                                    update=":installationSlotPropertyForm:installationSlotProperty" />
                                 <p:menuitem value="Device Property" oncomplete="PF('deviceInstanceProperty').show();"
-                                    actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd()}"
+                                    actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd}"
                                     update=":deviceInstancePropertyForm:deviceInstanceProperty" />
+                                <p:menuitem value="Installation Slot Property" oncomplete="PF('installationSlotProperty').show();"
+                                    actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd}"
+                                    update=":installationSlotPropertyForm:installationSlotProperty" />
                                 <p:menuitem value="Tag" oncomplete="PF('deviceTypeTag').show();" update=":deviceTypeTagForm"
                                     actionListener="#{comptypeAttributesController.prepareForTagAdd}" />
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();"

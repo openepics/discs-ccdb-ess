@@ -18,7 +18,7 @@
                 <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" 
                         var="prop" editable="true" editMode="cell" scrollable="true" 
                         tableStyle="word-wrap: break-word;" 
-                        widgetVar="propSelectTable" scrollHeight="350" scrollWidth="100%" 
+                        widgetVar="#{formId}_propSelectTable" scrollHeight="350" scrollWidth="100%" 
                         filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">                        
                     <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" 
                         update=":#{formId}:propertySelect" />
@@ -81,9 +81,9 @@
                 <p:commandButton value="Save" id="save" styleClass="dialogButton" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
                         action="#{comptypeAttributesController[submitHandler]}" update="#{componentToUpdate} propertySelect" />
-                <p:commandButton value="Cancel" styleClass="dialogButton" update="propertySelect" resetValues="true"
-                        oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
-                        action="#{comptypeAttributesController.resetPropertySelection(formId)}" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" update=" #{componentToUpdate} propertySelect" 
+                        resetValues="true" action="#{comptypeAttributesController.resetPropertySelection(formId)}" 
+                        oncomplete="PF('#{widgetName}').hide(); PF('#{formId}_propSelectTable').clearFilters(); #{resetFilter}" />
             </p:panel>
         </p:dialog>
     </h:form>
