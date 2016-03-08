@@ -111,7 +111,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
-    private static final String     CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
+    private static final String     CABLEDB_DEVICE_PAGE = "cables.xhtml?cableNumber=";
 
     @Inject private SlotEJB slotEJB;
     @Inject private SlotPairEJB slotPairEJB;
