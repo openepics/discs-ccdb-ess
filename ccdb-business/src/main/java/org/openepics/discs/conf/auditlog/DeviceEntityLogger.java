@@ -59,7 +59,9 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
         final Map<String, String> propertiesMap = new TreeMap<>();
         if (device.getDevicePropertyList() != null) {
             for (DevicePropertyValue propValue : device.getDevicePropertyList()) {
-                final String entryValue = propValue.getPropValue() == null ? null : propValue.getPropValue().auditLogString(100, 50);
+                final String entryValue = propValue.getPropValue() == null ? null
+                        : propValue.getPropValue().auditLogString(EntityLoggerUtil.AUDIT_LOG_ROWS,
+                                                                                EntityLoggerUtil.AUDIT_LOG_COLUMNS);
                 propertiesMap.put(propValue.getProperty().getName(), entryValue);
             }
         }

@@ -53,6 +53,8 @@ public class AppProperties {
     public static final String RESTRICT_TO_CONVENTION_NAMES = "org.openepics.discs.conf.props.restrictToConventionNames";
     public static final String CABLEDB_STATUS = "org.openepics.discs.conf.props.cableDBStatus";
     public static final String CABLEDB_APPLICATION_URL = "org.openepics.discs.conf.props.cableDBAppURL";
+    public static final String AUDIT_LOG_ROWS_PROPERTY_NAME= "org.openepics.discs.conf.props.auditLogRows";
+    public static final String AUDIT_LOG_COLUMNS_PROPERTY_NAME = "org.openepics.discs.conf.props.auditLogColumns";
 
     /**
      * Retrieves the string property with the given key-name

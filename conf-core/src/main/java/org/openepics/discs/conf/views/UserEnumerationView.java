@@ -56,7 +56,7 @@ public class UserEnumerationView implements Serializable {
      * @param enumeration The user defined enumeration to base the view object on
      */
     public UserEnumerationView(DataType enumeration) {
-        Preconditions.checkArgument(!Preconditions.checkNotNull(enumeration).isScalar());
+        Preconditions.checkArgument(Preconditions.checkNotNull(enumeration).isScalar());
         this.enumeration = enumeration;
         definitionList = Conversion.prepareEnumSelections(enumeration);
         enumerationBeingAdded = false;
@@ -65,6 +65,7 @@ public class UserEnumerationView implements Serializable {
     /** Default constructor. Creates view based on fresh (non-existing) {@link DataType} */
     public UserEnumerationView() {
         enumeration = new DataType();
+        enumeration.setScalar(true);
         enumerationBeingAdded = true;
         definitionList = new ArrayList<>();
     }
