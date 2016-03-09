@@ -42,41 +42,41 @@ import com.google.common.collect.Lists;
  *
  */
 public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
-	/** Current state of this node. Initialized is with initHierarchy() call, and deinitialized by reset(). */
-	private boolean initialized = false;
+    /** Current state of this node. Initialized is with initHierarchy() call, and deinitialized by reset(). */
+    private boolean initialized = false;
 
-	/**
-	 * Creates an uninitialized root node.
-	 *
-	 * @param data a fake slot view with the root
-	 * @param tree the tree of underlying hierarchy
-	 */
-	public RootNodeWithChildren(SlotView data, Tree<SlotView> tree) {
-		super(data, null, tree);
-		bufferedAllChildren = new ArrayList<>();
-	}
+    /**
+     * Creates an uninitialized root node.
+     *
+     * @param data a fake slot view with the root
+     * @param tree the tree of underlying hierarchy
+     */
+    public RootNodeWithChildren(SlotView data, Tree<SlotView> tree) {
+        super(data, null, tree);
+        bufferedAllChildren = new ArrayList<>();
+    }
 
-	/**
-	 * Method returns list of children we determined during initHierarchy call.
-	 * @return list of children
-	 */
-	@Override
-	public List<? extends BasicTreeNode<SlotView>> getAllChildren() {
-		return bufferedAllChildren;
-	}
+    /**
+     * Method returns list of children we determined during initHierarchy call.
+     * @return list of children
+     */
+    @Override
+    public List<? extends BasicTreeNode<SlotView>> getAllChildren() {
+        return bufferedAllChildren;
+    }
 
-	/**
-	 * Given a set of selected nodes in "contains" hierarchy this method:
-	 * 1. searches which of their descendants are also in "our" hierarchy
-	 * 2. adds them to the list
-	 * 3. prunes the list so that those nodes don't appear as children in "our" hierarchy
-	 *
-	 * @param selectedNodes The nodes from "contains" hierarchy to be searched for in "our" hierarchy.
-	 */
-	public void initHierarchy(final List<FilteredTreeNode<SlotView>> selectedNodes) {
-		if (initialized) return;
+    /**
+     * Given a set of selected nodes in "contains" hierarchy this method:
+     * 1. searches which of their descendants are also in "our" hierarchy
+     * 2. adds them to the list
+     * 3. prunes the list so that those nodes don't appear as children in "our" hierarchy
+     *
+     * @param selectedNodes The nodes from "contains" hierarchy to be searched for in "our" hierarchy.
+     */
+    public void initHierarchy(final List<FilteredTreeNode<SlotView>> selectedNodes) {
+        if (initialized) return;
 
-		bufferedAllChildren = new ArrayList<>();
+        bufferedAllChildren = new ArrayList<>();
         final List<Slot> childrenSlots = Lists.newArrayList();
 
         // 1. find root nodes for the selected sub-tree
@@ -87,7 +87,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         // 2. build the tree
         int order = 0;
         for (final Slot slot : childrenSlots) {
-            final SlotView levelOneView = new SlotView(slot, getData(), ++order, getTree().slotEJB);            
+            final SlotView levelOneView = new SlotView(slot, getData(), ++order, getTree().slotEJB);
             bufferedAllChildren.add(new FilteredTreeNode<SlotView>(levelOneView, this, getTree()));
         }
 
@@ -98,22 +98,22 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         getTree().setSelectedNodesArray(new TreeNode[0]);
         cleanCache();
         initialized = true;
-	}
+    }
 
-	/** Resets the state of the tree. Initial state is: no children, no selected nodes. */
-	public void reset() {
-		initialized = false;
-		bufferedAllChildren = new ArrayList<>();
-		bufferedFilteredChildren = null;
-		getTree().setSelectedNodesArray(new TreeNode[0]);
-	}
+    /** Resets the state of the tree. Initial state is: no children, no selected nodes. */
+    public void reset() {
+        initialized = false;
+        bufferedAllChildren = new ArrayList<>();
+        bufferedFilteredChildren = null;
+        getTree().setSelectedNodesArray(new TreeNode[0]);
+    }
 
-	/**
-	 * Traverses using containsNode parameter and collects candidate nodes into rootSlots list.
-	 *
-	 * @param containsNode a node from "contains" hierarchy to be traversed
-	 * @param rootSlots a return list
-	 */
+    /**
+     * Traverses using containsNode parameter and collects candidate nodes into rootSlots list.
+     *
+     * @param containsNode a node from "contains" hierarchy to be traversed
+     * @param rootSlots a return list
+     */
     private void findRelationRootsForSelectedNode(final FilteredTreeNode<SlotView> containsNode,
                                                                                     final List<Slot> rootSlots) {
         final Slot nodeSlot = containsNode.getData().getSlot();
@@ -121,8 +121,8 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         // getTree().getAllChildren returns children in our hierarchy
         // this is the condition for the node to appear in the new tree
         if (!getTree().getAllChildren(containsNode).isEmpty()   // TREE could be optimized to hasChildren()
-        		&& !rootSlots.contains(nodeSlot)) {
-        	rootSlots.add(nodeSlot);
+                && !rootSlots.contains(nodeSlot)) {
+            rootSlots.add(nodeSlot);
         }
 
         // traverse the rest of the nodes
@@ -140,11 +140,11 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         // visit all subtrees
         final Set<Long> visited = new HashSet<>();
         for (FilteredTreeNode<SlotView> levelOne : bufferedAllChildren) {
-        	if (!visited.contains(levelOne.getData().getId())) { // this prevents {a->b, b->a} to be both removed
-        		for (FilteredTreeNode<SlotView> levelTwo : levelOne.getBufferedAllChildren()) {
-        			depthFirstSearch(levelTwo, visited);
-        		}
-        	}
+            if (!visited.contains(levelOne.getData().getId())) { // this prevents {a->b, b->a} to be both removed
+                for (FilteredTreeNode<SlotView> levelTwo : levelOne.getBufferedAllChildren()) {
+                    depthFirstSearch(levelTwo, visited);
+                }
+            }
         }
 
         // remove them
@@ -177,8 +177,8 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
      * Normally this method would clean whole cache.
      * Here it's extended to prevent clearing of prepared list of roots.
      */
-	@Override
-	public void cleanCache() {
-		bufferedFilteredChildren = null;
-	}
+    @Override
+    public void cleanCache() {
+        bufferedFilteredChildren = null;
+    }
 }

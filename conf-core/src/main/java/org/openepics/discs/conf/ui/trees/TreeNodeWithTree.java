@@ -27,38 +27,38 @@ import java.util.List;
  *
  * @author ilist
  *
- * @param <D> type of data
+ * @param <T> type of data
  */
-public abstract class TreeNodeWithTree<D> extends BasicTreeNode<D> {
-	private Tree<D> tree;
+public abstract class TreeNodeWithTree<T> extends BasicTreeNode<T> {
+    private Tree<T> tree;
 
-	/**
-	 * Besides data and parent, construction is also given the tree.
-	 *
-	 * @param data data
-	 * @param parent parent node
-	 * @param tree the tree
-	 */
-	public TreeNodeWithTree(D data, BasicTreeNode<D> parent, Tree<D> tree) {
-		super(data, parent);
-		this.tree = tree;
-	}
+    /**
+     * Besides data and parent, construction is also given the tree.
+     *
+     * @param data data
+     * @param parent parent node
+     * @param tree the tree
+     */
+    public TreeNodeWithTree(T data, BasicTreeNode<T> parent, Tree<T> tree) {
+        super(data, parent);
+        this.tree = tree;
+    }
 
-	/**
-	 * Returns the children it gets from the parent tree. No caching.
-	 *
-	 * @return the children
-	 */
-	@Override
-	public List<? extends BasicTreeNode<D>> getAllChildren() {
-		return tree.getAllChildren(this);
-	}
+    /**
+     * Returns the children it gets from the parent tree. No caching.
+     *
+     * @return the children
+     */
+    @Override
+    public List<? extends BasicTreeNode<T>> getAllChildren() {
+        return tree.getAllChildren(this);
+    }
 
-	/**
-	 * Returns the tree.
-	 * @return the tree.
-	 */
-	protected Tree<D> getTree() {
-		return tree;
-	}
+    /**
+     * Returns the tree.
+     * @return the tree.
+     */
+    protected Tree<T> getTree() {
+        return tree;
+    }
 }

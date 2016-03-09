@@ -40,79 +40,79 @@ import com.google.common.collect.Lists;
  * @author ilist
  */
 public class SlotRelationshipTree extends Tree<SlotView> {
-	protected SlotRelationName relationship;
-	protected InstallationEJB installationEJB;
+    protected SlotRelationName relationship;
+    protected InstallationEJB installationEJB;
 
-	/**
-	 * Initializes the tree.
-	 * Relationship determines the type of hierarchy.
-	 * SlotEJB and installationEJB are needed to generate the children.
-	 * @param relationship the type of hierarchy
-	 * @param slotEJB slotEJB
-	 * @param installationEJB installationEJB
-	 */
-	public SlotRelationshipTree(SlotRelationName relationship, SlotEJB slotEJB, InstallationEJB installationEJB) {
-		super(slotEJB);
-		this.relationship = relationship;
-		this.installationEJB = installationEJB;
-	}
+    /**
+     * Initializes the tree.
+     * Relationship determines the type of hierarchy.
+     * SlotEJB and installationEJB are needed to generate the children.
+     * @param relationship the type of hierarchy
+     * @param slotEJB slotEJB
+     * @param installationEJB installationEJB
+     */
+    public SlotRelationshipTree(SlotRelationName relationship, SlotEJB slotEJB, InstallationEJB installationEJB) {
+        super(slotEJB);
+        this.relationship = relationship;
+        this.installationEJB = installationEJB;
+    }
 
-	/**
-	 * Containers and nodes containing the filter string are present.
-	 * @param node the node
-	 * @return should the node be displayed
-	 */
-	@Override
-	public boolean isNodeInFilter(BasicTreeNode<SlotView> node) {
-		final SlotView slotView = node.getData();
-		return !slotView.isHostingSlot() || slotView.getName().toUpperCase().contains(getAppliedFilter());
-	}
+    /**
+     * Containers and nodes containing the filter string are present.
+     * @param node the node
+     * @return should the node be displayed
+     */
+    @Override
+    public boolean isNodeInFilter(BasicTreeNode<SlotView> node) {
+        final SlotView slotView = node.getData();
+        return !slotView.isHostingSlot() || slotView.getName().toUpperCase().contains(getAppliedFilter());
+    }
 
-	/**
-	 * Returns all children. Takes care of correct order and initialization of them.
-	 * @param parent the parent node
-	 */
-	@Override
-	public List<? extends BasicTreeNode<SlotView>> getAllChildren(BasicTreeNode<SlotView> parent) {
-		final SlotView slotView = parent.getData();
-		final List<BasicTreeNode<SlotView>> allChildren = new ArrayList<>();
+    /**
+     * Returns all children. Takes care of correct order and initialization of them.
+     * @param parent the parent node
+     */
+    @Override
+    public List<? extends BasicTreeNode<SlotView>> getAllChildren(BasicTreeNode<SlotView> parent) {
+        final SlotView slotView = parent.getData();
+        final List<BasicTreeNode<SlotView>> allChildren = new ArrayList<>();
 
-		final List<SlotPair> slotChildren = slotView.getSlot().getPairsInWhichThisSlotIsAParentList();
+        final List<SlotPair> slotChildren = slotView.getSlot().getPairsInWhichThisSlotIsAParentList();
 
-		for (SlotPair pair : slotChildren) {
-	    	if (pair.getSlotRelation().getName() == relationship) {
-	    		final Slot childSlot = pair.getChildSlot();
-	            final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(), slotEJB);
+        for (SlotPair pair : slotChildren) {
+            if (pair.getSlotRelation().getName() == relationship) {
+                final Slot childSlot = pair.getChildSlot();
+                final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(), slotEJB);
 
-	            assignInstalledDeviceToView(childSlotView);
-	            allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
-	    	}
-	    }
-		if (!allChildren.isEmpty()) {
-			allChildren.sort((o1, o2) -> {return o1.getData().getOrder() - o2.getData().getOrder();});
-			allChildren.get(0).getData().setFirst(true);
-			allChildren.get(allChildren.size()-1).getData().setLast(true);
-		}
-		return allChildren;
-	}
+                assignInstalledDeviceToView(childSlotView);
+                allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
+            }
+        }
+        if (!allChildren.isEmpty()) {
+            allChildren.sort((o1, o2) -> {return o1.getData().getOrder() - o2.getData().getOrder();});
+            allChildren.get(0).getData().setFirst(true);
+            allChildren.get(allChildren.size()-1).getData().setLast(true);
+        }
+        return allChildren;
+    }
 
-	private void assignInstalledDeviceToView(final SlotView slotView) {
+    private void assignInstalledDeviceToView(final SlotView slotView) {
         if (slotView.isHostingSlot() && installationEJB != null) {
             final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slotView.getSlot());
             if (record != null) {
                 slotView.setInstalledDevice(record.getDevice());
             }
         }
-	}
+    }
 
-	/**
-	 * Finds a one instance of the slot in the tree. Only works for "contains" tree, but it could work for any entity
-	 * based trees.
-	 * TODO This code could be simplified by turning everything into recursion. Or we could use a similar map mentioned next to Tree.refreshNodeIds
-	 *
-	 * @param slot the slot to find
-	 * @return one of it's tree nodes
-	 */
+    /**
+     * Finds a one instance of the slot in the tree. Only works for "contains" tree, but it could work for any entity
+     * based trees.
+     * TODO This code could be simplified by turning everything into recursion. Or we could use a similar map mentioned next to Tree.refreshNodeIds
+     *
+     * @param slot the slot to find
+     * @return one of it's tree nodes
+     */
     public FilteredTreeNode<SlotView> findNode(final Slot slot) {
         Preconditions.checkNotNull(slot);
 
