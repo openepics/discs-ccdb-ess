@@ -148,7 +148,7 @@ public class DeviceEJB extends DAO<Device> {
         if (device.getComponentType().equals(newDeviceType))
             return device;
 
-        Device freshDevice = findById(device.getId());
+        Device freshDevice = refreshEntity(device);
         final List<DevicePropertyValue> deleteList = new ArrayList<>(freshDevice.getDevicePropertyList());
         for (final ComptypePropertyValue newPropDefinition : newDeviceType.getComptypePropertyList()) {
             final boolean isPropertyInDeleteList = isPropertyInPVList(newPropDefinition.getProperty(), deleteList);
@@ -172,14 +172,14 @@ public class DeviceEJB extends DAO<Device> {
                         deleteList.remove(valueToDelete);
                     }
                 }
-                freshDevice = findById(device.getId());
+                freshDevice = refreshEntity(device);
             }
         }
         removePropertyDefinitionsForTypeChange(deleteList);
-        freshDevice = findById(device.getId());
+        freshDevice = refreshEntity(device);
         freshDevice.setComponentType(newDeviceType);
         save(freshDevice);
-        return findById(device.getId());
+        return refreshEntity(device);
     }
 
     private boolean isPropertyInPVList(final Property prop, final List<DevicePropertyValue> propertyValues) {

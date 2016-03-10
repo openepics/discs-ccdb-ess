@@ -28,6 +28,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
 
+import org.openepics.discs.conf.ent.EntityWithId;
+
 /**
  * Abstract generic DAO used for all entities.
  * This only provides querying (read-only) access. See {@link DAO} for full CRUD version.
@@ -36,7 +38,7 @@ import javax.persistence.criteria.CriteriaQuery;
  *
  * @param <T> The entity type for which this DAO is defined.
  */
-public abstract class ReadOnlyDAO<T> {
+public abstract class ReadOnlyDAO<T extends EntityWithId> {
     @Inject protected ConfigurationEntityUtility entityUtility;
     @PersistenceContext protected EntityManager em;
 
@@ -51,6 +53,14 @@ public abstract class ReadOnlyDAO<T> {
      */
     public T findById(Object id) {
         return em.find(getEntityClass(), id);
+    }
+
+    /**
+     * @param entity the entity to get a fresh copy of
+     * @return returns a fresh entity read directly from the database
+     */
+    public T refreshEntity(T entity) {
+        return findById(entity.getId());
     }
 
     /**

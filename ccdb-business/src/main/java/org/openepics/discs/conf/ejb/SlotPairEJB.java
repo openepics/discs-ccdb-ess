@@ -22,6 +22,7 @@ package org.openepics.discs.conf.ejb;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -41,6 +42,9 @@ import com.google.common.base.Preconditions;
  */
 @Stateless
 public class SlotPairEJB extends DAO<SlotPair> {
+
+    private @Inject SlotEJB slotEJB;
+
     /**
      * Queries for a {@link SlotPair} given parent, child slot names and a relation type
      * @param childName child slot name (optional with wild card character)
@@ -83,10 +87,12 @@ public class SlotPairEJB extends DAO<SlotPair> {
     @Authorized
     public void delete(SlotPair entity) {
         Preconditions.checkNotNull(entity);
-        entity.getChildSlot().getPairsInWhichThisSlotIsAChildList().remove(entity);
-        entity.getParentSlot().getPairsInWhichThisSlotIsAParentList().remove(entity);
-        em.merge(entity.getChildSlot());
-        em.merge(entity.getParentSlot());
+        final Slot childSlot = slotEJB.refreshEntity(entity.getChildSlot());
+        final Slot parentSlot = slotEJB.refreshEntity(entity.getParentSlot());
+        childSlot.getPairsInWhichThisSlotIsAChildList().remove(entity);
+        parentSlot.getPairsInWhichThisSlotIsAParentList().remove(entity);
+        em.merge(childSlot);
+        em.merge(parentSlot);
         super.delete(entity);
     }
 
@@ -200,7 +206,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
             if (pair.getParentSlot().equals(parentSlot) &&
                     pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                 // when moving the slot, this "pair" information gets stale very fast. We need to fetch from DB.
-                mySlotPair = findById(pair.getId());
+                mySlotPair = refreshEntity(pair);
                 break;
             }
         }
@@ -239,7 +245,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
             add(newRelationship);
             explicitAuditLog(newRelationship, EntityTypeOperation.UPDATE);
             // pull in the new parent slot info
-            final SlotPair freshPair = findById(relationship.getId());
+            final SlotPair freshPair = refreshEntity(relationship);
             delete(freshPair);
             explicitAuditLog(freshPair, EntityTypeOperation.UPDATE);
         }

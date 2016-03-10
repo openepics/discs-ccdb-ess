@@ -253,7 +253,7 @@ public class SlotEJB extends DAO<Slot> {
         if (slot.getComponentType().equals(newDeviceType))
             return slot;
 
-        Slot freshSlot = findById(slot.getId());
+        Slot freshSlot = refreshEntity(slot);
 
         final List<SlotPropertyValue> deleteList = new ArrayList<>(freshSlot.getSlotPropertyList());
         for (final ComptypePropertyValue newPropDefinition : newDeviceType.getComptypePropertyList()) {
@@ -276,14 +276,14 @@ public class SlotEJB extends DAO<Slot> {
                         deleteList.remove(valueToDelete);
                     }
                 }
-                freshSlot = findById(slot.getId());
+                freshSlot = refreshEntity(slot);
             }
         }
         removePropertyDefinitionsForTypeChange(deleteList);
-        freshSlot = findById(slot.getId());
+        freshSlot = refreshEntity(slot);
         freshSlot.setComponentType(newDeviceType);
         save(freshSlot);
-        return findById(freshSlot.getId());
+        return refreshEntity(freshSlot);
     }
 
     private boolean isPropertyInParentList(final Property prop, final List<SlotPropertyValue> parentPropertyValues) {
@@ -470,7 +470,7 @@ public class SlotEJB extends DAO<Slot> {
         cleanupRelationshipsForDelete(slotToDelete, removedRelations);
         updateParentRefreshList(slotToDelete, parentRefreshList);
 
-        Slot freshSlot = findById(slotToDelete.getId());
+        Slot freshSlot = refreshEntity(slotToDelete);
         // audit log the deletion of this slot
         explicitAuditLog(freshSlot, EntityTypeOperation.DELETE);
         // and delete the slot
@@ -537,7 +537,7 @@ public class SlotEJB extends DAO<Slot> {
             final Slot newCopy = createSlotCopy(sourceSlot, parentSlot);
             originalToCopy.put(sourceSlot, newCopy);
 
-            addAttributesToNewCopy(findById(newCopy.getId()), sourceSlot);
+            addAttributesToNewCopy(refreshEntity(newCopy), sourceSlot);
 
             List<Slot> children = sourceSlot.getPairsInWhichThisSlotIsAParentList().stream()
                 .filter(sp -> sp.getSlotRelation().getName().equals(SlotRelationName.CONTAINS))
@@ -564,7 +564,7 @@ public class SlotEJB extends DAO<Slot> {
 
             // go through all the candidates, remember the ones for which there is no copied relationship yet
             final List<SlotPair> relationshipsToCopy = new ArrayList<>();
-            final Slot relChildCopySlot = findById(originalToCopy.get(source).getId());
+            final Slot relChildCopySlot = refreshEntity(originalToCopy.get(source));
             for (final SlotPair relationship : relationshipCandidates) {
                 final Slot relParentCopySlot = originalToCopy.get(relationship.getParentSlot());
                 final SlotRelationName relName = relationship.getSlotRelation().getName();
@@ -575,7 +575,7 @@ public class SlotEJB extends DAO<Slot> {
 
             // create copies of the remaining list
             for (final SlotPair relationshipToCopy : relationshipsToCopy) {
-                final Slot newRelParent = findById(originalToCopy.get(relationshipToCopy.getParentSlot()).getId());
+                final Slot newRelParent = refreshEntity(originalToCopy.get(relationshipToCopy.getParentSlot()));
                 slotPairEJB.add(new SlotPair(relChildCopySlot, newRelParent, relationshipToCopy.getSlotRelation()));
             }
         }
@@ -633,9 +633,9 @@ public class SlotEJB extends DAO<Slot> {
             copyValuesFromSource(newCopy, copySource);
         }
 
-        copyArtifactsFromSource(findById(newCopy.getId()), copySource);
+        copyArtifactsFromSource(refreshEntity(newCopy), copySource);
 
-        final Slot tagCopy = findById(newCopy.getId());
+        final Slot tagCopy = refreshEntity(newCopy);
         tagCopy.getTags().addAll(copySource.getTags());
 
         save(tagCopy);
