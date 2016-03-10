@@ -339,14 +339,14 @@ public class RelationshipController implements Serializable {
 
             if (editedRelationshipView.getSlotPair() == null) {
                 slotPairEJB.add(newSlotPair);
-                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()),
+                relationships.add(new SlotRelationshipView(slotPairEJB.refreshEntity(newSlotPair),
                                                 hierarchiesController.getSelectedNodeSlot()));
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship added.");
             } else {
                 slotPairEJB.save(newSlotPair);
                 relationships.remove(selectedRelationships.get(0));
-                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()),
+                relationships.add(new SlotRelationshipView(slotPairEJB.refreshEntity(newSlotPair),
                                                                 selectedRelationships.get(0).getSourceSlot()));
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship modified.");

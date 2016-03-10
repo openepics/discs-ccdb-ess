@@ -251,7 +251,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     protected void refreshSlot(final Slot slot) {
-        final Slot freshSlot = slotEJB.findById(slot.getId());
+        final Slot freshSlot = slotEJB.refreshEntity(slot);
         if (selectedSlot != null) {
             selectedSlot = freshSlot;
         }
@@ -1231,7 +1231,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     protected Slot getSelectedEntity() {
         if (selectedSlot != null) {
-            Slot slot = slotEJB.findById(selectedSlot.getId());
+            Slot slot = slotEJB.refreshEntity(selectedSlot);
             return slot;
         }
         throw new IllegalArgumentException("No slot selected");

@@ -221,7 +221,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     /** This method prepares the input fields used in the "Edit enumeration" dialog. */
     public void prepareModifyPopup() {
         Preconditions.checkState(isSingleEnumSelected());
-        dialogEnum = new UserEnumerationView(dataTypeEJB.findById(selectedEnums.get(0).getEnumeration().getId()));
+        dialogEnum = new UserEnumerationView(dataTypeEJB.refreshEntity(selectedEnums.get(0).getEnumeration()));
         dialogEnum.setUsed(dataTypeEJB.isDataTypeUsed(dialogEnum.getEnumeration()));
     }
 

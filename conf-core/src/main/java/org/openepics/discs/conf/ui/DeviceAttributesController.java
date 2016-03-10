@@ -77,7 +77,7 @@ public class DeviceAttributesController
         attributes = new ArrayList<>();
 
         for (final DeviceView deviceView : devicesController.getSelectedDevices()) {
-            final Device attrDevice = deviceEJB.findById(deviceView.getDevice().getId());
+            final Device attrDevice = deviceEJB.refreshEntity(deviceView.getDevice());
             final ComponentType parent = attrDevice.getComponentType();
 
             for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
@@ -148,7 +148,7 @@ public class DeviceAttributesController
     @Override
     protected Device getSelectedEntity() {
         if (devicesController.isSingleDeviceSelected()) {
-            return deviceEJB.findById(devicesController.getSelectedDevices().get(0).getDevice().getId());
+            return deviceEJB.refreshEntity(devicesController.getSelectedDevices().get(0).getDevice());
         }
         throw new IllegalArgumentException("No device selected");
     }

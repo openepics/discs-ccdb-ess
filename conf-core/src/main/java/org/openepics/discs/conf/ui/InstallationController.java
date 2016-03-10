@@ -157,7 +157,7 @@ public class InstallationController implements Serializable {
         UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                 "Device installed.");
 
-        installationView.setSlot(slotEJB.findById(installationView.getSlot().getId()));
+        installationView.setSlot(slotEJB.refreshEntity(installationView.getSlot()));
         installationView.setInstallationRecord(newRecord);
 
         slotAttributeController.populateAttributesList();

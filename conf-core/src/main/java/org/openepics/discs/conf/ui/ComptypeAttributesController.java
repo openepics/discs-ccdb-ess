@@ -155,7 +155,7 @@ public class ComptypeAttributesController
 
         for (final ComponentTypeView selectedMember : componentTypeManager.getSelectedDeviceTypes()) {
             // refresh the component type from database. This refreshes all related collections as well.
-            final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
+            final ComponentType freshComponentType = comptypeEJB.refreshEntity(selectedMember.getComponentType());
 
             for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
                 attributes.add(new EntityAttrPropertyValueView<ComponentType>(prop, freshComponentType));
@@ -479,7 +479,7 @@ public class ComptypeAttributesController
             final Long typeId = selectedComponent.getId();
             // for "Add new device type" the selectedComponent will contain a ComponentType which has not been persisted
             if (typeId != null)
-                return comptypeEJB.findById(selectedComponent.getId());
+                return comptypeEJB.refreshEntity(selectedComponent.getComponentType());
             else
                 return selectedComponent.getComponentType();
         }
