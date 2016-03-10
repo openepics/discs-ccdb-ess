@@ -71,7 +71,7 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE s.parentSlot = :parentSlot AND s.slotRelation = :slotRelation AND s.slotOrder > :order "
             + "ORDER BY s.slotOrder ASC")
 })
-public class SlotPair implements Serializable {
+public class SlotPair implements EntityWithId, Serializable {
     private static final long serialVersionUID = -1346609227484965749L;
 
     @Id
@@ -114,6 +114,7 @@ public class SlotPair implements Serializable {
         this.slotRelation = slotRelation;
     }
 
+    @Override
     public Long getId() {
         return id;
     }

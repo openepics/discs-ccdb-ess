@@ -26,7 +26,7 @@ for the project is "org.openepics.discs":
 - ccdb-ws: web service implmentation (artifactId:ccdb-ws)
 
 Each module is versioned independently, except the conf-core and ccdb-ws version numbers 
-are synced. The ccdb-mode, ccdb-business, ccdb-JAXB and ccdb-client-api are all deployed 
+are synced. The ccdb-model, ccdb-business, ccdb-JAXB and ccdb-client-api are all deployed 
 into the Maven repository. All sub-projects are tagged independently. The tag naming 
 rules are as follows:
 - ccdb-model: <version>-model (1.0.2-model)
