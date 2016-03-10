@@ -210,8 +210,6 @@ public class RelationshipController implements Serializable {
         if (canRelationshipBeDeleted()) {
             for (SlotRelationshipView selectedRelationship : selectedRelationships) {
                 final SlotPair slotPairToBeRemoved = selectedRelationship.getSlotPair();
-                final boolean isContainsRemoved =
-                        (slotPairToBeRemoved.getSlotRelation().getName() == SlotRelationName.CONTAINS);
                 final Long parentSlotId = slotPairToBeRemoved.getParentSlot().getId();
                 final Long childSlotId = slotPairToBeRemoved.getChildSlot().getId();
                 relationships.remove(selectedRelationship);
@@ -326,7 +324,7 @@ public class RelationshipController implements Serializable {
             if (!slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(),
                     slotRelation.getName()).isEmpty()) {
                 UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                        "This relationship already exists.");  // TODO why is this message not show?!
+                        "This relationship already exists.");  // XXX why is this message not show?!
                 return;
             }
 
