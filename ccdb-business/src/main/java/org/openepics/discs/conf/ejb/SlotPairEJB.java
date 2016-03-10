@@ -22,7 +22,6 @@ package org.openepics.discs.conf.ejb;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -42,9 +41,6 @@ import com.google.common.base.Preconditions;
  */
 @Stateless
 public class SlotPairEJB extends DAO<SlotPair> {
-
-    private @Inject SlotEJB slotEJB;
-
     /**
      * Queries for a {@link SlotPair} given parent, child slot names and a relation type
      * @param childName child slot name (optional with wild card character)
@@ -87,8 +83,8 @@ public class SlotPairEJB extends DAO<SlotPair> {
     @Authorized
     public void delete(SlotPair entity) {
         Preconditions.checkNotNull(entity);
-        final Slot childSlot = slotEJB.refreshEntity(entity.getChildSlot());
-        final Slot parentSlot = slotEJB.refreshEntity(entity.getParentSlot());
+        final Slot childSlot = refreshSlot(entity.getChildSlot());
+        final Slot parentSlot = refreshSlot(entity.getParentSlot());
         childSlot.getPairsInWhichThisSlotIsAChildList().remove(entity);
         parentSlot.getPairsInWhichThisSlotIsAParentList().remove(entity);
         em.merge(childSlot);
@@ -96,6 +92,10 @@ public class SlotPairEJB extends DAO<SlotPair> {
         super.delete(entity);
     }
 
+    // cannot use slotEJB.refreshEtity because the circular injection does not agree with Arquillian
+    private Slot refreshSlot(final Slot slotToRefresh) {
+        return em.find(Slot.class, slotToRefresh.getId());
+    }
 
     @Override
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
