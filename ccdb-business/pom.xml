@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ccdb-business</artifactId>
-    <version>1.3.9-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>ccdb-business</name>
 
     <parent>
         <groupId>org.openepics.discs</groupId>
         <artifactId>ccdb</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 

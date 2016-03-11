@@ -187,55 +187,6 @@ public class SlotEJB extends DAO<Slot> {
     }
 
     /**
-     * This method removed all needless property values in a single transaction. All the removals are only logged once.
-     *
-     * @param slot the {@link Slot} to work on
-     * @param deleteList property values to delete
-     * @deprecated As of release 1.3.3-business, replaced by {@link #changeSlotType(Slot, ComponentType)}
-     */
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    @Deprecated
-    public void removePropertyDefinitionsForTypeChange(final Slot slot, final List<SlotPropertyValue> deleteList) {
-        // delete all properties marked for removal
-        final List<SlotPropertyValue> deleteListCopy = new ArrayList<>(deleteList);
-        for (final SlotPropertyValue propertyValueToDelete : deleteListCopy) {
-            deleteChild(propertyValueToDelete);
-        }
-    }
-
-    /**
-     * This adds all the new properties in a single transaction.
-     *
-     * @param slot the {@link Slot} to work on
-     * @param newComponentType the new {@link ComponentType} to add the properties on
-     * @deprecated As of release 1.3.3-business, replaced by {@link #changeSlotType(Slot, ComponentType)}
-     */
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    @Deprecated
-    public void addPropertyDefinitionsForTypeChange(final Slot slot, final ComponentType newComponentType) {
-        // add all property values to the new type
-        final Slot slotFromDatabase = findById(slot.getId());
-        slotFromDatabase.setComponentType(newComponentType);
-        final List<SlotPropertyValue> existingPropertyValues = slotFromDatabase.getSlotPropertyList();
-        for (ComptypePropertyValue newPropDefinition : newComponentType.getComptypePropertyList()) {
-            if (newPropDefinition.isDefinitionTargetSlot()
-                    && !isPropertyInParentList(newPropDefinition.getProperty(), existingPropertyValues)) {
-                final SlotPropertyValue newPropertyValue = new SlotPropertyValue(false);
-                newPropertyValue.setProperty(newPropDefinition.getProperty());
-                newPropertyValue.setPropValue(null);
-                newPropertyValue.setSlot(slotFromDatabase);
-                addChild(newPropertyValue);
-                // this is for logging only, since the application is logging the slot, instead the new one
-                slot.getSlotPropertyList().add(newPropertyValue);
-            }
-        }
-    }
-
-    /**
      * If the type of the slot has changed (the method performs this check), the method adds new property values
      * for this type of slot from the type definition, and removes the existing ones. If both type definitions
      * contain the same properties, those values are preserved.
