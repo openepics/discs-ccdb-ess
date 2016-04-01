@@ -48,6 +48,7 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -302,6 +303,15 @@ public class ComptypeAttributesController
                                                             : selectionPropertyValuesFiltered.get(event.getRowIndex());
             final DataType dataType = editedPropVal.getDataType();
             final String newValueStr = getEditEventValue(newValue, editedPropVal.getPropertyValueUIElement());
+            if ((editedPropVal.getProperty().getValueUniqueness() != PropertyValueUniqueness.NONE)
+                    && !Strings.isNullOrEmpty(newValueStr)) {
+                final String formName = getFormId(event.getComponent());
+                FacesContext.getCurrentInstance().addMessage(formName + ":inputValidationFail",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
+                                "Unique property cannot have a default value."));
+                FacesContext.getCurrentInstance().validationFailed();
+                return;
+            }
             try {
                 switch (editedPropVal.getPropertyValueUIElement()) {
                     case INPUT:
@@ -449,6 +459,26 @@ public class ComptypeAttributesController
                 }
             }
         }
+    }
+
+    @Override
+    public void modifyPropertyValue() {
+        final EntityAttributeViewKind kind = dialogAttribute.getKind();
+        if ((kind == EntityAttributeViewKind.DEVICE_PROPERTY)
+                || (kind == EntityAttributeViewKind.INSTALL_SLOT_PROPERTY)) {
+            final ComptypePropertyValue editedPropVal = (ComptypePropertyValue) dialogAttribute.getEntity();
+            if (editedPropVal.isPropertyDefinition()
+                    && (editedPropVal.getProperty().getValueUniqueness() != PropertyValueUniqueness.NONE)
+                    && !Strings.isNullOrEmpty(dialogAttribute.getValue())) {
+                final EntityAttrPropertyValueView<?> propAttribute = (EntityAttrPropertyValueView<?>)dialogAttribute;
+                propAttribute.setPropertyValue(null);
+                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Default value is never unique."));
+                FacesContext.getCurrentInstance().validationFailed();
+                return;
+            }
+        }
+        super.modifyPropertyValue();
     }
 
     /** Checks whether it is safe to add a new property (definition) to the entity.
