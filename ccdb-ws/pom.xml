@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ccdb-ws</artifactId>
-    <version>${app.version}-SNAPSHOT</version>
+    <version>${app.version}</version>
     <packaging>war</packaging>
     <name>ccdb-ws</name>
 
     <parent>
         <groupId>org.openepics.discs</groupId>
         <artifactId>ccdb</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.2</version>
         <relativePath>..</relativePath>
     </parent>
 
