@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"           
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:panel toggleable="false" id="searchPanel"  header="Racks">
+        <h:form id="filterForm">                   
+            <p:panelGrid id="searchPanel"  styleClass="centerPanel noBorders">   
+                
+                <p:column>                                    
+                    <p:outputLabel  value="Rack " />
+                    <p:inputText id="rname" value="#{rackLayoutManager.inputRackName}" size="8"/>
+                    <p:watermark for="rname" value=" rack name" rendered="false"/>
+                     <p:spacer width="5"/>
+                    <p:outputLabel  value=" Device " />
+                    <p:inputText id="dname" value="#{rackLayoutManager.inputDeviceName}"  size="8"/>
+                </p:column>
+                
+                <p:column>                                    
+                    <p:outputLabel for="rows" value=" Rows " />
+                    <p:spinner id="rows" value="#{rackLayoutManager.rows}" min="1" max="5" size="2" />
+                    <p:outputLabel for="cols" value=" Columns " />
+                    <p:spinner id="cols" value="#{rackLayoutManager.columns}" min="1" max="10" size="2"/>
+                    
+                </p:column>
+                
+                <p:column>
+                    <p:commandButton id="searchBtn" value="submit" action="#{rackLayoutManager.submitSearch()}"  
+                                     icon="ui-icon-play" update=":rackLayoutForm @form"/> 
+                    <p:blockUI block="searchPanel" trigger="searchBtn" >          
+                        <p:graphicImage value="/resources/images/ajax-loader.gif" style="background-color: transparent" />  
+                    </p:blockUI>
+                    <p:commandButton id="resetBtn" value="reset" process="@this"  icon="ui-icon-stop" 
+                                     update=":rackLayoutForm @form"  action="#{rackLayoutManager.init()}" />
+                    <p:blockUI block="searchPanel" trigger="resetBtn" >          
+                        <p:graphicImage value="/resources/images/ajax-loader.gif" style="background-color: transparent" />  
+                    </p:blockUI>
+                    
+                </p:column>
+                <p:column>
+                    <p:commandButton  id="firstPageBtn" action="#{rackLayoutManager.gotoFirstPage()}" process="@this"
+                                      icon="ui-icon-seek-first" title="First Page" update=":rackLayoutForm @form" disabled="#{rackLayoutManager.firstPage}"/>
+                    <p:blockUI block="searchPanel" trigger="firstPageBtn" >          
+                        <p:graphicImage value="/resources/images/ajax-loader.gif" style="background-color: transparent" />  
+                    </p:blockUI>
+                    <p:commandButton id="prevPageBtn" action="#{rackLayoutManager.gotoPrevPage()}"  process="@this"
+                                     icon="ui-icon-seek-prev" title="Previous Page" update=":rackLayoutForm  @form" disabled="#{rackLayoutManager.firstPage}"/> 
+                    <p:blockUI block="searchPanel" trigger="prevPageBtn" >          
+                        <p:graphicImage value="/resources/images/ajax-loader.gif" style="background-color: transparent" />  
+                    </p:blockUI>
+                </p:column>
+                <p:column>             
+                    <p:commandButton id="nextPageBtn" action="#{rackLayoutManager.gotoNextPage()}"  process="@this"
+                                     icon="ui-icon-seek-next" title="Next Page" update=":rackLayoutForm  @form" disabled="#{rackLayoutManager.lastPage}"/>
+                    <p:blockUI block="searchPanel" trigger="nextPageBtn" >          
+                        <p:graphicImage value="/resources/images/ajax-loader.gif" style="background-color: transparent" />  
+                    </p:blockUI>
+                    <p:commandButton id="lastPageBtn" action="#{rackLayoutManager.gotoLastPage()}"  process="@this"
+                                     icon="ui-icon-seek-end" title="Last Page" update=":rackLayoutForm  @form" disabled="#{rackLayoutManager.lastPage}"/>
+                    <p:blockUI block="searchPanel" trigger="lastPageBtn" >          
+                        <p:graphicImage value="/resources/images/ajax-loader.gif" style="background-color: transparent" />  
+                    </p:blockUI>                  
+                </p:column>
+                <p:column>
+                    <h:outputText value=" Page: #{rackLayoutManager.currentPage}/#{rackLayoutManager.maximumPages}" />
+                </p:column>
+                                                              
+            </p:panelGrid>
+        </h:form>
+    </p:panel>
+</ui:composition>

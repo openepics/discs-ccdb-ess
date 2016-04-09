@@ -21,6 +21,7 @@ package org.openepics.discs.conf.ent;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -29,6 +30,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.conf.valueconverters.SedsConverter;
 
 /**
  * An abstract property for a Configuration Db entity
@@ -40,6 +42,7 @@ public abstract class PropertyValue extends ConfigurationEntity {
     private static final long serialVersionUID = -7646118591971159935L;
 
     @Column(name = "prop_value", columnDefinition = "TEXT")
+    @Convert(converter = SedsConverter.class)
     private Value propValue;
 
     @Basic(optional = false)

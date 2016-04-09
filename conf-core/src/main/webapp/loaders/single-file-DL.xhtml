@@ -193,13 +193,5 @@
         </p:dialog>
     </h:form>
 
-    <ui:include src="/resources/dialogs/export-table.xhtml">
-        <!-- the order has to be "widgetName" before "formId" -->
-        <ui:param name="widgetName" value="#{formId}_exportErrors" />
-        <ui:param name="formId" value="#{formId}_exportErrorsForm" />
-        <ui:param name="dialogTitle" value="Export errors table" />
-        <ui:param name="fileFormatSelection" value="#{controller.simpleErrorTableExportDialog.fileFormat}" />
-        <ui:param name="includeHeader" value="#{controller.simpleErrorTableExportDialog.includeHeaderRow}" />
-        <ui:param name="tableFile" value="#{controller.simpleErrorTableExportDialog.exportedTable}" />
-    </ui:include>
+    
 </ui:composition>

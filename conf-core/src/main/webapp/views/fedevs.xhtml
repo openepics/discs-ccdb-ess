@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+    Display the navigation list of logical components.
+
+    @author: Vasu V
+-->
+
+<ui:composition 
+    template="/WEB-INF/template/template.xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">
+        <h:form id="clnav-form">
+            <p:dataTable id="clnav-table" var="comp" value="#{slotUserViews.feslots}"                     
+                         currentPageReportTemplate="Displaying {startRecord} - {endRecord} of {totalRecords}. Page: {currentPage}/{totalPages}"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {CurrentPageReport}"
+                         rows="25" paginator="true" rowsPerPageTemplate="25,50,100"                                     
+                          rowKey="#{comp.id}"  styleClass="ccdbDatatable">                    
+
+                <f:facet name="header">
+                    <h:outputText value="Front End View"/>
+                </f:facet>
+                <p:column id="name" headerText="Name"  sortBy="#{comp.name}" filterBy="#{comp.name}" filterMatchMode="contains">
+                    
+                    <p:link  value="#{comp.name}"  outcome="devices" target="_blank">
+                        <f:param name="name" value="#{comp.name}" />
+                    </p:link>
+                </p:column>
+                <p:column id="type" headerText="Type" sortBy="#{comp.componentType.name}" filterBy="#{comp.componentType.name}">
+                    <h:outputText value="#{comp.componentType.name}"/>
+                </p:column>  
+                <p:column id="desc" headerText="Description"  filterBy="#{comp.description}">
+                    <h:outputText value="#{comp.description}"/>
+                </p:column>           
+            </p:dataTable>          
+        </h:form>
+    </ui:define>
+</ui:composition>

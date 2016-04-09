@@ -1,0 +1,261 @@
+
+/* 
+    Document   : Layout
+    Created on : Oct 16, 2013, 3:48:17 PM
+    Author     : Vasu V <vuppala@frib.msu.org>
+    Description:
+        Purpose of the stylesheet follows.
+
+   TODO: Remove !important from all 
+*/
+
+
+body {
+    font-size: 11px;
+    font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif; 
+    /*width: 100% !important;*/   
+}
+
+a {
+    text-decoration: underline;       
+    color: cadetblue;
+}
+
+
+/* -------------------------------------------------------- */
+
+.centered { 
+    margin: 0 auto;
+}
+
+.experiment a {
+    text-decoration: none;       
+    color: darkslateblue;
+}
+
+.ui-growl {
+    position:absolute;
+    top: 0%;
+    left:75%;
+}
+
+.ui-icon.blueIcon
+{
+    background-image: url("#{resource['images:ui-icons-blue.png']}");
+}
+
+/* keep menuitems slightly bigger */
+.ui-menuitem-text {
+    font-size: 110%;
+}
+
+
+/* -------------------------------------------------------- */
+
+.title {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 24px; 
+    font-style: normal;
+    font-weight: bold; 
+    text-decoration: none;
+}
+
+.testTitle {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 20px; 
+    font-style: normal;
+    font-weight: bold; 
+    color:  #ff0000;
+}
+
+.headerWidget,
+.headerWidget tr, 
+.headerWidget td {
+    background-color: transparent !important;
+    /*padding-bottom: 0 !important;*/
+    /*padding-top: 0 !important;*/
+    /* border-style: none !important;*/
+}
+
+
+.plainPanel, .plainPanel > * {
+    border: none ;
+    vertical-align: top;
+    padding: 0px !important;
+    margin:  0px !important;
+}
+
+.header
+{
+    font-style: normal;
+    vertical-align: middle;
+    /* left: 15px; */
+    /* padding: 10px; */
+    text-decoration: none;
+    width: 100% !important;
+    background-image: url("#{resource['images:header-bg.png']}"); 
+    background-repeat: repeat;    
+    border: 1px solid LightGray;
+}
+
+
+.alignRight, td.alignRight {
+    text-align: right;
+}
+
+.floatRight {
+    float: right;
+}
+
+.noBorders>tbody>tr, .noBorders>tbody>tr>td {
+    /* background: none; */ 
+    border: none !important;
+    /* vertical-align: top; */
+}
+
+/* to align a panelGrid to center */
+.centerPanel {
+    margin: 0 auto;
+}
+
+.noBordersNP>tbody>tr, .noBordersNP>tbody>tr>td {
+    /* background: none; */ 
+    border: none !important;   
+    padding: 0px !important;
+    /* vertical-align: top; */
+}
+
+/* - racks - */
+.matchingSlot {    
+    background-color: azure !important;
+}
+
+.rackPanel {
+    font-size: x-small !important; 
+}
+
+.rackPanel .ui-panelgrid-cell {     
+    padding: 2px 2px 2px 2px;
+}
+
+/* ---- */
+
+.verticalAligned td {
+    vertical-align: top;
+}
+
+.alignTop td {
+    vertical-align: top;
+}
+
+.menu {    
+    /*background-color: transparent;*/
+    margin: 0px;
+}
+
+
+.export-grid {
+    margin: 5px auto;
+}
+
+.iconDisplay { 
+    display: inline-block; 
+}
+
+.thinPanel tr .thinPanel td {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.heading {
+    font-size: 18px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    display: block;
+    text-align: center;
+}
+
+.ui-datatable.ccdbDatatable tbody,
+.ui-datatable.ccdbDatatable th,
+.ui-datatable.ccdbDatatable th
+.ui-datatable.ccdbDatatable td {
+    font-size: 11px;
+    white-space: normal; /* text wrap around */
+    
+}
+
+.ui-treetable.ccdbTreetable tbody,
+.ui-treetable.ccdbTreetable th,
+.ui-treetable.ccdbTreetable th
+.ui-treetable.ccdbTreetable td {
+    font-size: 11px;
+    white-space: normal; /* text wrap around */
+    
+}
+
+.ui-datatable.ccdbProperty tbody,
+.ui-datatable.ccdbProperty th,
+.ui-datatable.ccdbProperty th
+.ui-datatable.ccdbProperty td {
+    font-size: x-small;
+    white-space: normal; /* text wrap around */   
+    vertical-align: top;
+}
+
+/* -------------------------------------------------- */
+
+#top {
+    /*position: relative;*/   
+    /* color: black; */
+    /* padding: 5px; */
+    /* margin: 0px 0px 10px 0px; */
+    /* background-image: url('../images/header-bg.png'); */
+    /* background-repeat: repeat; */
+    /* border: 1px solid #000000; */
+
+}
+
+#content {
+    margin: 15px;     
+    /* padding: 10px; */
+    /*width: 98%;*/
+    /*    margin-left: auto;
+        margin-right: auto;*/
+    /* border: 0px solid LightGray; */
+    /* border-radius: 7px; */
+    /* box-shadow: 0 0 7px 2px #888888; */
+    /* color: black; */
+
+    /* text-align: left; */
+    /* width: 80%; */
+    /* background-color: #FFFFFF;  */
+}
+
+.box {
+    margin: 0px; 
+    padding: 0px;
+    border: 0px solid LightGray;
+    border-radius: 0px;
+    box-shadow: 2px 2px 5px 2px #888888; 
+    color: black;
+    /* text-align: left; */
+    /* width: 80%; */
+    /* background-color: #FFFFFF;  */
+}
+
+.boxf {
+    margin: 0px; 
+    padding: 10px;
+    border: 0px solid #000000;
+    color: black;
+    width: 90%;
+    margin: 0  auto;
+    /* background-color: #FFFFFF; */
+}
+
+#bottom {
+    position: relative;
+    color:  #009999;
+    /*padding: 5px;*/
+    /*margin: 10px 0px 0px 0px;*/
+    text-align:  center;
+}

@@ -1,0 +1,121 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <h:form id="unitsForm">
+            <script type="text/javascript">
+                // <![CDATA[
+                function closeDialogActions(widgetVar) {
+                    if (widgetVar != null) PF(widgetVar).hide();
+                    PF('unitsTableVar').clearFilters();                    
+                }
+                // ]]>
+            </script>
+            <p:growl id="growl" showDetail="true" globalOnly="true"/>
+            
+                    <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
+                            scrollable="true"  emptyMessage="No records found." 
+                            selection="#{unitManager.selectedUnits}" selectionMode="multiple" rowKey="#{unit.unit.id}" 
+                            resizableColumns="true" tableStyle="word-wrap: break-word;" 
+                            filteredValue="#{unitManager.filteredUnits}" scrollRows="20"  scrollHeight="600" styleClass="ccdbDatatable">
+                        <p:ajax event="filter" update="unitsForm:exportButton" />
+                        <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton 
+                                :unitsForm:duplicateButton" />
+                        <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton 
+                                :unitsForm:duplicateButton" />
+    
+                        <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}"
+                                filterMatchMode="contains" styleClass="tableColWidth30">
+                            <h:outputText value="#{unit.name}" />
+                        </p:column>
+       
+                        <p:column headerText="Description" sortBy="#{unit.description}" filterBy="#{unit.description}" 
+                                filterStyle="width: 20em;" filterMatchMode="contains" styleClass="tableColWidth60">
+                            <h:outputText value="#{unit.description}" />
+                        </p:column>
+    
+                        <p:column headerText="Symbol" sortBy="#{unit.symbol}" filterBy="#{unit.symbol}" 
+                                filterMatchMode="contains" styleClass="tableColWidth10">
+                            <h:outputText value="#{unit.symbol}" />
+                        </p:column>
+                    </p:dataTable>
+            
+
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected" 
+                    style="float: right; margin-top: 1em;" 
+                    disabled="#{empty unitManager.selectedUnits or not securityPolicy.getUIHint('UNIT_CREATE')}"
+                    oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                    
+                <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportUnits').show();" 
+                    disabled="#{empty unitManager.filteredUnits}" update=":exportUnitsForm:exportUnits" 
+                    actionListener="#{unitManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteUnits').show();" 
+                    disabled="#{empty unitManager.selectedUnits or not securityPolicy.getUIHint('UNIT_DELETE')}" 
+                    update=":deleteUnitsForm:deleteUnits" actionListener="#{unitManager.checkUnitsForDeletion()}" />
+                <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
+                    style="float: right; margin: 1em 1ex 0 0;" update=":modifyUnitForm:modifyUnit" 
+                    disabled="#{not unitManager.singleUnitSelected or not securityPolicy.getUIHint('UNIT_MODIFY')}" 
+                    oncomplete="PF('modifyUnit').show();" actionListener="#{unitManager.prepareModifyPopup}" />
+                <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup}" value="Add" 
+                    update=":addUnitForm" title="Add New Unit" icon="ui-icon-plus" 
+                    disabled="#{not securityPolicy.getUIHint('UNIT_CREATE')}" 
+                    oncomplete="PF('addUnit').show()" style="float: right; margin: 1em 1ex 0 0;" />
+         
+        </h:form>
+
+        <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteUnitsForm" />
+            <ui:param name="dialogTitle" value="Delete Units" />
+            <ui:param name="widgetName" value="deleteUnits" />
+            <ui:param name="controller" value="#{unitManager}" />
+            <ui:param name="deletePreventionList" value="#{unitManager.usedUnits}" />
+            <ui:param name="deleteList" value="#{unitManager.selectedUnits}" />
+            <ui:param name="filteredDialogList" value="#{unitManager.filteredDialogUnits}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
+                                                :unitsForm:exportButton :unitsForm:duplicateButton :unitsForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="units" />
+            <ui:param name="entityName" value="Unit" />
+        </ui:include>
+        
+        <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
+            <ui:param name="formId" value="duplicateForm" />
+            <ui:param name="controller" value="#{unitManager}" />
+            <ui:param name="duplicateList" value="#{unitManager.selectedUnits}" />
+            <ui:param name="filteredDuplicateList" value="#{unitManager.filteredUnits}" />
+            <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:editButton :unitsForm:deleteButton :unitsForm:duplicateButton :unitsForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="units" />
+            <ui:param name="entityName" value="Unit" />
+        </ui:include>
+                    
+        <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
+            <ui:param name="formId" value="modifyUnitForm" />
+            <ui:param name="dialogTitle" value="Edit Unit" />
+            <ui:param name="widgetName" value="modifyUnit" />
+            <ui:param name="submitHandler" value="onModify" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
+            <ui:param name="formId" value="addUnitForm" />
+            <ui:param name="dialogTitle" value="Add Unit" />
+            <ui:param name="widgetName" value="addUnit" />
+            <ui:param name="submitHandler" value="onAdd" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportUnitsForm" />
+            <ui:param name="widgetName" value="exportUnits" />
+            <ui:param name="dialogTitle" value="Export Units" />
+            <ui:param name="fileFormatSelection" value="#{unitManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{unitManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{unitManager.simpleTableDialog.exportedTable}" />
+        </ui:include>
+    </ui:define>
+</ui:composition>

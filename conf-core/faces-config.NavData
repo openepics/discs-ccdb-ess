@@ -2,60 +2,9 @@
 <Scene Scope="Project" version="2">
     <Scope Scope="Faces Configuration Only"/>
     <Scope Scope="Project">
-        <Node id="manage/device/property.xhtml" x="400" y="150" zoom="true"/>
-        <Node id="resources/comps/property.xhtml" x="1650" y="150" zoom="true"/>
-        <Node id="resources/comps/lcomp-props.xhtml" x="900" y="150" zoom="true"/>
-        <Node id="manage/slot/property.xhtml" x="650" y="1200" zoom="true"/>
-        <Node id="resources/comps/logincomp.xhtml" x="900" y="450" zoom="true"/>
-        <Node id="manage/installation/artifact.xhtml" x="650" y="1050" zoom="true"/>
-        <Node id="template/menu.xhtml" x="1900" y="300" zoom="true"/>
-        <Node id="manage/slot/artifact.xhtml" x="400" y="300" zoom="true"/>
-        <Node id="resources/comps/comp-alignment.xhtml" x="650" y="300" zoom="true"/>
-        <Node id="manage/device/search.xhtml" x="150" y="450" zoom="true"/>
-        <Node id="resources/comps/comp-installs.xhtml" x="2150" y="300" zoom="true"/>
-        <Node id="template/ConfigManagerTemplate.xhtml" x="1650" y="600" zoom="true"/>
-        <Node id="index" x="1400" y="750" zoom="true"/>
-        <Node id="resources/comps/sig-relations.xhtml" x="150" y="1200" zoom="true"/>
-        <Node id="manage/comptype/artifact.xhtml" x="150" y="1350" zoom="true"/>
-        <Node id="resources/comps/comp-artifact.xhtml" x="1400" y="150" zoom="true"/>
-        <Node id="resources/comps/comp-trav.xhtml" x="2150" y="150" zoom="true"/>
-        <Node id="resources/comps/comp-cable.xhtml" x="1900" y="150" zoom="true"/>
-        <Node id="resources/comps/comptype-props.xhtml" x="900" y="1050" zoom="true"/>
-        <Node id="manage/alignment/property.xhtml" x="1150" y="600" zoom="true"/>
-        <Node id="manage/installation/search.xhtml" x="1150" y="900" zoom="true"/>
-        <Node id="manage/property/index.xhtml" x="1400" y="300" zoom="true"/>
-        <Node id="manage/device/assembly.xhtml" x="400" y="450" zoom="true"/>
-        <Node id="manage/installation/index.xhtml" x="900" y="900" zoom="true"/>
-        <Node id="browse/slot/index.xhtml" x="650" y="450" zoom="true"/>
-        <Node id="manage/alignment/artifact.xhtml" x="150" y="750" zoom="true"/>
-        <Node id="manage/comptype/property.xhtml" x="150" y="1050" zoom="true"/>
-        <Node id="template/about.xhtml" x="400" y="900" zoom="true"/>
-        <Node id="manage/comptype/property_1.xhtml" x="150" y="300" zoom="true"/>
-        <Node id="manage/alignment/index.xhtml" x="400" y="1050" zoom="true"/>
-        <Node id="manage/slot/search.xhtml" x="650" y="150" zoom="true"/>
-        <Node id="resources/comps/comp-signals-local.xhtml" x="650" y="900" zoom="true"/>
-        <Node id="resources/comps/comp-search.xhtml" x="1400" y="450" zoom="true"/>
-        <Node id="manage/slot/relslot.xhtml" x="2400" y="150" zoom="true"/>
         <Node id="template/header.xhtml" x="1150" y="150" zoom="true"/>
-        <Node id="manage/slot/assembly.xhtml" x="1400" y="600" zoom="true"/>
-        <Node id="manage/alignment/search.xhtml" x="900" y="600" zoom="true"/>
-        <Node id="manage/device/index.xhtml" x="1150" y="450" zoom="true"/>
-        <Node id="browse/slot/comptree.xhtml" x="150" y="600" zoom="true"/>
-        <Node id="resources/comps/comp-relations.xhtml" x="650" y="750" zoom="true"/>
-        <Node id="manage/comptype/assembly.xhtml" x="900" y="750" zoom="true"/>
-        <Node id="manage/device/artifact.xhtml" x="1650" y="300" zoom="true"/>
-        <Node id="resources/comps/comp-signals.xhtml" x="900" y="300" zoom="true"/>
-        <Node id="manage/comptype/index_1.xhtml" x="150" y="150" zoom="true"/>
-        <Node id="manage/slot/property_1.xhtml" x="650" y="600" zoom="true"/>
-        <Node id="browse/device/index.xhtml" x="400" y="600" zoom="true"/>
-        <Node id="resources/comps/comp-olog.xhtml" x="400" y="750" zoom="true"/>
-        <Node id="manage/slot/index.xhtml" x="1900" y="450" zoom="true"/>
-        <Node id="resources/comps/comp-details.xhtml" x="1150" y="750" zoom="true"/>
-        <Node id="index.xhtml" x="400" y="1350" zoom="true"/>
-        <Node id="manage/comptype/index.xhtml" x="1150" y="300" zoom="true"/>
-        <Node id="manage/comptype/search.xhtml" x="400" y="1200" zoom="true"/>
-        <Node id="browse/slot/comptreenav.xhtml" x="150" y="900" zoom="true"/>
-        <Node id="resources/comps/comp-measure.xhtml" x="1650" y="450" zoom="true"/>
+        <Node id="template/menu.xhtml" x="1900" y="300" zoom="true"/>
+        <Node id="resources/comps/logincomp.xhtml" x="900" y="450" zoom="true"/>
     </Scope>
     <Scope Scope="All Faces Configurations"/>
 </Scene>

@@ -1,51 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:cc="http://java.sun.com/jsf/composite"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <!-- INTERFACE -->
     <cc:interface>
-        <cc:attribute name="update" required="false" default="@all"/>
-        <cc:attribute name="ajax" required="false" default="true"/>
     </cc:interface>
 
-    <!-- IMPLEMENTATION -->
-    <!-- ToDo: Still not good. needs lots of improvements. too flaky  -->
-    <cc:implementation>
-        <h:form id="_loginForm" rendered="#{loginManager.loggedIn}">
-            <p:growl id="_loginGrowl"  showDetail="true"/>
-            <ui:remove> -------------------- Logout -------------------</ui:remove>
-            <p:commandButton id="_loginOutButton" type="button"
-                             value="#{loginManager.userId}"
-                             icon="ui-icon-person" rendered="#{loginManager.loggedIn}" />
-            <p:overlayPanel id="_loginExitPanel" for="_loginOutButton"
-                            widgetVar="_loginExitWidget" style="border: 0px;" rendered="#{loginManager.loggedIn}" >
-                <p:panelGrid styleClass="noBorders">
+    <cc:implementation> 
+        
+        <ui:remove> -------------------- Buttons -------------------</ui:remove>
+        <p:commandButton id="_loginButton" type="button" 
+                         value="#{loginMsgs.loginBtn}"  onclick="PF('_loginSigninWidget').show()"
+                         icon="ui-icon-person" rendered="#{!loginManager.loggedin}"/>
+        <p:commandButton id="_loginOutButton" type="button" 
+                         value="#{loginManager.userid}" onclick="PF('_loginExitWidget').show()"
+                         icon="ui-icon-person" rendered="#{loginManager.loggedin}" />
+
+        <ui:remove> -------------------- Login -------------------</ui:remove>
+
+        <p:dialog id="_loginSigninPanel" widgetVar="_loginSigninWidget"  closable="false" closeOnEscape="true"
+                  header="#{loginMsgs.loginHeader}" width="300px"> 
+            <h:form id="_loginForm" > 
+                <p:panelGrid  id="_loginSigninGrid" styleClass="noBorders">
                     <p:row>
                         <p:column>
-                            <h:outputText value="You are logged in as #{loginManager.userId}" />
+                            <h:outputText value="#{loginMsgs.loginUser}" /> 
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="userid" value="#{loginManager.userid}" 
+                                         required="true" validatorMessage="You must enter user ID" /> 
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{loginMsgs.loginPass} " />     
+                        </p:column> 
+                        <p:column>
+                            <p:password id="passwd" value="#{loginManager.password}"  converter="#{charArrayConverter}"/>  
+                        </p:column>
+                    </p:row> 
+                    
+                    <p:row>
+                        <p:column colspan="2">  
+                            <p:separator />
+                        </p:column>
+                    </p:row>        
+                    <p:row>
+                        <p:column>                                                           
+                            <p:commandButton  value="#{loginMsgs.loginCancelBtn}"  
+                                              type="button" onclick="PF('_loginSigninWidget').hide()" />  
+                        </p:column>
+                        <p:column>
+                            <p:commandButton  id="_loginBtn" value="#{loginMsgs.loginBtn}" process="@form"
+                                              update="_loginSigninGrid"  
+                                              style="float: right" action="#{loginManager.onLogin}"  
+                                              oncomplete="if (!args.validationFailed &amp;&amp; args.loginSuccess) PF('_loginSigninWidget').hide()"/>                              
+                        </p:column>
+                    </p:row> 
+                </p:panelGrid>
+                <p:watermark for="userid" value="#{loginMsgs.loginUserWM}" /> 
+                <p:watermark for="passwd" value="#{loginMsgs.loginPassWM}" />
+                <p:blockUI block="_loginSigninGrid" trigger="_loginBtn" >                   
+                    <p:graphicImage value="/resources/images/ajax-loader.gif"  style="background-color: transparent" />                   
+                </p:blockUI>
+            </h:form>
+        </p:dialog>
+
+
+        <ui:remove> -------------------- Logout -------------------</ui:remove>
+
+        <p:dialog id="_loginExitPanel" widgetVar="_loginExitWidget"  width="250px"
+                  closable="false" closeOnEscape="true"
+                  header="#{loginMsgs.logoutHeader}: #{loginManager.userid}" >
+            <h:form id="_logoutForm" >
+                <p:panelGrid styleClass="noBorders">
+                    <p:row>
+                        <p:column colspan="2">  
+                            <h:outputText value="Do you really want to logout? " />
+                        </p:column>                        
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">  
+                            <p:separator />
                         </p:column>
                     </p:row>
                     <p:row>
-                        <p:column>
-                            <p:panelGrid styleClass="noBorders">
-                                <p:row>
-                                    <p:column>
-                                        <p:commandButton value="#{msgs.loginCancelBtn}"
-                                            type="button" onclick="PF('_loginExitWidget').hide()"/>
-                                    </p:column>
-                                    <p:column>
-                                    <p:commandButton value="#{msgs.loginLogoutBtn}" process="@this"
-                                            update="@form #{cc.attrs.update}"
-                                            action="#{loginManager.onLogout()}" ajax="#{cc.attrs.ajax}"/>
-                                    </p:column>
-                                </p:row>
-                            </p:panelGrid>
+                        <p:column> 
+                            <p:commandButton  value="#{loginMsgs.loginCancelBtn}" 
+                                              type="button" onclick="PF('_loginExitWidget').hide()"/>
+                        </p:column>
+                        <p:column >
+                            <p:commandButton value="#{loginMsgs.loginLogoutBtn}"  process="@this"                                               
+                                             action="#{loginManager.onLogout()}" />  
                         </p:column>
                     </p:row>
                 </p:panelGrid>
-            </p:overlayPanel>
-        </h:form>
+            </h:form>
+        </p:dialog>
+
     </cc:implementation>
 </html>

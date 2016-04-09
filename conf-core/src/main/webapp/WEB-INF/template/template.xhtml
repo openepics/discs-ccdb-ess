@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />      
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images/hourlog.ico']}" />
+        <h:outputScript library="js" name="ccdb-common.js" />
+        <title>#{msgs.title}</title>
+    </h:head>
+
+    <h:body>
+        <!--<f:facet name="last">-->
+            <h:outputStylesheet library="css"  name="style.css" />           
+        <!--</f:facet>--> 
+        <h:form id="MainMessageForm">
+            <p:growl id="CCDB-infoMessages" showDetail="true"  severity="info, warn" autoUpdate="true" />
+            <p:growl id="CCDB-severeMessages" showDetail="true"  severity="error, fatal" sticky="true" autoUpdate="true"  life="60000"/>
+        </h:form>
+
+        <div id="top" class="top box">
+            <ui:insert name="top">
+                <div id="header">
+                    <ui:include src="header.xhtml" />                  
+                </div>
+<!--                <div id="menu" >  
+                    <ui:include src="/menu/menu.xhtml" />
+                </div>-->
+            </ui:insert>
+        </div>
+
+        <div id="content" class='box'>
+            <ui:insert name="content">Content</ui:insert>
+        </div>
+        <p:spacer height="5" />
+        <div id="bottom" >            
+            <ui:insert name="bottom">             
+                <h:outputText value="#{msgs.copyright}" escape="false"/>
+            </ui:insert>                          
+        </div>
+
+        <!--<ui:include src="exceptions.xhtml" />-->
+    </h:body>
+
+</html>

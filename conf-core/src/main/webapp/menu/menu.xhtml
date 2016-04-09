@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:rc="http://java.sun.com/jsf/composite/comps"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:form id="menuform">
+        <script type="text/javascript">
+        // <![CDATA[
+        function templateDownloadStart() {
+            PF('statusDialog').show();
+        }
+        function templateDownloadStop() {
+            PF('statusDialog').hide();
+        }
+        // ]]>
+        </script>
+
+        <p:growl id="menumsgs" showDetail="true" />
+
+        <p:menubar autoDisplay="false" >
+            <p:menuitem value="Home"  outcome="home" icon="fa fa-home" />          
+
+            <p:submenu label="Devices" icon="fa fa-cogs">
+                <p:menuitem value="Device Search" icon="fa fa-cogs" outcome="device"  rendered="false"/>
+                <p:menuitem value="Device List" icon="fa fa-cogs" outcome="devicelist" />
+            </p:submenu>
+            
+            <p:submenu label="Slots" icon="fa  fa-server">
+                <p:menuitem value="Slot Tree" icon="fa  fa-server" outcome="slottree" />
+                <p:menuitem value="Slot List" icon="fa  fa-server" outcome="slotlist" />
+            </p:submenu>
+            
+            <p:submenu label="Racks" icon="fa  fa-building-o">
+                <p:menuitem value="Rack Layout" icon="fa  fa-building-o" outcome="racklayout" />
+                <p:menuitem value="Rack List" icon="fa  fa-building-o" outcome="racklist" />
+            </p:submenu>                     
+
+            <p:submenu label="Views" icon="fa  fa-pagelines">
+                <p:menuitem value="Front End" icon="fa  fa-pagelines" outcome="fedevices" />
+                <p:menuitem value="PSOL Power Supplies" icon="fa  fa-pagelines" outcome="psoldevs"/>
+                <p:menuitem value="RF" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
+                <p:submenu label="My Views" icon="fa  fa-pagelines">
+                    <p:menuitem value="BPMs in FE" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
+                </p:submenu>
+            </p:submenu>
+            
+            <p:submenu label="Reports" icon="fa  fa-line-chart ">
+                <p:menuitem value="Differential Report" icon="fa  fa-line-chart " outcome="diffreport" />             
+                <p:menuitem value="Status Report" icon="fa  fa-line-chart " outcome="statusreport"/>
+                <p:menuitem value="Configuration Report" icon="fa  fa-line-chart o" outcome="home"  disabled="true"/>
+            </p:submenu>
+            
+            <p:submenu label="Device Types" icon="fa fa-tablet">
+                <p:menuitem value="Device Type List" icon="fa fa-tablet" outcome="device-types" />
+            </p:submenu>
+                      
+            <p:submenu label="Properties" icon="fa fa-connectdevelop">
+                <p:menuitem value="Property List" icon="fa fa-connectdevelop" outcome="properties" />
+            </p:submenu>         
+            
+            <p:submenu label="Base" icon="fa fa-database">
+                <p:menuitem value="Audit Log" icon="fa fa-database" outcome="log" />
+                <p:menuitem value="Enumerations" icon="fa fa-database" outcome="enums" />                              
+                <p:menuitem value="Units" icon="fa fa-database" outcome="units" />
+            </p:submenu>
+            
+             <p:submenu label="Import" icon="fa fa-upload">               
+                <p:menuitem value="Devices" icon="fa fa-upload" url="#" disabled="true"/>
+                <p:menuitem value="Device Types" icon="fa fa-upload" url="#" disabled="true"/>
+                <p:menuitem value="Properties" icon="fa fa-upload" url="#" disabled="true"/> 
+                <p:menuitem value="Slots" icon="fa fa-upload" url="#" disabled="true"/>               
+                <p:menuitem value="Units" icon="fa fa-upload" url="#" disabled="true"/>
+            </p:submenu>
+            
+            <p:submenu label="Links" icon="fa fa-external-link" >
+                <p:menuitem value="Cables" icon="fa  fa-external-link" url="#{msgs.cables}" target="_blank"/>
+                <p:menuitem value="Traveler" icon="fa  fa-external-link" url="#{msgs.traveler}" target="_blank"/>
+                <p:menuitem value="Calibration" icon="fa  fa-external-link" url="#{msgs.calibration}" target="_blank"/>
+                <p:menuitem value="Names" icon="fa  fa-external-link" url="#{msgs.names}" target="_blank"/>
+                <p:menuitem value="Logbook" icon="fa  fa-external-link" url="#{msgs.logbook}" target="_blank"/>
+                <p:menuitem value="Lattice/Model" icon="fa  fa-external-link" url="#{msgs.latticeModel}" target="_blank" disabled="true" />
+            </p:submenu>  
+           
+            <p:menuitem value="Preferences"  url="/prefs/" icon="fa fa-cog"  disabled="true"/> 
+        
+            <p:submenu label="Help" icon="fa fa-info">
+                <p:menuitem value="Online Help" title="Online Help" 
+                            icon="ui-icon-info" 
+                            url="/help/help.xhtml"   rendered="false"/>             
+                <p:menuitem value="Report Problems" id="reportProblem" icon="fa fa-info"  immediate="true"
+                            title="Report Problems"  onclick="PF('reportProblemWid').show()" disabled="true"/>
+                <p:menuitem value="About" id="aboutMenu" icon="fa fa-info"  immediate="true"
+                            title="About HourLog"  onclick="PF('aboutPanelWid').show()"/>    
+            </p:submenu> 
+            
+            <f:facet name="options">                              
+                <rc:logincomp /> 
+            </f:facet>
+        </p:menubar> 
+    </h:form>
+
+    <h:panelGroup rendered="#{request.requestURI.endsWith('units.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importUnitsForm" />
+            <ui:param name="dialogTitle" value="Import Units" />
+            <ui:param name="widgetName" value="importUnits" />
+            <ui:param name="controller" value="#{request.requestURI.endsWith('units.xhtml') ? unitManager : null}" />
+        </ui:include>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{request.requestURI.endsWith('properties.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importPropertiesForm" />
+            <ui:param name="dialogTitle" value="Import Properties" />
+            <ui:param name="widgetName" value="importProperties" />
+            <ui:param name="controller" value="#{request.requestURI.endsWith('properties.xhtml') ? propertyManager : null}" />
+        </ui:include>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{request.requestURI.endsWith('device-types.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importCompTypesForm" />
+            <ui:param name="dialogTitle" value="Import Device Types" />
+            <ui:param name="widgetName" value="importCompTypes" />
+            <ui:param name="controller" value="#{request.requestURI.endsWith('device-types.xhtml') ? componentTypeManager : null}" />
+        </ui:include>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{request.requestURI.endsWith('devices.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importDevicesForm" />
+            <ui:param name="dialogTitle" value="Import Devices" />
+            <ui:param name="widgetName" value="importDevices" />
+            <ui:param name="controller" value="#{request.requestURI.endsWith('devices.xhtml') ? devicesController : null}" />
+        </ui:include>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{request.requestURI.endsWith('enums.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importEnumsForm" />
+            <ui:param name="dialogTitle" value="Import Enumerations" />
+            <ui:param name="widgetName" value="importEnums" />
+            <ui:param name="controller" value="#{request.requestURI.endsWith('enums.xhtml') ? dataTypeManager : null}" />
+        </ui:include>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{request.requestURI.endsWith('home.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importSignalsForm" />
+            <ui:param name="dialogTitle" value="Import Signals" />
+            <ui:param name="widgetName" value="importSignals" />
+            <ui:param name="controller" value="#{request.requestURI.endsWith('home.xhtml') ? hierarchiesController : null}" />
+        </ui:include>
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importSlotsForm" />
+            <ui:param name="dialogTitle" value="Import Slots" />
+            <ui:param name="widgetName" value="importSlots" />
+            <ui:param name="controller" value="#{request.requestURI.endsWith('home.xhtml') ? hierarchiesController : null}" />
+        </ui:include>
+    </h:panelGroup>
+</ui:composition>

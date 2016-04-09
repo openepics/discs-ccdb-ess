@@ -1,0 +1,54 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <h:form id="racklistForm">
+            <p:dataTable var="rack" id="rackTable" value="#{rackListManager.racks}" 
+                         emptyMessage="No records found." 
+                         rowKey="#{rack.id}" 
+                         resizableColumns="true" filteredValue="#{rackListManager.filteredRacks}" 
+                         currentPageReportTemplate="Displaying {startRecord} - {endRecord} of {totalRecords}. Page: {currentPage}/{totalPages}"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {CurrentPageReport}"
+                         rows="25" paginator="true" rowsPerPageTemplate="25,50,100" styleClass="ccdbDatatable">   
+                
+                <f:facet name="header">
+                    <h:outputText value="Racks"/>
+                </f:facet>
+                <p:column headerText="Name" sortBy="#{rack.name}" filterBy="#{rack.name}"
+                          filterMatchMode="contains" >
+                    <h:outputText value="#{rack.name}" />
+                </p:column>
+
+                <p:column headerText="Alias" sortBy="#{rack.rackAlias}" filterBy="#{rack.rackAlias}" 
+                           filterMatchMode="contains" >
+                    <h:outputText value="#{rack.rackAlias}" />
+                </p:column>
+
+                <p:column headerText="Row" sortBy="#{rack.siteRow}" filterBy="#{rack.siteRow}" 
+                           filterMatchMode="contains" >
+                    <h:outputText value="#{rack.siteRow}" />
+                </p:column>
+                
+                <p:column headerText="Segment" sortBy="#{rack.siteSystem}" filterBy="#{rack.siteSystem}" 
+                           filterMatchMode="contains" >
+                    <h:outputText value="#{rack.siteSystem}" />
+                </p:column>
+                
+                <p:column headerText="Subsystem" sortBy="#{rack.siteSubsystem}" filterBy="#{rack.siteSubsystem}" 
+                           filterMatchMode="contains" >
+                    <h:outputText value="#{rack.siteSubsystem}" />
+                </p:column>
+                
+                <p:column headerText="Type" sortBy="#{rack.siteDeviceType}" filterBy="#{rack.siteDeviceType}" 
+                           filterMatchMode="contains" >
+                    <h:outputText value="#{rack.siteDeviceType}" />
+                </p:column>
+                             
+            </p:dataTable>
+        </h:form>     
+    </ui:define>
+</ui:composition>

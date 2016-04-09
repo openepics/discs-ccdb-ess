@@ -13,18 +13,104 @@
             <base-name>messages</base-name>
             <var>msgs</var>
         </resource-bundle>
+        <resource-bundle>
+            <base-name>login</base-name>
+            <var>loginMsgs</var>
+        </resource-bundle>
     </application>
     <navigation-rule>
-	    <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>home</from-outcome>
-            <to-view-id>/home.xhtml</to-view-id>
-        </navigation-case>             
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>  
         <navigation-case>
             <from-outcome>logout</from-outcome>
-            <to-view-id>/</to-view-id>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>slottree</from-outcome>
+            <to-view-id>/slot/slots.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>slotlist</from-outcome>
+            <to-view-id>/slot/slotlist.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>devices</from-outcome>
+            <to-view-id>/device/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>   
+        <navigation-case>
+            <from-outcome>devicelist</from-outcome>
+            <to-view-id>/device/devices.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+         <navigation-case>
+            <from-outcome>fedevices</from-outcome>
+            <to-view-id>/views/fedevs.xhtml</to-view-id>
+            <redirect/>
         </navigation-case> 
+        <navigation-case>
+            <from-outcome>psoldevs</from-outcome>
+            <to-view-id>/views/ps.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>device-types</from-outcome>
+            <to-view-id>/type/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>properties</from-outcome>
+            <to-view-id>/properties.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>  
+        <navigation-case>
+            <from-outcome>units</from-outcome>
+            <to-view-id>/base/units.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>   
+        <navigation-case>
+            <from-outcome>enums</from-outcome>
+            <to-view-id>/base/enums.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>   
+        <navigation-case>
+            <from-outcome>log</from-outcome>
+            <to-view-id>/base/log.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>     
+        <navigation-case>
+            <from-outcome>complist</from-outcome>
+            <to-view-id>/complist.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>racklist</from-outcome>
+            <to-view-id>/rack/racklist.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>   
+        <navigation-case>
+            <from-outcome>racklayout</from-outcome>
+            <to-view-id>/rack/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>diffreport</from-outcome>
+            <to-view-id>/report/diff.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>statusreport</from-outcome>
+            <to-view-id>/report/devicestatus.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
     </navigation-rule>
+    
     <navigation-rule>
 	    <from-view-id>/home.xhtml</from-view-id>
         <navigation-case>

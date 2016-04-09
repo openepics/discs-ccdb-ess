@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="selectedSlot" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="false"/>       
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+       <p:panel header="Change History"> 
+       <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{null}" 
+                            
+                            resizableColumns="true" tableStyle="word-wrap: break-word;" emptyMessage="No records found." 
+                            filteredValue="#{auditManager.filteredAuditRecords}"  >
+                        <p:ajax event="filter" ignoreAutoUpdate="true"/>
+    
+                        <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}" 
+                                  filterMatchMode="contains" rendered="false">
+                            <h:outputText value="#{auditRecord.entityKey}" />
+                        </p:column>
+                        <p:column headerText="Entity Type" sortBy="#{auditRecord.entityType}" filterBy="#{auditRecord.entityType}" 
+                                  filterMatchMode="exact" filterOptions="#{auditManager.entityTypes}" rendered="false">
+                            <h:outputText value="#{auditRecord.entityType.label}" />
+                        </p:column>
+                        
+                        <p:column headerText="Time" 
+                                sortBy="#{auditRecord.logTimeFormatted}" >
+                            <h:outputText value="#{auditRecord.logTimeFormatted}" />                            
+                        </p:column>
+    
+                        <p:column headerText="By" sortBy="#{auditRecord.user}"  
+                                 >
+                            <h:outputText value="#{auditRecord.user}" />
+                        </p:column>
+    
+                        <p:column headerText="Operation" sortBy="#{auditRecord.oper}"  
+                                 >
+                            <h:outputText value="#{auditRecord.oper}" />
+                        </p:column>
+   
+                        
+    
+                        
+    
+                        <p:column headerText="Entity ID" sortBy="#{auditRecord.entityId}" filterBy="#{auditRecord.entityId}" 
+                                  filterMatchMode="contains" rendered="false">
+                            <h:outputText value="#{auditRecord.entityId}" />
+                        </p:column>
+    
+                        <p:column headerText="Change" sortBy="#{auditRecord.entry}" >
+                            
+                        </p:column>
+                    </p:dataTable>
+       </p:panel>
+    </cc:implementation>
+</html>

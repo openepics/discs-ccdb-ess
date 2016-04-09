@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="selectedSlot" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="false"/>       
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        
+            <p:panelGrid>  
+                <f:facet name="header">  
+                    <p:row>  
+                        <p:column>Global X</p:column>  
+                        <p:column>Y</p:column>  
+                        <p:column>Z</p:column>  
+                        <p:column>Pitch</p:column> 
+                        <p:column>Yaw</p:column>  
+                        <p:column>Roll</p:column>
+                        <p:column>Date</p:column>
+                    </p:row>  
+                </f:facet>  
+                <p:row>  
+                    <p:column>#{cc.attrs.selectedSlot.globalX}</p:column>  
+                    <p:column>#{cc.attrs.selectedSlot.globalY}</p:column>  
+                    <p:column>#{cc.attrs.selectedSlot.globalZ}</p:column>  
+                    <p:column>#{cc.attrs.selectedSlot.globalPitch}</p:column>  
+                    <p:column>#{cc.attrs.selectedSlot.globalYaw}</p:column>
+                    <p:column>#{cc.attrs.selectedSlot.globalRoll}</p:column>
+                    <p:column> </p:column>
+                </p:row> 					  
+            </p:panelGrid>
+    </cc:implementation>
+</html>

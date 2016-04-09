@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="selectedSlot" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="true"/> 
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        
+             <!--<h:outputText value="Signals" />-->
+            <p:dataTable id="insttable" var="rec" emptyMessage="No signals defined." 
+                         value="#{cc.attrs.selectedSlot.installationRecordList}"  >
+                <f:facet name="header">
+                    <h:outputText value="Control Signals"/>
+                </f:facet>
+                <p:column id="component" headerText="Property" >
+                   
+                </p:column> 
+                <p:column id="idate" headerText="Signal"  >
+                    
+                </p:column>
+                <p:column id="uidate" headerText="Channel"  >
+                    										
+                </p:column>
+                 
+            </p:dataTable>  
+       
+       
+    </cc:implementation>
+</html>

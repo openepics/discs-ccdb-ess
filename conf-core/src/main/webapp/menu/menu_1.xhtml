@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:fc="http://java.sun.com/jsf/composite/comps"
+                xmlns:f="http://java.sun.com/jsf/core">
+    
+    <h:form styleClass="menu">        
+        <p:menubar autoDisplay="false" >
+            <p:menuitem value="Home"  outcome="home" icon="fa fa-home" />          
+
+            <p:submenu label="Devices" icon="fa fa-cogs">
+                <p:menuitem value="Device Search" icon="fa fa-cogs" outcome="device"  rendered="false"/>
+                <p:menuitem value="Device List" icon="fa fa-cogs" outcome="devices" />
+            </p:submenu>
+            
+            <p:submenu label="Slots" icon="fa  fa-server">
+                <p:menuitem value="Slot Tree" icon="fa  fa-server" outcome="slottree" />
+                <p:menuitem value="Slot List" icon="fa  fa-server" outcome="slotlist" />
+            </p:submenu>
+            
+            <p:submenu label="Racks" icon="fa  fa-building-o">
+                <p:menuitem value="Rack Layout" icon="fa  fa-building-o" outcome="racklayout" />
+                <p:menuitem value="Rack List" icon="fa  fa-building-o" outcome="racklist" />
+            </p:submenu>                     
+
+            <p:submenu label="Views" icon="fa  fa-pagelines">
+                <p:menuitem value="Front End" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
+                <p:menuitem value="Power Supplies" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
+                <p:menuitem value="RF" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
+                <p:submenu label="My Views" icon="fa  fa-pagelines">
+                    <p:menuitem value="BPMs in FE" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
+                </p:submenu>
+            </p:submenu>
+            
+            <p:submenu label="Reports" icon="fa  fa-line-chart ">
+                <p:menuitem value="Status Report" icon="fa  fa-line-chart " outcome="home"  disabled="true"/>
+                <p:menuitem value="Configuration Report" icon="fa  fa-line-chart o" outcome="home"  disabled="true"/>
+            </p:submenu>
+            
+            <p:submenu label="Device Types" icon="fa fa-tablet">
+                <p:menuitem value="Device Type List" icon="fa fa-tablet" outcome="device-types" />
+            </p:submenu>
+                      
+            <p:submenu label="Properties" icon="fa fa-connectdevelop">
+                <p:menuitem value="Property List" icon="fa fa-connectdevelop" outcome="properties" />
+            </p:submenu>         
+            
+            <p:submenu label="Base" icon="fa fa-database">
+                <p:menuitem value="Audit Log" icon="fa fa-database" outcome="log" />
+                <p:menuitem value="Enumerations" icon="fa fa-database" outcome="enums" />                              
+                <p:menuitem value="Units" icon="fa fa-database" outcome="units" />
+            </p:submenu>
+            
+             <p:submenu label="Import" icon="fa fa-upload">               
+                <p:menuitem value="Devices" icon="fa fa-upload" url="#" disabled="true"/>
+                <p:menuitem value="Device Types" icon="fa fa-upload" url="#" disabled="true"/>
+                <p:menuitem value="Properties" icon="fa fa-upload" url="#" disabled="true"/> 
+                <p:menuitem value="Slots" icon="fa fa-upload" url="#" disabled="true"/>               
+                <p:menuitem value="Units" icon="fa fa-upload" url="#" disabled="true"/>
+            </p:submenu>
+            
+            <p:submenu label="Links" icon="fa fa-external-link" >
+                <p:menuitem value="Cables" icon="fa  fa-external-link" url="#{msgs.cables}" target="_blank"/>
+                <p:menuitem value="Traveler" icon="fa  fa-external-link" url="#{msgs.traveler}" target="_blank"/>
+                <p:menuitem value="Calibration" icon="fa  fa-external-link" url="#{msgs.calibration}" target="_blank"/>
+                <p:menuitem value="Names" icon="fa  fa-external-link" url="#{msgs.names}" target="_blank"/>
+                <p:menuitem value="Logbook" icon="fa  fa-external-link" url="#{msgs.logbook}" target="_blank"/>
+                <p:menuitem value="Lattice/Model" icon="fa  fa-external-link" url="#{msgs.latticeModel}" target="_blank" disabled="true" />
+            </p:submenu>  
+           
+            <p:menuitem value="Preferences"  url="/prefs/" icon="fa fa-cog"  disabled="true"/> 
+        
+            <p:submenu label="Help" icon="fa fa-info">
+                <p:menuitem value="Online Help" title="Online Help" 
+                            icon="ui-icon-info" 
+                            url="/help/help.xhtml"   rendered="false"/>             
+                <p:menuitem value="Report Problems" id="reportProblem" icon="fa fa-info"  immediate="true"
+                            title="Report Problems"  onclick="PF('reportProblemWid').show()" disabled="true"/>
+                <p:menuitem value="About" id="aboutMenu" icon="fa fa-info"  immediate="true"
+                            title="About HourLog"  onclick="PF('aboutPanelWid').show()"/>    
+            </p:submenu> 
+            
+            <f:facet name="options">                              
+                <fc:logincomp /> 
+            </f:facet>
+        </p:menubar> 
+    </h:form>
+    
+    <ui:include src="about.xhtml" />
+    <!--<ui:include src="report-problem.xhtml" />-->
+</ui:composition>

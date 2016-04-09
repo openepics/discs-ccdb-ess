@@ -37,7 +37,6 @@ import org.openepics.names.jaxb.DeviceNameElement;
  */
 @Named("names")
 @ViewScoped
-@Alternative
 public class NamesForDevelopment implements Names {
     private static final long serialVersionUID = 7974397392868166709L;
 

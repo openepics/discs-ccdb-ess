@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <cc:interface>
+        <cc:attribute name="id" required="true" />
+        <cc:attribute name="attributeList" required="true" />
+        <cc:attribute name="updateButtons" />
+        <cc:attribute name="parentName" />
+    </cc:interface>
+
+    <cc:implementation>
+        <!--<h:outputText value="Properties" />-->
+
+        <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
+                     emptyMessage="No records found." value="#{cc.attrs.attributeList}" 
+                     scrollable="true" scrollWidth="100%" scrollHeight="100%"                                            
+                     rowKey="#{attribute.id}"
+                     widgetVar="attributesWidget">
+            <!--selection="#{hierarchiesController.selectedAttributes}" selectionMode="multiple"-->                                                               
+
+            <f:facet name="header">
+                <h:outputText value="Properties"/>
+            </f:facet>
+            <p:column headerText="Container/Slot" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
+                      filterMatchMode="contains"  rendered="false">
+                <h:outputText value="#{attribute.parent}" />
+            </p:column>
+
+            <p:column headerText="Name" sortBy="#{attribute.name}" >
+                <h:outputText value="#{attribute.name}" title="#{attribute.kind.toString()}, type: #{attribute.type.name}"/>
+            </p:column>
+
+            <p:column headerText="Value" sortBy="#{attribute.value}" style="text-align: right;" >
+                <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
+                    <h:outputText value="#{attribute.value}" style="color: black; text-decoration: underline;" />
+                </h:outputLink>
+                <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
+                <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
+                    <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                    <!--<f:setPropertyActionListener value="#{attribute}" target="#{hierarchiesController.downloadAttribute}" />-->
+<!--                                            <p:fileDownload value="#{hierarchiesController.downloadFile}" />-->
+                </p:commandLink>
+                <h:outputText value=" #{attribute.unit.name}" rendered="#{!empty attribute.unit}"/>
+                <h:outputText value=" #{attribute.property.unit.name}" rendered="#{empty attribute.unit and !empty attribute.property.unit}"/>
+                <h:outputLink rendered="#{!empty attribute.unit and !empty attribute.property.unit}"
+                              value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
+
+                    <i class="fa fa-arrow-right" style="color: #778D9B" />
+                </h:outputLink>
+            </p:column>
+
+            <p:column headerText="Unit" sortBy="#{attribute.unit.name}"   rendered="false">
+                <h:outputText value="#{attribute.unit.name}" />
+
+                <h:outputLink rendered="#{!empty attribute.unit}"
+                              value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
+
+                    <i class="fa fa-arrow-right" style="color: #778D9B" />
+                </h:outputLink>
+                <h:outputText value="-" rendered="#{empty attribute.unit}" />
+            </p:column>
+
+            <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}" rendered="false">
+                <h:outputText value="#{attribute.kind.toString()}" />
+            </p:column>
+
+            <p:column headerText="Data type" sortBy="#{attribute.type.name}" rendered="false">
+                <h:outputText value="#{attribute.type.name}" />
+            </p:column>
+            <f:facet name="footer">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:commandButton type="button" title="New" icon="ui-icon-document" disabled="true"/>   
+                        <p:commandButton type="button" title="Edit" icon="ui-icon-disk" disabled="true"/>
+                        <p:commandButton type="button" title="Delete" icon="ui-icon-trash" disabled="true"/>
+                    </f:facet>
+                </p:toolbar>
+            </f:facet>
+        </p:dataTable>
+    </cc:implementation>
+</html>

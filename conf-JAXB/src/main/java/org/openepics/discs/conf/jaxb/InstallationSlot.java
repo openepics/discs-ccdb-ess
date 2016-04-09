@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 public class InstallationSlot {
     private String name;
     private String description;
-
+    private Double percentComplete = 0.0;
+    
     @XmlElement private DeviceType deviceType;
 
     @XmlElementWrapper(name = "parents")
@@ -69,7 +70,7 @@ public class InstallationSlot {
     @XmlElementWrapper(name = "properties")
     @XmlAnyElement(lax = true)
     private List<PropertyValue> properties;
-
+    
     public InstallationSlot() { }
 
     public String getName() { return name; }
@@ -80,6 +81,14 @@ public class InstallationSlot {
 
     public DeviceType getDeviceType() { return deviceType; }
     public void setDeviceType(DeviceType deviceType) { this.deviceType = deviceType; }
+
+    public Double getPercentComplete() {
+        return percentComplete;
+    }
+
+    public void setPercentComplete(Double percentComplete) {
+        this.percentComplete = percentComplete;
+    }
 
     public List<String> getParents() { return parents; }
     public void setParents(List<String> parents) { this.parents = parents; }

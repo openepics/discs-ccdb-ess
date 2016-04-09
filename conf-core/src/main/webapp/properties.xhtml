@@ -1,4 +1,4 @@
-<ui:composition template="/template/template.xhtml" 
+<ui:composition template="/WEB-INF/template/template.xhtml" 
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
@@ -17,13 +17,13 @@
         </script>
         
         <h:form id="propertiesForm">
-            <p:growl id="growl" showDetail="true" globalOnly="true"/>
+            
             <p:fieldset id="propertiesFieldset" legend="Properties" style="box-sizing: border-box; height: calc(100vh - 7em);">
                 <div style="height: calc(100% - 3em)">
                     <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable"
                             selection="#{propertyManager.selectedProperties}" selectionMode="multiple" rowKey="#{property.id}" 
                             value="#{propertyManager.properties}" tableStyle="word-wrap: break-word"
-                            resizableColumns="true" scrollable="true" scrollWidth="100%" scrollHeight="100%"
+                            resizableColumns="true" scrollable="true" scrollRows="20"  scrollHeight="600" styleClass="ccdbDatatable"
                             filteredValue="#{propertyManager.filteredProperties}" emptyMessage="No records found.">
                         <p:ajax event="filter" update=":propertiesForm:exportButton" />
                         <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
@@ -85,6 +85,9 @@
             </p:fieldset>
         </h:form>
 
+        
+        
+        
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
             <ui:param name="formId" value="deletePropertiesForm" />
             <ui:param name="dialogTitle" value="Delete Properties" />

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+    Report problems
+
+    @author: Vasu V
+-->
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <p:dialog id="reportProblemPanel"  header="Report Problems" widgetVar="reportProblemWid"
+              width="25%" hideEffect="clip"> 
+        <p:panel>
+            <h:outputText value="We're sorry, if you are having trouble using #{msgs.title}. To report a problem or give feedback, please contact the " /> 
+            <p:link href="mailto:#{msgs.supportEmail}?Subject=#{msgs.title}: Feedback"  value="development team"/>. 
+            <h:outputText value="Thank you!" />  
+        </p:panel>
+
+    </p:dialog>
+</ui:composition>

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+    Display the navigation list of logical components.
+
+    @author: Vasu V
+-->
+
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <h:form id="clnav-form">
+        <p:dataTable id="clnav-table" var="comp" value="#{slotListView.slots}" 
+                     paginator="true" rows="50" 
+                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="25,50,100" resizableColumns="true" paginatorAlwaysVisible="false"
+                     
+                     selectionMode="single"  selection="#{slotListView.selectedSlot}" rowKey="#{comp.id}"  styleClass="ccdbDatatable">
+            <!--
+            scrollable="true" scrollHeight="500" 
+            scrollHeight="500" scrollWidth="500"
+            -->
+            <p:ajax event="rowSelect"  update=":complist-detail" oncomplete="" />
+
+            <p:column id="name" headerText="Name"  sortBy="#{comp.name}" filterBy="#{comp.name}" filterMatchMode="contains">
+                <h:outputText value="#{comp.name}"/>
+            </p:column>
+            <p:column id="type" headerText="Type" sortBy="#{comp.componentType.name}" filterBy="#{comp.componentType.name}">
+                <h:outputText value="#{comp.componentType.name}"/>
+            </p:column>  
+            <p:column id="desc" headerText="Description"  filterBy="#{comp.description}">
+                <h:outputText value="#{comp.description}"/>
+            </p:column>           
+        </p:dataTable>          
+    </h:form>
+</ui:composition>

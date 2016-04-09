@@ -1,0 +1,155 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+    
+        <script type="text/javascript">
+            //<![CDATA[                        
+            function closeDialogActions(widgetVar) {
+                if (widgetVar !== null) PF(widgetVar).hide();
+                PF('propertiesTableVar').clearFilters();                
+            }
+            // ]]>
+        </script>
+        
+        <h:form id="propertiesForm">
+            <p:growl id="growl" showDetail="true" globalOnly="true"/>
+            
+               
+                    <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable"
+                            selection="#{propertyManager.selectedProperties}" selectionMode="multiple" rowKey="#{property.id}" 
+                            value="#{propertyManager.properties}"
+                            resizableColumns="true" scrollable="true" scrollRows="20" scrollHeight="600"
+                            filteredValue="#{propertyManager.filteredProperties}" emptyMessage="No records found." styleClass="ccdbDatatable">
+                        <p:ajax event="filter" update=":propertiesForm:exportButton" />
+                        <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
+                                :propertiesForm:duplicateButton" />
+                        <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
+                                :propertiesForm:duplicateButton" />
+        
+                        <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" 
+                                filterMatchMode="contains" styleClass="tableColWidth20">
+                            <h:outputText value="#{property.name}" />
+                        </p:column>
+        
+                        <p:column id="descCol" headerText="Description" sortBy="#{property.description}" filterBy="#{property.description}" 
+                                filterStyle="width: 20em;" filterMatchMode="contains" styleClass="tableColWidth60">
+                            <h:outputText value="#{property.description}" />
+                        </p:column>
+        
+                        <p:column id="uniCol" headerText="Unit" sortBy="#{property.unit.name}" 
+                                filterBy="#{property.unit.name}" filterMatchMode="contains" styleClass="tableColWidth10">
+                            <h:outputLink rendered="#{!empty property.unit}" 
+                                    value="#{request.contextPath}/units.xhtml?id=#{property.unit.id}">
+                                <h:outputText value="#{property.unit.name}" style="text-decoration: underline;" />
+                            </h:outputLink>
+                            <h:outputText value="-" rendered="#{empty property.unit}" />
+                        </p:column>
+        
+                        <p:column headerText="Data Type" sortBy="#{property.dataType.name}" 
+                                filterBy="#{property.dataType.name}" filterMatchMode="contains" styleClass="tableColWidth10">
+                            <h:outputText value="#{property.dataType.name}" />
+                        </p:column>
+                    </p:dataTable>
+                
+    
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected" 
+                    style="float: right; margin-top: 1em;" 
+                    disabled="#{empty propertyManager.selectedProperties or not securityPolicy.getUIHint('PROP_CREATE')}" 
+                    oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                    
+                <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportProperties').show();" 
+                    disabled="#{empty propertyManager.filteredProperties}" update=":exportPropForm:exportProperties" 
+                    actionListener="#{propertyManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperties').show();" 
+                    disabled="#{empty propertyManager.selectedProperties or not securityPolicy.getUIHint('PROP_DELETE')}" 
+                    update=":deletePropertiesForm:deleteProperties" 
+                    actionListener="#{propertyManager.checkPropertiesForDeletion()}" />
+                <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
+                    style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyForm:modifyProperty" 
+                    disabled="#{not propertyManager.singlePropertySelected or not securityPolicy.getUIHint('PROP_MODIFY')}" 
+                    oncomplete="PF('modifyProperty').show();" actionListener="#{propertyManager.prepareModifyPopup}" />
+                <p:commandButton id="addButton" actionListener="#{propertyManager.prepareAddPopup}" value="Add" 
+                    disabled="#{not securityPolicy.getUIHint('PROP_CREATE')}"
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('addProperty').show()" 
+                    update=":addPropertyForm:addProperty" title="Add New Properties" icon="ui-icon-plus" />
+           
+        </h:form>
+
+        <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
+            <ui:param name="formId" value="deletePropertiesForm" />
+            <ui:param name="dialogTitle" value="Delete Properties" />
+            <ui:param name="widgetName" value="deleteProperties" />
+            <ui:param name="controller" value="#{propertyManager}" />
+            <ui:param name="deletePreventionList" value="#{propertyManager.usedProperties}" />
+            <ui:param name="deleteList" value="#{propertyManager.selectedProperties}" />
+            <ui:param name="filteredDialogList" value="#{propertyManager.filteredDialogProperties}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+                                                :propertiesForm:editButton :propertiesForm:exportButton :propertiesForm:duplicateButton :propertiesForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="properties" />
+            <ui:param name="entityName" value="Property" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
+            <ui:param name="formId" value="duplicateForm" />
+            <ui:param name="controller" value="#{propertyManager}" />
+            <ui:param name="duplicateList" value="#{propertyManager.selectedProperties}" />
+            <ui:param name="filteredDuplicateList" value="#{propertyManager.filteredProperties}" />
+            <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:editButton :propertiesForm:deleteButton :propertiesForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="properties" />
+            <ui:param name="entityName" value="Property" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/property.xhtml">
+            <ui:param name="formId" value="modifyPropertyForm" />
+            <ui:param name="dialogTitle" value="Edit Property" />
+            <ui:param name="updateComponents" 
+                value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton :propertiesForm:growl" />
+            <ui:param name="widgetName" value="modifyProperty" />
+            <ui:param name="submitHandler" value="onModify" />
+            <ui:param name="saveAction" value="closeDialogActions('modifyProperty');" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/property.xhtml">
+            <ui:param name="formId" value="addPropertyForm" />
+            <ui:param name="dialogTitle" value="Add Property" />
+            <ui:param name="updateComponents" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+                                                :propertiesForm:editButton :propertiesForm:exportButton :propertiesForm:duplicateButton :propertiesForm:growl" />
+            <ui:param name="widgetName" value="addProperty" />
+            <ui:param name="batchCreation" value="true" />
+            <ui:param name="submitHandler" value="onAdd" />
+            <ui:param name="saveAction" value="closeDialogActions('addProperty');" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/batch-creation-conflict.xhtml">
+            <ui:param name="formId" value="batchConflictForm" />
+            <ui:param name="dialogTitle" value="Conflicting Properties" />
+            <ui:param name="widgetName" value="batchConflict" />
+            <ui:param name="entity" value="properties" />
+            <ui:param name="entityListing" value="#{propertyManager.dialogProperty.batchPropertyConflicts}" />
+            <ui:param name="relatedDialog" value="addProperty" />
+            <ui:param name="controller" value="#{propertyManager}" />
+            <ui:param name="submitHandler" value="creationProceed" />
+            <ui:param name="formToUpdate" 
+                value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton :propertiesForm:growl" />
+            <ui:param name="saveActions" value="closeDialogActions(null);" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportPropForm" />
+            <ui:param name="widgetName" value="exportProperties" />
+            <ui:param name="dialogTitle" value="Export Properties" />
+            <ui:param name="fileFormatSelection" value="#{propertyManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{propertyManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{propertyManager.simpleTableDialog.exportedTable}" />
+        </ui:include>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,67 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <cc:interface>
+        <cc:attribute name="id" required="true" />
+        <cc:attribute name="controllerBean" required="true" />
+        <cc:attribute name="updateButtons" />
+        <cc:attribute name="parentName" />
+    </cc:interface>
+
+    <cc:implementation>
+        <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}"
+                selection="#{cc.attrs.controllerBean.selectedAttributes}" selectionMode="multiple"
+                rowKey="#{attribute.id}" style="overflow: hidden" scrollHeight="100%" emptyMessage="No records found." 
+                scrollable="true" resizableColumns="true" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}"
+                tableStyle="word-wrap: break-word;" widgetVar="attributesDataTable">
+            <p:ajax event="filter" ignoreAutoUpdate="true" />
+            <p:ajax event="rowSelect" update="#{cc.attrs.updateButtons}" />
+            <p:ajax event="rowUnselect" update="#{cc.attrs.updateButtons}" />
+
+            <p:column headerText="#{cc.attrs.parentName}" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
+                      filterMatchMode="contains" rendered="false">
+                <h:outputText value="#{attribute.parent}" />
+            </p:column>
+
+            <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}"
+                    filterMatchMode="contains">
+                <h:outputText value="#{attribute.name}" />
+            </p:column>
+
+            <p:column headerText="Value" style="width: 30%" sortBy="#{attribute.value}" filterBy="#{attribute.value}"
+                    filterMatchMode="contains">
+                <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
+                    <h:outputText value="#{attribute.value}" style="text-decoration: underline;" />
+                </h:outputLink>
+                <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
+                <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
+                    <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                    <f:setPropertyActionListener value="#{attribute}" target="#{cc.attrs.controllerBean.downloadArtifact}" />
+                    <p:fileDownload value="#{cc.attrs.controllerBean.downloadFile}" />
+                </p:commandLink>
+            </p:column>
+
+            <p:column headerText="Unit" sortBy="#{attribute.unit}" filterBy="#{attribute.unit.name}"
+                      filterMatchMode="contains" rendered="false">
+                <h:outputLink rendered="#{!empty attribute.unit}"
+                        value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
+                    <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
+                </h:outputLink>
+                <h:outputText value="-" rendered="#{empty attribute.unit}" />
+            </p:column>
+
+            <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}" filterBy="#{attribute.kind}"
+                      filterMatchMode="exact" filterOptions="#{cc.attrs.controllerBean.attributeKinds}" rendered="false">
+                <h:outputText value="#{attribute.kind.toString()}" />
+            </p:column>
+
+            <p:column headerText="Data Type" sortBy="#{attribute.type.name}" filterBy="#{attribute.type.name}"
+                      filterMatchMode="contains" rendered="false">
+                <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
+            </p:column>
+        </p:dataTable>
+    </cc:implementation>
+</html>

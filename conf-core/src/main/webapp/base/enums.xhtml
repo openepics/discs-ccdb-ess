@@ -1,0 +1,128 @@
+<ui:composition template="/WEB-INF/template/template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <h:form id="enumsForm">
+            <script type="text/javascript">
+                // <![CDATA[              
+                function closeDialogActions(widgetVar) {
+                    if (widgetVar != null) PF(widgetVar).hide();
+                    PF('enumsTableVar').clearFilters();
+                }
+                // ]]>
+            </script>
+            <p:growl id="growl" showDetail="true" globalOnly="true"/>
+            
+                    <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
+                            scrollable="true" scrollHeight="600" emptyMessage="No records found." 
+                            selection="#{dataTypeManager.selectedEnums}" selectionMode="multiple" rowKey="#{enum.enumeration.id}" 
+                            resizableColumns="true" tableStyle="word-wrap: break-word;" 
+                            filteredValue="#{dataTypeManager.filteredDataTypeViews}"  scrollRows="50" styleClass="ccdbDatatable">
+                        <p:ajax event="filter" update=":enumsForm:exportButton"/>
+                        <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton 
+                                :enumsForm:duplicateButton" />
+                        <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton 
+                                :enumsForm:duplicateButton" />
+    
+                        <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
+                                filterMatchMode="contains">
+                            <h:outputText value="#{enum.name}" />
+                        </p:column>
+    
+                        <p:column headerText="Description" sortBy="#{enum.description}" filterBy="#{enum.description}" 
+                                width="30%" filterStyle="width: 20em;" filterMatchMode="contains">
+                            <h:outputText value="#{enum.description}" />
+                        </p:column>
+    
+                        <p:column headerText="Definition" sortBy="#{enum.displayDefinition}" style="width: 50%;" 
+                                filterBy="#{enum.displayDefinition}" filterMatchMode="contains">
+                            <h:outputText value="#{enum.displayDefinition}" />
+                        </p:column>
+                    </p:dataTable>
+                
+
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected" 
+                    style="float: right; margin-top: 1em;" 
+                    disabled="#{empty dataTypeManager.selectedEnums or not securityPolicy.getUIHint('ENUM_CREATE')}" 
+                    oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                       
+                <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportEnums').show();" 
+                    disabled="#{empty dataTypeManager.filteredDataTypeViews}" update=":exportEnumsForm:exportEnums" 
+                    actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnums').show();" 
+                    disabled="#{empty dataTypeManager.selectedEnums or not securityPolicy.getUIHint('ENUM_DELETE')}" 
+                    update=":deleteEnumsForm:deleteEnums" actionListener="#{dataTypeManager.checkEnumsForDeletion()}" />
+                <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
+                    style="float: right; margin: 1em 1ex 0 0;" update=":modifyEnumForm:modifyEnum" 
+                    disabled="#{not dataTypeManager.singleEnumSelected or not securityPolicy.getUIHint('ENUM_MODIFY')}" 
+                    oncomplete="PF('modifyEnum').show();" actionListener="#{dataTypeManager.prepareModifyPopup}" />
+                <p:commandButton actionListener="#{dataTypeManager.prepareAddPopup}" value="Add"
+                        title="Add New Enumeration" icon="ui-icon-plus" style="float: right; margin: 1em 1ex 0 0;" 
+                        disabled="#{not securityPolicy.getUIHint('ENUM_CREATE')}"
+                        oncomplete="PF('addEnum').show();" update=":addEnumForm:addEnum" />
+          
+        </h:form>
+
+        <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteEnumsForm" />
+            <ui:param name="dialogTitle" value="Delete Enumerations" />
+            <ui:param name="widgetName" value="deleteEnums" />
+            <ui:param name="controller" value="#{dataTypeManager}" />
+            <ui:param name="deletePreventionList" value="#{dataTypeManager.usedEnums}" />
+            <ui:param name="deleteList" value="#{dataTypeManager.selectedEnums}" />
+            <ui:param name="filteredDialogList" value="#{dataTypeManager.filteredDialogEnums}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
+                                                :enumsForm:editButton :enumsForm:exportButton 
+                                                :enumsForm:duplicateButton :enumsForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="enumerations" />
+            <ui:param name="entityName" value="Enumeration" />
+        </ui:include>
+        
+        <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
+            <ui:param name="formId" value="duplicateForm" />
+            <ui:param name="controller" value="#{dataTypeManager}" />
+            <ui:param name="duplicateList" value="#{dataTypeManager.selectedEnums}" />
+            <ui:param name="filteredDuplicateList" value="#{dataTypeManager.filteredDataTypeViews}" />
+            <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:duplicateButton :enumsForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="enumerations" />
+            <ui:param name="entityName" value="Enumeration" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/add-or-modify-enum.xhtml">
+            <ui:param name="formId" value="modifyEnumForm" />
+            <ui:param name="dialogTitle" value="Edit Enumeration" />
+            <ui:param name="widgetName" value="modifyEnum" />
+            <ui:param name="submitHandler" value="onModify" />
+            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions('modifyEnum');" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/add-or-modify-enum.xhtml">
+            <ui:param name="formId" value="addEnumForm" />
+            <ui:param name="dialogTitle" value="Add Enumeration" />
+            <ui:param name="widgetName" value="addEnum" />
+            <ui:param name="submitHandler" value="onAdd" />
+            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
+                                                :enumsForm:editButton :enumsForm:exportButton 
+                                                :enumsForm:duplicateButton :enumsForm:growl" />
+            <ui:param name="closeDialogActions" value="closeDialogActions('addEnum');" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportEnumsForm" />
+            <ui:param name="widgetName" value="exportEnums" />
+            <ui:param name="dialogTitle" value="Export Enumerations" />
+            <ui:param name="fileFormatSelection" value="#{dataTypeManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{dataTypeManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{dataTypeManager.simpleTableDialog.exportedTable}" />
+        </ui:include>
+    </ui:define>
+</ui:composition>

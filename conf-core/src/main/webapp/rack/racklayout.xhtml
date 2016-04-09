@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+    <h:form id="rackLayoutForm">
+        <p:panelGrid id="rackLayoutPanel" styleClass="centerPanel noBorders">
+            <c:forEach begin="1" end="#{rackLayoutManager.rows}" var="row">                   
+                <p:row>
+                    <c:forEach begin="1" end="#{rackLayoutManager.columns}" var="col"> 
+                        <c:set var="rack" value="#{rackLayoutManager.rackAt(row, col)}" />
+                        <p:column>
+                            <p:panelGrid styleClass="rackPanel" rendered="#{not empty rack}">
+                                <f:facet name="header">
+                                    <p:row >
+                                        <p:column colspan="3">
+                                            <h:outputText value="#{rack.name}" />
+                                        </p:column>                       
+                                    </p:row>
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="#" />
+                                        </p:column>   
+                                        <p:column>
+                                            <h:outputText value="Front" />
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="Rear" />
+                                        </p:column>
+                                    </p:row>                  
+                                </f:facet>
+
+                                <c:forEach items="#{rackLayoutManager.slotsOfRack(rack)}"  var="slot">                                    
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="#{slot.number}" >
+                                                <f:convertNumber pattern="00"  minIntegerDigits="2" />
+                                            </h:outputText>
+                                        </p:column>   
+                                        <p:column styleClass="#{slot.frontMatch ? 'matchingSlot' : ''}" >
+                                            <c:forEach items="#{slot.frontDevices}"  var="devslot">
+                                                <h:outputText value="#{devslot.name}" />
+                                            </c:forEach>
+                                        </p:column>
+                                        <p:column styleClass="#{slot.rearMatch} ? 'matchingSlot' : ''">
+                                            <c:forEach items="#{slot.rearDevices}"  var="devslot">
+                                                <h:outputText value="#{devslot.name} " />
+                                            </c:forEach>
+                                        </p:column>
+                                    </p:row>
+                                </c:forEach>
+                            </p:panelGrid>
+                        </p:column>
+                    </c:forEach>
+                </p:row>
+            </c:forEach>
+        </p:panelGrid>
+    </h:form>     
+
+</ui:composition>

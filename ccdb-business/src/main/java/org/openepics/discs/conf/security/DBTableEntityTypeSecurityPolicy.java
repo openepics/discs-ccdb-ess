@@ -48,7 +48,7 @@ import org.openepics.discs.conf.ent.Privilege;
 @RequestScoped
 @Named("securityPolicy")
 @Alternative
-@Priority(Interceptor.Priority.APPLICATION+10)
+@Priority(Interceptor.Priority.APPLICATION+30)
 public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
                 implements SecurityPolicy, Serializable {
     private static final long serialVersionUID = 108664734022549860L;

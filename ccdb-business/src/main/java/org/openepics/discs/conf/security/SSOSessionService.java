@@ -23,12 +23,15 @@ import java.io.Serializable;
 
 import javax.enterprise.context.RequestScoped;
 
-import se.esss.ics.rbac.loginmodules.service.RBACSSOSessionService;
+// import se.esss.ics.rbac.loginmodules.service.RBACSSOSessionService;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @RequestScoped
-public class SSOSessionService extends RBACSSOSessionService implements Serializable {
+public class SSOSessionService implements Serializable {
     private static final long serialVersionUID = 1972897899709952311L;
 }
+//public class SSOSessionService extends RBACSSOSessionService implements Serializable {
+//    private static final long serialVersionUID = 1972897899709952311L;
+//}

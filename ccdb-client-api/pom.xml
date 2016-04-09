@@ -19,10 +19,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.openepics.discs</groupId>
-            <artifactId>ccdb-jaxb</artifactId>
-        </dependency>
-        <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
             <version>2.0</version>
@@ -30,6 +26,11 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ccdb-jaxb</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
