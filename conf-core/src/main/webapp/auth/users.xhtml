@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"              
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <!--<p:panel header="User Roles">-->
+    <p:dataTable value="#{authView.users}" var="obj" 
+                 scrollRows="10" scrollable="true" scrollHeight="200" liveScroll="true"> 
+        <f:facet name="header">
+            <h:outputText value="Users"/>
+        </f:facet>
+        <p:column headerText="ID" sortBy="#{obj.userId}">
+            <h:outputText value="#{obj.userId}"/>
+        </p:column>
+        <p:column headerText="Name" sortBy="#{obj.name}">
+            <h:outputText value="#{obj.name}"/>
+        </p:column>
+
+        <p:column headerText="Email">
+            <h:outputText value="#{obj.email}"/>
+        </p:column>
+        <p:column headerText="Comment">
+            <h:outputText value="#{obj.comment}"/>
+        </p:column>
+
+        <f:facet name="footer">
+            <p:toolbar>
+                <f:facet name="left">
+                    <p:commandButton type="button" title="New" icon="ui-icon-document" disabled="true"/>   
+                    <p:commandButton type="button" title="Edit" icon="ui-icon-disk" disabled="true"/>
+                    <p:commandButton type="button" title="Delete" icon="ui-icon-trash" disabled="true"/>
+                </f:facet>
+            </p:toolbar>
+        </f:facet>
+    </p:dataTable>
+    <!--</p:panel>-->
+</ui:composition>

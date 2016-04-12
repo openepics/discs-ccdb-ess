@@ -18,6 +18,7 @@
             <f:viewAction action="#{deviceManager.initializeView()}"/>
         </f:metadata>
 
+        <h:outputText value="#{deviceManager.selectedSlot.name}" styleClass="heading"/>
         <p:panelGrid styleClass="noBorders" >
             <p:row>
                 <p:column style="vertical-align: top;">
@@ -31,7 +32,11 @@
                     <dc:attributes id="slotAttribs" attributeList="#{deviceManager.slotAttributes}" />                 
                 </p:column>
             </p:row>
-            
+            <p:row>
+                <p:column colspan="3">
+                     <p:separator/>
+                </p:column>
+            </p:row>
             <p:row>               
                 <p:column style="vertical-align: top;">
                     <dc:related-devices selectedSlot="#{deviceManager.selectedSlot}" />
@@ -43,30 +48,46 @@
                     <dc:ports selectedSlot="#{deviceManager.selectedSlot}" />
                 </p:column>
             </p:row>
-
+            <p:row>
+                <p:column colspan="3">
+                     <p:separator/>
+                </p:column>
+            </p:row>
             <p:row>
                 <p:column style="vertical-align: top;">
                     <dc:signals selectedSlot="#{deviceManager.selectedSlot}" />
                 </p:column>
+                <p:column>
+                    <dc:cm selectedSlot="#{deviceManager.selectedSlot}" />
+                </p:column>
+                <p:column>
+                    <dc:alignment selectedSlot="#{deviceManager.selectedSlot}" />              
+                </p:column>
+                
+            </p:row>
+            
+            <p:row>
+                
+                <p:column colspan="3">
+                     <p:separator/>
+                </p:column>
+                 
+            </p:row>
+            
+             <p:row>
+                
                 <p:column style="vertical-align: top;">
                     <dc:travelers selectedSlot="#{deviceManager.selectedSlot}" />
+                </p:column>
+                 <p:column style="vertical-align: top;">
+                    <dc:history selectedSlot="#{deviceManager.selectedSlot}" />
                 </p:column>
                 <p:column style="vertical-align: top;">                   
                     <dc:cables selectedSlot="#{deviceManager.selectedSlot}" />
                 </p:column>
             </p:row>
-             <p:row>
-                <p:column style="vertical-align: top;">
-                    <dc:history selectedSlot="#{deviceManager.selectedSlot}" />
-                </p:column>
-                <p:column>
-                   
-                </p:column>
-                <p:column>
-                    
-                
-                </p:column>
-            </p:row>
+            
+           
         </p:panelGrid>
         
     </ui:define>

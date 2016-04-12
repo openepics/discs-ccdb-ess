@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"              
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:form id="authRoleForm" >
+        <p:dataTable value="#{authView.roles}" var="obj" 
+                     scrollRows="10" scrollable="true" scrollHeight="200" liveScroll="true">  
+            <f:facet name="header">
+                <h:outputText value="Roles"/>
+            </f:facet>
+            
+            <p:column headerText="Name" sortBy="#{obj.roleId}">
+                <h:outputText value="#{obj.roleId}"/>
+            </p:column>
+            <p:column headerText="Description">
+                <h:outputText value="#{obj.description}"/>
+            </p:column>
+
+            <f:facet name="footer">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:commandButton type="button" title="New" icon="ui-icon-document" disabled="true"/>   
+                        <p:commandButton type="button" title="Edit" icon="ui-icon-disk" disabled="true"/>
+                        <p:commandButton type="button" title="Delete" icon="ui-icon-trash" disabled="true"/>
+                    </f:facet>
+                </p:toolbar>
+            </f:facet>
+        </p:dataTable>
+    </h:form>
+    
+</ui:composition>

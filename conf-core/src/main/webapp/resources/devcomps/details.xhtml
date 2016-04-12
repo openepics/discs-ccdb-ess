@@ -4,6 +4,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
       xmlns:cc="http://java.sun.com/jsf/composite">
 
     <!-- INTERFACE -->
@@ -14,58 +15,74 @@
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
-
-        <h:outputText value="Device Details"  rendered="false"/>
-        <p:panel header="Device Details" styleClass="noBorders">
-            <p:panelGrid >  
-                <p:row>  
-                    <p:column>Name</p:column>  
-                    <p:column>#{cc.attrs.selectedSlot.name}</p:column>                               
-                </p:row>
-                <p:row>  
-                    <p:column>Description</p:column>  
-                    <p:column>#{cc.attrs.selectedSlot.description}</p:column>                               
-                </p:row>
-                <p:row>  
-                    <p:column>Type</p:column>  
-                    <p:column>#{cc.attrs.selectedSlot.componentType.name}</p:column>                               
-                </p:row> 
-                <p:row>  
-                    <p:column>Comment</p:column>  
-                    <p:column>#{cc.attrs.selectedSlot.comment}</p:column>                               
-                </p:row>
-                <p:row>  
-                    <p:column>% Complete</p:column>  
-                    <p:column>0.0</p:column>                               
-                </p:row>
-                <p:row>  
-                    <p:column>DHR Status</p:column>  
-                    <p:column>Pending</p:column>                               
-                </p:row>
-                <p:row>  
-                    <p:column>Modified By</p:column>  
-                    <p:column>#{cc.attrs.selectedSlot.modifiedBy}</p:column>                               
-                </p:row>
-                <p:row>  
-                    <p:column>Date Modified</p:column>  
+        <h:outputText value="Details"  rendered="false"/>
+        <p:panel header="Details" styleClass="noBorders">
+            <p:panelGrid styleClass="noBorders">  
+                <p:row> 
                     <p:column>
-                        <h:outputText value="#{cc.attrs.selectedSlot.modifiedAt}">
-                            <f:convertDateTime pattern="MMM dd, yyyy" />
-                        </h:outputText>
-                    </p:column>                               
+                        <p:panelGrid >  
+                            <p:row>  
+                                <p:column>Name</p:column>  
+                                <p:column>#{cc.attrs.selectedSlot.name}</p:column>                               
+                            </p:row>
+                            <p:row>  
+                                <p:column>Description</p:column>  
+                                <p:column>#{cc.attrs.selectedSlot.description}</p:column>                               
+                            </p:row>
+                            <p:row>  
+                                <p:column>Type</p:column>  
+                                <p:column>#{cc.attrs.selectedSlot.componentType.name}</p:column>                               
+                            </p:row> 
+                            <p:row>  
+                                <p:column>Comment</p:column>  
+                                <p:column>#{cc.attrs.selectedSlot.comment}</p:column>                               
+                            </p:row>
+                            <p:row rendered="false">  
+                                <p:column>Modified By</p:column>  
+                                <p:column>#{cc.attrs.selectedSlot.modifiedBy}</p:column>                               
+                            </p:row>
+                            <p:row rendered="false">  
+                                <p:column>Date Modified</p:column>  
+                                <p:column>
+                                    <h:outputText value="#{cc.attrs.selectedSlot.modifiedAt}">
+                                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                                    </h:outputText>
+                                </p:column>                               
+                            </p:row>
+                        </p:panelGrid >  
+                    </p:column>
+                    <p:column>
+                        <p:panelGrid >  
+                            <p:row>  
+                                <p:column>Area Manager</p:column>  
+                                <p:column><h:outputText value="#{fn:substringBefore(cc.attrs.selectedSlot.name,'_')}_AreaManager" /></p:column>                               
+                            </p:row>
+                            <p:row>  
+                                <p:column>Owner</p:column>  
+                                <p:column><h:outputText value="#{cc.attrs.selectedSlot.componentType.name}_Manager"  rendered="#{fn:startsWith(cc.attrs.selectedSlot.componentType.name, 'PS')}"/></p:column>                               
+                            </p:row>
+                            <p:row>  
+                                <p:column>% Complete</p:column>  
+                                <p:column>0.0</p:column>                               
+                            </p:row>           
+                            <p:row>  
+                                <p:column><h:outputText value="CM Level" title="Configuration Management: Level of Care"/></p:column>  
+                                <p:column>Low</p:column>                               
+                            </p:row>
+                        </p:panelGrid> 
+                    </p:column>
                 </p:row>
-                
-            </p:panelGrid>   
-            <f:facet name="footer">
-                    <p:toolbar>
-                        <f:facet name="left">
-                            <p:commandButton type="button" title="New" icon="ui-icon-document" disabled="true"/>   
-                            <p:commandButton type="button" title="Edit" icon="ui-icon-disk" disabled="true"/>
-                            <p:commandButton type="button" title="Delete" icon="ui-icon-trash" disabled="true"/>
-                        </f:facet>
-                    </p:toolbar>
-                </f:facet>
-        </p:panel>
+            </p:panelGrid>
 
+            <f:facet name="footer">
+                <p:toolbar>
+                    <f:facet name="left">
+                        <p:commandButton type="button" title="New" icon="ui-icon-document" disabled="true"/>   
+                        <p:commandButton type="button" title="Edit" icon="ui-icon-disk" disabled="true"/>
+                        <p:commandButton type="button" title="Delete" icon="ui-icon-trash" disabled="true"/>
+                    </f:facet>
+                </p:toolbar>
+            </f:facet>
+        </p:panel>
     </cc:implementation>
 </html>

@@ -18,7 +18,7 @@
              <p:dataTable id="insttable" var="rec" emptyMessage="No Ports Specified." 
                          value="#{cc.attrs.selectedSlot.installationRecordList}"  >
                 <f:facet name="header">
-                    <h:outputText value="Device Ports"/>
+                    <h:outputText value="Ports"/>
                 </f:facet>
                 <p:column id="component" headerText="Port" >
                     <h:outputText value="#{rec.device.serialNumber}" />

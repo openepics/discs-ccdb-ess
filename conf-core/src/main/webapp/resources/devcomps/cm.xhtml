@@ -9,27 +9,31 @@
     <!-- INTERFACE -->
     <cc:interface>
         <cc:attribute name="selectedSlot" required="true"/>
-        <cc:attribute name="collapsed" required="false" default="false"/>       
+        <cc:attribute name="collapsed" required="false" default="false"/> 
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
+
+        <h:outputText value="Configuration Management"  rendered="false"/>
         
-           <p:dataTable id="apptable" var="rec" emptyMessage="No alignments on record" 
+            <p:dataTable id="apptable" var="rec" emptyMessage="No approvals on record" 
                          value="#{cc.attrs.selectedSlot.installationRecordList}"  >
                 <f:facet name="header">
-                    <h:outputText value="Alignment"/>
+                    <h:outputText value="Approvals"/>
                 </f:facet>
-                <p:column  headerText="Performed By" >
+                <p:column  headerText="Review Name" >
                    
                 </p:column> 
-                <p:column headerText="Approved By"  >
+                <p:column headerText="Approval Status"  >
                     
                 </p:column>
-                <p:column headerText="Data"  >
+                <p:column headerText="Approver"  >
                     										
                 </p:column>
-                
+                <p:column headerText="Date"  >
+                    										
+                </p:column>
              <f:facet name="footer">
                     <p:toolbar>
                         <f:facet name="left">
@@ -40,5 +44,7 @@
                     </p:toolbar>
                 </f:facet>    
             </p:dataTable>
+        
+
     </cc:implementation>
 </html>

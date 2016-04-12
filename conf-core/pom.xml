@@ -55,13 +55,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ccdb-business</artifactId>
-            <version>1.3.8-SNAPSHOT</version>
+            <artifactId>ccdb-model</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ccdb-model</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
+            <artifactId>ccdb-business</artifactId>
+            <version>1.3.9-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

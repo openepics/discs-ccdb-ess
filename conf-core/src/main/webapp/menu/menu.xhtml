@@ -40,7 +40,7 @@
 
             <p:submenu label="Views" icon="fa  fa-pagelines">
                 <p:menuitem value="Front End" icon="fa  fa-pagelines" outcome="fedevices" />
-                <p:menuitem value="PSOL Power Supplies" icon="fa  fa-pagelines" outcome="psoldevs"/>
+                <p:menuitem value="PSOL" icon="fa  fa-pagelines" outcome="psoldevs"/>
                 <p:menuitem value="RF" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
                 <p:submenu label="My Views" icon="fa  fa-pagelines">
                     <p:menuitem value="BPMs in FE" icon="fa  fa-pagelines" outcome="home"  disabled="true"/>
@@ -73,6 +73,10 @@
                 <p:menuitem value="Properties" icon="fa fa-upload" url="#" disabled="true"/> 
                 <p:menuitem value="Slots" icon="fa fa-upload" url="#" disabled="true"/>               
                 <p:menuitem value="Units" icon="fa fa-upload" url="#" disabled="true"/>
+            </p:submenu>
+            
+            <p:submenu label="Admin" icon="fa fa-cubes">               
+                <p:menuitem value="Authorizations" icon="fa fa-cubes" outcome="auth"/>               
             </p:submenu>
             
             <p:submenu label="Links" icon="fa fa-external-link" >

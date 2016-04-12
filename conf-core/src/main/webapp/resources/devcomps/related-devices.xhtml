@@ -19,12 +19,12 @@
       
             <p:dataTable var="child" emptyMessage="" value="#{cc.attrs.selectedSlot.pairsInWhichThisSlotIsAParentList}" >
                 <f:facet name="header">
-                <h:outputText value="Related Devices"/>
+                <h:outputText value="Relationships"/>
             </f:facet>
                 <p:column headerText="Relationship">
                     <h:outputText value="#{child.slotRelation.name} " /> 
                 </p:column>
-                <p:column headerText="Device">
+                <p:column headerText="Slot">
                     <h:outputText value=" #{child.childSlot.name}" />
                     <p:link  value="#{child.childSlot.name}"  outcome="devices" target="_blank">
                         <f:param name="name" value="#{child.childSlot.name}" />

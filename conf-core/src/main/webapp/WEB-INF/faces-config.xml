@@ -109,6 +109,11 @@
             <to-view-id>/report/devicestatus.xhtml</to-view-id>
             <redirect/>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>auth</from-outcome>
+            <to-view-id>/auth/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
     </navigation-rule>
     
     <navigation-rule>
