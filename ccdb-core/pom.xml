@@ -3,10 +3,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ccdb-business</artifactId>
+    <artifactId>ccdb-core</artifactId>
     <version>1.3.9-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>ccdb-business</name>
+    <name>CCDB Core</name>
 
     <parent>
         <groupId>org.openepics.discs</groupId>

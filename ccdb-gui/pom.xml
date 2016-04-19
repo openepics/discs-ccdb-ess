@@ -3,10 +3,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>CCDB-GUI</artifactId>
+    <artifactId>ccdb-gui</artifactId>
     <!--<version>${app.version}-SNAPSHOT</version>-->
     <packaging>war</packaging>
-    <name>CCDB-GUI</name>
+    <name>CCDB Web-based GUI</name>
 
     <parent>
         <groupId>org.openepics.discs</groupId>

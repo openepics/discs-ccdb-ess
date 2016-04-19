@@ -6,7 +6,7 @@
     <artifactId>ccdb-ws</artifactId>
     <version>${app.version}-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>ccdb-ws</name>
+    <name>CCDB RESTful Service</name>
 
     <parent>
         <groupId>org.openepics.discs</groupId>
