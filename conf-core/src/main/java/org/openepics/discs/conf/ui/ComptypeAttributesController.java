@@ -395,23 +395,26 @@ public class ComptypeAttributesController
      * type and property values to already existing installation slots or device instances.
      */
     public void addNewPropertyValueDefs() {
+        Preconditions.checkState(isPropertyDefinition);
         int created = 0;
         for (final MultiPropertyValueView pv : selectedPropertyValues) {
             final ComptypePropertyValue newPropertyValueInstance = newPropertyValue();
             newPropertyValueInstance.setInRepository(false);
             newPropertyValueInstance.setProperty(pv.getProperty());
-            newPropertyValueInstance.setPropValue(pv.getValue());
             newPropertyValueInstance.setPropertiesParent(getSelectedEntity());
-
-            if (isPropertyDefinition) {
-                final ComptypePropertyValue ctPropValueInstance = newPropertyValueInstance;
-                ctPropValueInstance.setPropertyDefinition(true);
-                if (definitionTarget == DefinitionTarget.SLOT) {
-                    ctPropValueInstance.setDefinitionTargetSlot(true);
-                } else {
-                    ctPropValueInstance.setDefinitionTargetDevice(true);
-                }
+            newPropertyValueInstance.setPropertyDefinition(true);
+            if (definitionTarget == DefinitionTarget.SLOT) {
+                newPropertyValueInstance.setDefinitionTargetSlot(true);
+            } else {
+                newPropertyValueInstance.setDefinitionTargetDevice(true);
             }
+
+            // This should be checked in UI, but let's normalize in case of an error.
+            if (pv.getProperty().getValueUniqueness() != PropertyValueUniqueness.NONE) {
+                pv.setValue(null);
+            }
+
+            newPropertyValueInstance.setPropValue(pv.getValue());
             comptypeEJB.addChild(newPropertyValueInstance);
             componentTypeManager.refreshSelectedComponent();
             addPropertyValueBasedOnDef(newPropertyValueInstance);
