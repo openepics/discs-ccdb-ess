@@ -11,6 +11,6 @@
 # JBOSS_PIDFILE=$JBOSS_HOME"/jboss.pid"
 #
 WAIT_TIME=25
-eval $JBOSS_HOME/bin/standalone.sh "&"
+eval $JBOSS_HOME/bin/standalone.sh $@ "&"
 echo "Waiting $WAIT_TIME seconds for JBOSS to start."
 sleep $WAIT_TIME

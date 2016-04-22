@@ -46,7 +46,9 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.primefaces.model.SortOrder;
 
 import com.google.common.collect.Lists;
 
@@ -156,5 +158,17 @@ public class UiUtility {
         }
     }
 
+    public static org.openepics.discs.conf.util.SortOrder translateToCCDBSortOrder(SortOrder sortOrder) {
+        switch (sortOrder) {
+        case ASCENDING:
+            return org.openepics.discs.conf.util.SortOrder.ASCENDING;
+        case DESCENDING:
+            return org.openepics.discs.conf.util.SortOrder.DESCENDING;
+        case UNSORTED:
+            return org.openepics.discs.conf.util.SortOrder.UNSORTED;
+        default:
+            throw new UnhandledCaseException();
+        }
+    }
 
 }

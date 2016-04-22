@@ -26,7 +26,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.ent.EntityWithId;
 
@@ -92,6 +94,18 @@ public abstract class ReadOnlyDAO<T extends EntityWithId> {
 
         final List<T> result = em.createQuery(cq).getResultList();
         return result != null ? result : new ArrayList<T>();
+    }
+
+    /**
+     * @return the number of elements in the table
+     */
+    public long getRowCount() {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final Root<T> root = cq.from(getEntityClass());
+
+        cq.select(cb.count(root));
+        return em.createQuery(cq).getSingleResult();
     }
 
     /**
