@@ -17,9 +17,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.ccdb.core.util;
 
 
+import org.openepics.discs.ccdb.core.util.Conversion;
+import org.openepics.discs.ccdb.core.util.PropertyValueUIElement;
+import org.openepics.discs.ccdb.core.util.ConversionException;
+import org.openepics.discs.ccdb.core.util.BuiltInDataType;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -27,17 +31,17 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.values.DblTableValue;
-import org.openepics.discs.conf.ent.values.DblValue;
-import org.openepics.discs.conf.ent.values.DblVectorValue;
-import org.openepics.discs.conf.ent.values.EnumValue;
-import org.openepics.discs.conf.ent.values.IntValue;
-import org.openepics.discs.conf.ent.values.IntVectorValue;
-import org.openepics.discs.conf.ent.values.StrValue;
-import org.openepics.discs.conf.ent.values.StrVectorValue;
-import org.openepics.discs.conf.ent.values.TimestampValue;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.values.DblTableValue;
+import org.openepics.discs.ccdb.model.values.DblValue;
+import org.openepics.discs.ccdb.model.values.DblVectorValue;
+import org.openepics.discs.ccdb.model.values.EnumValue;
+import org.openepics.discs.ccdb.model.values.IntValue;
+import org.openepics.discs.ccdb.model.values.IntVectorValue;
+import org.openepics.discs.ccdb.model.values.StrValue;
+import org.openepics.discs.ccdb.model.values.StrVectorValue;
+import org.openepics.discs.ccdb.model.values.TimestampValue;
 
 public class ConversionTest {
 

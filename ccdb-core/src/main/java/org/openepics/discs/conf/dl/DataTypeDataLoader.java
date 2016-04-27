@@ -25,13 +25,13 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.json.JsonObject;
 
-import org.openepics.discs.conf.dl.annotations.DataTypeLoader;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.ejb.DataTypeEJB;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.ccdb.core.dl.annotations.DataTypeLoader;
+import org.openepics.discs.ccdb.core.dl.common.AbstractDataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.ErrorMessage;
+import org.openepics.discs.ccdb.core.ejb.DataTypeEJB;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.core.util.Conversion;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
 

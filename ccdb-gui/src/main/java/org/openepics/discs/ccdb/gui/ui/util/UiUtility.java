@@ -32,7 +32,7 @@
  *   http://frib.msu.edu
  *
  */
-package org.openepics.discs.conf.ui.util;
+package org.openepics.discs.ccdb.gui.ui.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +42,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.PersistenceException;
 
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.gui.views.EntityAttributeViewKind;
 
 import com.google.common.collect.Lists;
 

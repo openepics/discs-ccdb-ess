@@ -17,18 +17,18 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.List;
 
 import javax.ejb.Stateless;
 
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.Unit;
+import org.openepics.discs.ccdb.core.security.Authorized;
+import org.openepics.discs.ccdb.core.util.CRUDOperation;
+import org.openepics.discs.ccdb.core.util.Utility;
 
 /**
  *

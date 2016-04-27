@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -38,20 +38,20 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ejb.SlotPairEJB;
-import org.openepics.discs.conf.ejb.SlotRelationEJB;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
-import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
-import org.openepics.discs.conf.ui.util.ConnectsManager;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.views.SlotRelationshipView;
-import org.openepics.discs.conf.views.SlotView;
+import org.openepics.discs.ccdb.core.ejb.InstallationEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotPairEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotRelationEJB;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotRelation;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.gui.ui.trees.FilteredTreeNode;
+import org.openepics.discs.ccdb.gui.ui.trees.SlotRelationshipTree;
+import org.openepics.discs.ccdb.gui.ui.util.ConnectsManager;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.gui.views.SlotRelationshipView;
+import org.openepics.discs.ccdb.gui.views.SlotView;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,32 +31,32 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import org.openepics.discs.conf.auditlog.Audit;
+import org.openepics.discs.ccdb.core.auditlog.Audit;
 import org.openepics.discs.conf.dl.SlotsDataLoader;
-import org.openepics.discs.conf.ent.AlignmentArtifact;
-import org.openepics.discs.conf.ent.AlignmentPropertyValue;
-import org.openepics.discs.conf.ent.Artifact;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotArtifact;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.BlobStore;
-import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.DuplicateNameException;
-import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.ccdb.model.AlignmentArtifact;
+import org.openepics.discs.ccdb.model.AlignmentPropertyValue;
+import org.openepics.discs.ccdb.model.Artifact;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypeArtifact;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.DeviceArtifact;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.model.PropertyValueUniqueness;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotArtifact;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
+import org.openepics.discs.ccdb.model.SlotRelation;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.model.values.Value;
+import org.openepics.discs.ccdb.core.security.Authorized;
+import org.openepics.discs.ccdb.core.util.BlobStore;
+import org.openepics.discs.ccdb.core.util.CRUDOperation;
+import org.openepics.discs.ccdb.core.util.DuplicateNameException;
+import org.openepics.discs.ccdb.core.util.UnhandledCaseException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

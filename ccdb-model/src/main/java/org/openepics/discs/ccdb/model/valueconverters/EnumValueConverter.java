@@ -18,9 +18,9 @@
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-package org.openepics.discs.conf.valueconverters;
+package org.openepics.discs.ccdb.model.valueconverters;
 
-import org.openepics.discs.conf.ent.values.EnumValue;
+import org.openepics.discs.ccdb.model.values.EnumValue;
 import org.openepics.seds.api.datatypes.SedsEnum;
 
 /**

@@ -30,12 +30,12 @@ import javax.inject.Inject;
 
 import joptsimple.internal.Strings;
 
-import org.openepics.discs.conf.dl.annotations.UnitsLoader;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.ejb.UnitEJB;
-import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.ccdb.core.dl.annotations.UnitsLoader;
+import org.openepics.discs.ccdb.core.dl.common.AbstractDataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.ErrorMessage;
+import org.openepics.discs.ccdb.core.ejb.UnitEJB;
+import org.openepics.discs.ccdb.model.Unit;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;

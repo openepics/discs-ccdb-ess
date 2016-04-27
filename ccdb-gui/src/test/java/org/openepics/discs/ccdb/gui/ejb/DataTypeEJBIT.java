@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.gui.ejb;
 
+import org.openepics.discs.ccdb.core.ejb.DataTypeEJB;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -32,8 +33,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.testutil.TestUtility;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.gui.testutil.TestUtility;
 
 @RunWith(Arquillian.class)
 public class DataTypeEJBIT {

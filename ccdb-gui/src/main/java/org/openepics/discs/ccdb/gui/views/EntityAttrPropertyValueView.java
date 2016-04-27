@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.util.List;
 import java.util.Scanner;
@@ -28,22 +28,22 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.NamedEntity;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.BuiltInDataType;
-import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.PropertyValueUIElement;
-import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.ConfigurationEntity;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.NamedEntity;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.Unit;
+import org.openepics.discs.ccdb.model.values.Value;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.BuiltInDataType;
+import org.openepics.discs.ccdb.core.util.Conversion;
+import org.openepics.discs.ccdb.core.util.PropertyValueUIElement;
+import org.openepics.discs.ccdb.core.util.UnhandledCaseException;
 
 import com.google.common.base.Preconditions;
 

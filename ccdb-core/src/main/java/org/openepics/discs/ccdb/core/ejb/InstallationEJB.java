@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -26,14 +26,14 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 
-import org.openepics.discs.conf.auditlog.Audit;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.ccdb.core.auditlog.Audit;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.InstallationRecord;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.core.security.Authorized;
+import org.openepics.discs.ccdb.core.util.CRUDOperation;
 
 import com.google.common.base.Preconditions;
 

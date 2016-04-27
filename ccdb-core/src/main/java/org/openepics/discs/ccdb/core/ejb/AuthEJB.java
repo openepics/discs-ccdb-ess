@@ -13,18 +13,17 @@
  *   http://frib.msu.edu
  *
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
-import org.openepics.discs.conf.ent.Privilege;
-
-import org.openepics.discs.conf.ent.Rack;
-import org.openepics.discs.conf.ent.Role;
-import org.openepics.discs.conf.ent.User;
-import org.openepics.discs.conf.ent.UserRole;
+import org.openepics.discs.ccdb.model.Privilege;
+import org.openepics.discs.ccdb.model.Rack;
+import org.openepics.discs.ccdb.model.Role;
+import org.openepics.discs.ccdb.model.User;
+import org.openepics.discs.ccdb.model.UserRole;
 
 /**
  *

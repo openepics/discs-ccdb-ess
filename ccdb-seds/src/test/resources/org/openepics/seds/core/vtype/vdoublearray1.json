@@ -1,0 +1,37 @@
+
+{
+    "metadata":{
+        "type":"SedsScalarArray_Number",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "valueArray":[
+            3.14,
+            6.28,
+            1.41,
+            0.0,
+            1.0
+        ],
+        "representationArray":[
+            "3.14",
+            "6.28",
+            "1.41",
+            "0.0",
+            "1.0"
+        ],
+        "alarm":{
+            "severity":"MINOR",
+            "message":"LOW"
+        },
+        "display":{
+            "lowDisplay":10.0,
+            "highDisplay":100.0,
+            "units":"meters"
+        },
+        "time":{
+            "unixSec":1354719441,
+            "nanoSec":521786982
+        }
+    }
+}

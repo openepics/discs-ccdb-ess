@@ -18,7 +18,7 @@
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-package org.openepics.discs.conf.valueconverters;
+package org.openepics.discs.ccdb.model.valueconverters;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,16 +30,17 @@ import org.epics.util.time.Timestamp;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openepics.discs.conf.ent.values.DblTableValue;
-import org.openepics.discs.conf.ent.values.DblValue;
-import org.openepics.discs.conf.ent.values.DblVectorValue;
-import org.openepics.discs.conf.ent.values.EnumValue;
-import org.openepics.discs.conf.ent.values.IntValue;
-import org.openepics.discs.conf.ent.values.IntVectorValue;
-import org.openepics.discs.conf.ent.values.StrValue;
-import org.openepics.discs.conf.ent.values.StrVectorValue;
-import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.ccdb.model.values.DblTableValue;
+import org.openepics.discs.ccdb.model.values.DblValue;
+import org.openepics.discs.ccdb.model.values.DblVectorValue;
+import org.openepics.discs.ccdb.model.values.EnumValue;
+import org.openepics.discs.ccdb.model.values.IntValue;
+import org.openepics.discs.ccdb.model.values.IntVectorValue;
+import org.openepics.discs.ccdb.model.values.StrValue;
+import org.openepics.discs.ccdb.model.values.StrVectorValue;
+import org.openepics.discs.ccdb.model.values.TimestampValue;
+import org.openepics.discs.ccdb.model.values.Value;
+
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>

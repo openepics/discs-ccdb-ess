@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,15 +31,15 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.AuditRecordEJB;
-import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleTableExporter;
-import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.ccdb.core.ejb.AuditRecordEJB;
+import org.openepics.discs.ccdb.model.AuditRecord;
+import org.openepics.discs.ccdb.model.ConfigurationEntity;
+import org.openepics.discs.ccdb.model.EntityType;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.gui.export.ExportTable;
+import org.openepics.discs.ccdb.gui.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.ccdb.gui.ui.export.SimpleTableExporter;
+import org.openepics.discs.ccdb.core.util.Utility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;

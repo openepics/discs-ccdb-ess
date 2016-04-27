@@ -28,23 +28,23 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.jaxb.InstallationSlot;
-import org.openepics.discs.conf.jaxb.PropertyKind;
-import org.openepics.discs.conf.jaxb.PropertyValue;
-import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
-import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.core.ejb.InstallationEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.InstallationRecord;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.jaxb.InstallationSlot;
+import org.openepics.discs.ccdb.jaxb.PropertyKind;
+import org.openepics.discs.ccdb.jaxb.PropertyValue;
+import org.openepics.discs.ccdb.jaxrs.InstallationSlotResource;
+import org.openepics.discs.ccdb.core.util.UnhandledCaseException;
 
 /**
  * An implementation of the InstallationSlotResource interface.
@@ -167,7 +167,7 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
                         collect(Collectors.toList());
     }
 
-    private PropertyValue createPropertyValue(final org.openepics.discs.conf.ent.PropertyValue slotPropertyValue) {
+    private PropertyValue createPropertyValue(final org.openepics.discs.ccdb.model.PropertyValue slotPropertyValue) {
         final PropertyValue propertyValue = new PropertyValue();
         final Property parentProperty = slotPropertyValue.getProperty();
         propertyValue.setName(parentProperty.getName());

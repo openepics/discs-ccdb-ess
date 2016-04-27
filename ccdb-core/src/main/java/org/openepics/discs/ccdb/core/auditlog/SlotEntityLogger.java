@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,15 +26,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotArtifact;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.ccdb.model.AuditRecord;
+import org.openepics.discs.ccdb.model.EntityType;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.InstallationRecord;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotArtifact;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
+import org.openepics.discs.ccdb.core.util.Conversion;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;

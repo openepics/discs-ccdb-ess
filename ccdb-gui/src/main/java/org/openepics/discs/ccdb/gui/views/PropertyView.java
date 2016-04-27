@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -28,12 +28,12 @@ import javax.faces.validator.ValidatorException;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
-import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.BuiltInDataType;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValueUniqueness;
+import org.openepics.discs.ccdb.model.Unit;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.BuiltInDataType;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>

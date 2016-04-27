@@ -1,0 +1,36 @@
+
+{
+    "meta":{
+        "type":"SedsScalarArray_Integer",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "valueArray":[
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+        ],
+        "representationArray":[
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+        ],
+        "time":{
+            "unixSec":1354719441,
+            "nanoSec":521786982
+        }
+    }
+}

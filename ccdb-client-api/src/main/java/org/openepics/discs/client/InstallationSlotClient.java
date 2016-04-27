@@ -30,9 +30,9 @@ import javax.ws.rs.core.MultivaluedHashMap;
 
 import org.openepics.discs.client.impl.ClosableResponse;
 import org.openepics.discs.client.impl.ResponseException;
-import org.openepics.discs.conf.jaxb.InstallationSlot;
-import org.openepics.discs.conf.jaxb.InstallationSlotNames;
-import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
+import org.openepics.discs.ccdb.jaxb.InstallationSlot;
+import org.openepics.discs.ccdb.jaxb.InstallationSlotNames;
+import org.openepics.discs.ccdb.jaxrs.InstallationSlotResource;
 
 /**
  * This is CCDB service client installation slot parser that is used to get data from server.

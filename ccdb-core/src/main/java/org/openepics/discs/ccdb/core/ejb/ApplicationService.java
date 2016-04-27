@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -31,7 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.openepics.discs.conf.ent.Config;
+import org.openepics.discs.ccdb.model.Config;
 
 /**
  * A service bean managing global application settings and database initialization.

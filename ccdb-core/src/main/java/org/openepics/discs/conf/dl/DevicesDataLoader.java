@@ -28,16 +28,16 @@ import javax.inject.Inject;
 
 import joptsimple.internal.Strings;
 
-import org.openepics.discs.conf.dl.annotations.DevicesLoader;
-import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.DAO;
-import org.openepics.discs.conf.ejb.DeviceEJB;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.ccdb.core.dl.annotations.DevicesLoader;
+import org.openepics.discs.ccdb.core.dl.common.AbstractEntityWithPropertiesDataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.ErrorMessage;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.core.ejb.DAO;
+import org.openepics.discs.ccdb.core.ejb.DeviceEJB;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;

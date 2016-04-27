@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.security;
+package org.openepics.discs.ccdb.core.security;
 
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -29,7 +29,7 @@ import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
 import javax.interceptor.Interceptor;
 
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
 
 /**
  * Dummy implementation of a security policy.

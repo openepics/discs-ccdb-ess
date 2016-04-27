@@ -32,7 +32,7 @@
  *   http://frib.msu.edu
  *
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.ccdb.core.util;
 
 import java.util.Collection;
 import java.util.Map;
@@ -41,8 +41,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import org.openepics.discs.conf.ejb.ReadOnlyDAO;
-import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.ccdb.core.ejb.ReadOnlyDAO;
+import org.openepics.discs.ccdb.model.SlotRelationName;
 
 import com.google.common.base.Preconditions;
 

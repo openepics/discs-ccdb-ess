@@ -22,7 +22,7 @@
  *
  */
 
-package org.openepics.discs.conf.ui.common;
+package org.openepics.discs.ccdb.gui.ui.common;
 
 import java.util.Comparator;
 

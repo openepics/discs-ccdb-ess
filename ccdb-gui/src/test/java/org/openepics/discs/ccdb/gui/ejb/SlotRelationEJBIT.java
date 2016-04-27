@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.gui.ejb;
 
+import org.openepics.discs.ccdb.core.ejb.SlotRelationEJB;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -34,9 +35,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.testutil.TestUtility;
+import org.openepics.discs.ccdb.model.SlotRelation;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.gui.testutil.TestUtility;
 
 @RunWith(Arquillian.class)
 public class SlotRelationEJBIT {

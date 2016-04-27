@@ -17,23 +17,24 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
+import org.openepics.discs.ccdb.core.auditlog.SlotEntityLogger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotArtifact;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.ent.values.IntValue;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotArtifact;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
+import org.openepics.discs.ccdb.model.SlotRelation;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.model.values.IntValue;
 
 /**
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>

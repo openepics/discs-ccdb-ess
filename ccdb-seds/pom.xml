@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.openepics.discs</groupId>
+    <artifactId>seds-japi</artifactId>
+    <name>CCDB SEDS JAPI</name>
+    <version>1.0.0-SNAPSHOT</version>
+    
+    <packaging>jar</packaging>    
+    <url>http://openepics.sourceforge.net/</url>
+
+    <description>
+        Implementation of the SEDS protocol in Java. Provides interfaces to 
+        serialize and deserialize standard data structures to and from JSON.
+    </description>
+    
+    <parent>
+        <groupId>org.openepics.discs</groupId>
+        <artifactId>ccdb</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+    
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL) version 3.0</name>
+            <url>http://www.gnu.org/licenses/gpl.txt</url>
+        </license>
+    </licenses>
+    
+    <scm>
+        <url>https://stash.nscl.msu.edu/projects/AAR/</url>    
+        <connection>
+            scm:git:https://stash.nscl.msu.edu/scm/aar/seds.git
+        </connection>
+        <developerConnection>
+            scm:git:https://stash.nscl.msu.edu/scm/aar/seds.git
+        </developerConnection>
+    </scm>
+    
+    <developers>
+        <developer>
+            <name>Aaron Barber</name>
+            <email>barberaa@frib.msu.edu</email>
+            <organization>FRIB</organization>
+            <organizationUrl>http://www.frib.msu.edu/</organizationUrl>
+        </developer>
+    </developers>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <netbeans.hint.license>FRIB</netbeans.hint.license>
+    </properties>
+    
+    <dependencies>
+        <!-- VTypes -->                        
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>epics-vtype</artifactId>
+            <version>2.6</version>
+        </dependency>
+        
+        <!-- Json Validation -->
+        <dependency>
+            <groupId>com.github.fge</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>2.2.4</version>
+        </dependency>      
+                        
+        <!-- Json Processing (Compile) -->   
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+        
+        <!-- Json Processing (Run) -->   
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        
+        <!-- Testing -->        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>    
+</project>

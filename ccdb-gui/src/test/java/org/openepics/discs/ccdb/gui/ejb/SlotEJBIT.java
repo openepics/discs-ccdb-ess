@@ -17,8 +17,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.gui.ejb;
 
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,9 +41,9 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.testutil.TestUtility;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.Tag;
+import org.openepics.discs.ccdb.gui.testutil.TestUtility;
 
 /**
  *

@@ -1,0 +1,1 @@
+mvn.cmd package install

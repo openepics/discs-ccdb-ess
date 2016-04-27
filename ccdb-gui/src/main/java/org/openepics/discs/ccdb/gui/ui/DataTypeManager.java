@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,21 +36,21 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonObject;
 
-import org.openepics.discs.conf.dl.annotations.DataTypeLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.ejb.DataTypeEJB;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleTableExporter;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.BuiltInDataType;
-import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.UserEnumerationView;
+import org.openepics.discs.ccdb.core.dl.annotations.DataTypeLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.ejb.DataTypeEJB;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.gui.export.ExportTable;
+import org.openepics.discs.ccdb.gui.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.ccdb.gui.ui.common.DataLoaderHandler;
+import org.openepics.discs.ccdb.gui.ui.common.UIException;
+import org.openepics.discs.ccdb.gui.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.ccdb.gui.ui.export.SimpleTableExporter;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.BuiltInDataType;
+import org.openepics.discs.ccdb.core.util.Utility;
+import org.openepics.discs.ccdb.gui.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
 

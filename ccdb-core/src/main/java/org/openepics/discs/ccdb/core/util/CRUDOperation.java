@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.ccdb.core.util;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -25,7 +25,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
 
 /**
  * Custom annotation that describes which of CRUD operations is being performed in the method

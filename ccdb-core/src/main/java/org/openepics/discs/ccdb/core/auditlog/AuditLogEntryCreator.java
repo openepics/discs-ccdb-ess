@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,8 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.AuditRecord;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
 
 /**
  * Use this class to serialize Object contents to JSON for the Entry string in the AuditRecord

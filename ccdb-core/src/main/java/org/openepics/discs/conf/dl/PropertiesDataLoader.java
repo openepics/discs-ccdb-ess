@@ -29,17 +29,17 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.ejb.DataTypeEJB;
-import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ejb.UnitEJB;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
-import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.ccdb.core.dl.annotations.PropertiesLoader;
+import org.openepics.discs.ccdb.core.dl.common.AbstractDataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.ErrorMessage;
+import org.openepics.discs.ccdb.core.ejb.DataTypeEJB;
+import org.openepics.discs.ccdb.core.ejb.PropertyEJB;
+import org.openepics.discs.ccdb.core.ejb.UnitEJB;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValueUniqueness;
+import org.openepics.discs.ccdb.model.Unit;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;

@@ -18,7 +18,7 @@
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,23 +37,23 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
-import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleTableExporter;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.ImportFileStatistics;
-import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.ComponentTypeView;
+import org.openepics.discs.ccdb.core.dl.annotations.ComponentTypesLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoaderResult;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.gui.export.ExportTable;
+import org.openepics.discs.ccdb.gui.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.ccdb.gui.ui.common.DataLoaderHandler;
+import org.openepics.discs.ccdb.gui.ui.common.ExcelSingleFileImportUIHandlers;
+import org.openepics.discs.ccdb.gui.ui.common.UIException;
+import org.openepics.discs.ccdb.gui.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.ccdb.gui.ui.export.SimpleTableExporter;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.ImportFileStatistics;
+import org.openepics.discs.ccdb.core.util.Utility;
+import org.openepics.discs.ccdb.gui.views.ComponentTypeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 

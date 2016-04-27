@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.dl.common;
+package org.openepics.discs.ccdb.core.dl.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.util.ImportFileStatistics;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.core.util.ImportFileStatistics;
 
 import com.google.common.base.Preconditions;
 

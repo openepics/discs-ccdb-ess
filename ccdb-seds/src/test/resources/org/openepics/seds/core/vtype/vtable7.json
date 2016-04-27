@@ -1,0 +1,44 @@
+
+{
+    "metadata":{
+        "type":"SedsTable",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "numRows":0,
+        "numColumns":4,
+        "names":[
+            "Name",
+            "Value",
+            "Severity",
+            "Status"
+        ],
+        "columnTypes":[
+            "SedsScalarArray_String",
+            "SedsScalarArray_Number",
+            "SedsScalarArray_String",
+            "SedsScalarArray_String"
+        ],
+        "values":[
+            {
+                "valueArray":[
+                ]
+            },
+            {
+                "valueArray":[
+                ],
+                "representationArray":[
+                ]
+            },
+            {
+                "valueArray":[
+                ]
+            },
+            {
+                "valueArray":[
+                ]
+            }
+        ]
+    }
+}

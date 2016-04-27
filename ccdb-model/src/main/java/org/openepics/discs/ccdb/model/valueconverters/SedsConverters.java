@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.valueconverters;
+package org.openepics.discs.ccdb.model.valueconverters;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +30,7 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.ccdb.model.values.Value;
 
 /**
  * This class initializes a mapping between various Value classes and the implementation of the converter. The class is a

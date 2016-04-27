@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.export;
+package org.openepics.discs.ccdb.gui.ui.export;
 
-import org.openepics.discs.conf.export.CSVExportTable;
-import org.openepics.discs.conf.export.ExcelExportTable;
-import org.openepics.discs.conf.export.ExportTable;
+import org.openepics.discs.ccdb.gui.export.CSVExportTable;
+import org.openepics.discs.ccdb.gui.export.ExcelExportTable;
+import org.openepics.discs.ccdb.gui.export.ExportTable;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 

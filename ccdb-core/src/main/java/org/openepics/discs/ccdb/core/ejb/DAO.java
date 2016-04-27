@@ -17,28 +17,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.auditlog.Audit;
-import org.openepics.discs.conf.auditlog.AuditLogEntryCreator;
-import org.openepics.discs.conf.ent.Artifact;
-import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.EntityWithArtifacts;
-import org.openepics.discs.conf.ent.EntityWithProperties;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.ParentEntityResolver;
-import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
-import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.ccdb.core.auditlog.Audit;
+import org.openepics.discs.ccdb.core.auditlog.AuditLogEntryCreator;
+import org.openepics.discs.ccdb.model.Artifact;
+import org.openepics.discs.ccdb.model.AuditRecord;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.EntityWithArtifacts;
+import org.openepics.discs.ccdb.model.EntityWithProperties;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.model.values.Value;
+import org.openepics.discs.ccdb.core.security.Authorized;
+import org.openepics.discs.ccdb.core.util.CRUDOperation;
+import org.openepics.discs.ccdb.core.util.ParentEntityResolver;
+import org.openepics.discs.ccdb.core.util.PropertyValueNotUniqueException;
+import org.openepics.discs.ccdb.core.util.UnhandledCaseException;
 
 import com.google.common.base.Preconditions;
 

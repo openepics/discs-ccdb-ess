@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import org.openepics.discs.client.impl.ClosableResponse;
 import org.openepics.discs.client.impl.ResponseException;
-import org.openepics.discs.conf.jaxb.InstallationSlotNames;
-import org.openepics.discs.conf.jaxrs.InstallationSlotNameResource;
+import org.openepics.discs.ccdb.jaxb.InstallationSlotNames;
+import org.openepics.discs.ccdb.jaxrs.InstallationSlotNameResource;
 
 /**
  *

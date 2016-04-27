@@ -17,14 +17,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.core.util.Conversion;
 
 import com.google.common.base.Preconditions;
 

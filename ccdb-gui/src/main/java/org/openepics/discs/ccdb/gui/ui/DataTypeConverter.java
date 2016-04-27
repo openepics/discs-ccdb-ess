@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -25,8 +25,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.DataTypeEJB;
-import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.ccdb.core.ejb.DataTypeEJB;
+import org.openepics.discs.ccdb.model.DataType;
 
 /**
  *

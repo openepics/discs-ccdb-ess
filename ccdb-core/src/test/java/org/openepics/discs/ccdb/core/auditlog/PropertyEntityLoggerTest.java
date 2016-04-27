@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
+import org.openepics.discs.ccdb.core.auditlog.PropertyEntityLogger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -26,9 +27,9 @@ import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.Unit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import javax.ejb.Stateless;
 
-import org.openepics.discs.conf.ent.AlignmentRecord;
+import org.openepics.discs.ccdb.model.AlignmentRecord;
 
 /**
  *

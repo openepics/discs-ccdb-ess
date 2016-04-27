@@ -38,18 +38,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.DataTypeEJB;
-import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ejb.UnitEJB;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
-import org.openepics.discs.conf.testutil.TestUtility;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.ccdb.core.dl.annotations.PropertiesLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoaderResult;
+import org.openepics.discs.ccdb.core.dl.common.ErrorMessage;
+import org.openepics.discs.ccdb.core.dl.common.ValidationMessage;
+import org.openepics.discs.ccdb.core.ejb.DataTypeEJB;
+import org.openepics.discs.ccdb.core.ejb.PropertyEJB;
+import org.openepics.discs.ccdb.core.ejb.UnitEJB;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValueUniqueness;
+import org.openepics.discs.ccdb.gui.testutil.TestUtility;
+import org.openepics.discs.ccdb.gui.ui.common.DataLoaderHandler;
 
 /**
  * Integration tests for {@link PropertiesDataLoader}

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ent;
+package org.openepics.discs.ccdb.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -29,8 +29,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.valueconverters.SedsConverter;
+import org.openepics.discs.ccdb.model.values.Value;
+import org.openepics.discs.ccdb.model.valueconverters.SedsConverter;
 
 /**
  * An abstract property for a Configuration Db entity

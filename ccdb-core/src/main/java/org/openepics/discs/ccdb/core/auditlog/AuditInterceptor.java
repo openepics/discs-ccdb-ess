@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
 import java.util.Date;
 import java.util.List;
@@ -29,10 +29,10 @@ import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.security.SecurityPolicy;
-import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.ParentEntityResolver;
+import org.openepics.discs.ccdb.model.AuditRecord;
+import org.openepics.discs.ccdb.core.security.SecurityPolicy;
+import org.openepics.discs.ccdb.core.util.CRUDOperation;
+import org.openepics.discs.ccdb.core.util.ParentEntityResolver;
 
 
 /**

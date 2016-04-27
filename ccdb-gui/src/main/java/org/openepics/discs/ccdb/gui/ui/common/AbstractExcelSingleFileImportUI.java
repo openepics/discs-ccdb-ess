@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.common;
+package org.openepics.discs.ccdb.gui.ui.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,14 +26,14 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.util.ImportFileStatistics;
-import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoaderResult;
+import org.openepics.discs.ccdb.core.dl.common.ExcelImportFileReader;
+import org.openepics.discs.ccdb.core.dl.common.ValidationMessage;
+import org.openepics.discs.ccdb.gui.export.ExportTable;
+import org.openepics.discs.ccdb.gui.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.ccdb.core.util.ImportFileStatistics;
+import org.openepics.discs.ccdb.core.util.Utility;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;

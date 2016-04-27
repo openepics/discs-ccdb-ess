@@ -17,19 +17,19 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.trees;
+package org.openepics.discs.ccdb.gui.ui.trees;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.views.SlotView;
+import org.openepics.discs.ccdb.core.ejb.InstallationEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.InstallationRecord;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.gui.views.SlotView;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

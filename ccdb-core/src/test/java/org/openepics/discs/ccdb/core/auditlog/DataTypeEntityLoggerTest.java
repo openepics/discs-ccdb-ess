@@ -17,14 +17,15 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
+import org.openepics.discs.ccdb.core.auditlog.DataTypeEntityLogger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
 
 public class DataTypeEntityLoggerTest {
 

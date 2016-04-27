@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,21 +27,21 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import org.openepics.discs.conf.auditlog.Audit;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.BlobStore;
-import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.ccdb.core.auditlog.Audit;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.DeviceArtifact;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.model.PropertyValueUniqueness;
+import org.openepics.discs.ccdb.model.values.Value;
+import org.openepics.discs.ccdb.core.security.Authorized;
+import org.openepics.discs.ccdb.core.util.BlobStore;
+import org.openepics.discs.ccdb.core.util.CRUDOperation;
+import org.openepics.discs.ccdb.core.util.Utility;
 
 import com.google.common.base.Preconditions;
 

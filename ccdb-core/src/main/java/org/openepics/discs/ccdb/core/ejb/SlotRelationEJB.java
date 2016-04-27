@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 
-import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.ccdb.model.SlotRelation;
+import org.openepics.discs.ccdb.model.SlotRelationName;
 
 /**
  * DAO Service for accessing (querying) for available {@link SlotRelation}s

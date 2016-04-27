@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -30,13 +30,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.views.InstallationView;
+import org.openepics.discs.ccdb.core.ejb.InstallationEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.InstallationRecord;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.gui.views.InstallationView;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.security;
+package org.openepics.discs.ccdb.core.security;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,8 +25,8 @@ import java.util.List;
 import javax.security.auth.spi.LoginModule;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.EntityType;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
 
 
 /**

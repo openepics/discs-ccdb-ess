@@ -13,7 +13,7 @@
  *   http://frib.msu.edu
  *
  */
-package org.openepics.discs.conf.ent;
+package org.openepics.discs.ccdb.model;
 
 import java.io.Serializable;
 import java.util.List;

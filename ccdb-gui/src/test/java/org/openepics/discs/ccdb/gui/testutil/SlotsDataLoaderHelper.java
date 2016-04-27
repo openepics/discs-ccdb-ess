@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.testutil;
+package org.openepics.discs.ccdb.gui.testutil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,11 +27,11 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openepics.discs.conf.dl.SlotsDataLoaderIT;
-import org.openepics.discs.conf.dl.annotations.SlotsLoader;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
+import org.openepics.discs.ccdb.core.dl.annotations.SlotsLoader;
+import org.openepics.discs.ccdb.core.dl.common.AbstractDataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoaderResult;
+import org.openepics.discs.ccdb.core.dl.common.ExcelImportFileReader;
 
 /**
  * Helper class for {@link SlotsDataLoaderIT} and {@link SlotsAndSlotPairsDataLoaderIT}

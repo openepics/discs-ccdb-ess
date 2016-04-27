@@ -27,8 +27,8 @@ import javax.ws.rs.core.GenericType;
 
 import org.openepics.discs.client.impl.ClosableResponse;
 import org.openepics.discs.client.impl.ResponseException;
-import org.openepics.discs.conf.jaxb.DeviceType;
-import org.openepics.discs.conf.jaxrs.DeviceTypeResource;
+import org.openepics.discs.ccdb.jaxb.DeviceType;
+import org.openepics.discs.ccdb.jaxrs.DeviceTypeResource;
 
 /**
  * This is CCDB service clientdataType parser that is used to get data from server.

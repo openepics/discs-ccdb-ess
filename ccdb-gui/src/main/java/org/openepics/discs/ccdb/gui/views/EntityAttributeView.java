@@ -17,16 +17,16 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
 
-import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.NamedEntity;
-import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.ccdb.model.ConfigurationEntity;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.NamedEntity;
+import org.openepics.discs.ccdb.model.Unit;
 
 /**
  * The UI view class. This is a helper class containing all the information that is used in the UI and is displayed

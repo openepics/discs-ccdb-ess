@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.dl.common;
+package org.openepics.discs.ccdb.core.dl.common;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.openepics.discs.conf.util.ImportFileStatistics;
+import org.openepics.discs.ccdb.core.util.ImportFileStatistics;
 
 import com.google.common.base.Preconditions;
 
@@ -299,7 +299,7 @@ public abstract class AbstractDataLoader implements DataLoader {
      */
     protected void handleLoadingError(Logger logger, Exception e) { // NOSONAR
         logger.log(Level.FINE, e.getMessage(), e);
-        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+        if (e.getCause() instanceof org.openepics.discs.ccdb.core.security.SecurityException) {
             result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, HDR_OPERATION, command);
         } else {
             result.addRowMessage(ErrorMessage.SYSTEM_EXCEPTION);

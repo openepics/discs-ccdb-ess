@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.openepics.discs.conf.device;
+package org.openepics.discs.ccdb.gui.device;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,26 +15,26 @@ import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.DeviceEJB;
-import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotArtifact;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.views.EntityAttrArtifactView;
-import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
-import org.openepics.discs.conf.views.EntityAttrTagView;
-import org.openepics.discs.conf.views.EntityAttributeView;
-import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.openepics.discs.ccdb.core.ejb.DeviceEJB;
+import org.openepics.discs.ccdb.core.ejb.InstallationEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypeArtifact;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.DeviceArtifact;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.InstallationRecord;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotArtifact;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
+import org.openepics.discs.ccdb.model.Tag;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.gui.views.EntityAttrArtifactView;
+import org.openepics.discs.ccdb.gui.views.EntityAttrPropertyValueView;
+import org.openepics.discs.ccdb.gui.views.EntityAttrTagView;
+import org.openepics.discs.ccdb.gui.views.EntityAttributeView;
+import org.openepics.discs.ccdb.gui.views.EntityAttributeViewKind;
 
 /**
  *

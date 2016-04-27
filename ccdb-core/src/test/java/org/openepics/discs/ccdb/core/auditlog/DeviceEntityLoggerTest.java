@@ -17,19 +17,20 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
+import org.openepics.discs.ccdb.core.auditlog.DeviceEntityLogger;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.values.IntValue;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.DeviceArtifact;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.values.IntValue;
 
 public class DeviceEntityLoggerTest {
 

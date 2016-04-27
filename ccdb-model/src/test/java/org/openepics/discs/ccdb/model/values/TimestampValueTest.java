@@ -18,8 +18,9 @@
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-package org.openepics.discs.conf.ent.values;
+package org.openepics.discs.ccdb.model.values;
 
+import org.openepics.discs.ccdb.model.values.TimestampValue;
 import static org.junit.Assert.assertEquals;
 
 import org.epics.util.time.Timestamp;

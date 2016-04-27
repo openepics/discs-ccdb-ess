@@ -13,9 +13,9 @@
  *   http://frib.msu.edu
  *
  */
-package org.openepics.discs.conf.rack;
+package org.openepics.discs.ccdb.gui.rack;
 
-import org.openepics.discs.conf.ejb.RackEJB;
+import org.openepics.discs.ccdb.core.ejb.RackEJB;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,10 +27,10 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.openepics.discs.conf.ent.Rack;
-import org.openepics.discs.conf.ent.RackSlot;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ui.util.UiUtility;
+import org.openepics.discs.ccdb.model.Rack;
+import org.openepics.discs.ccdb.model.RackSlot;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
 
 /**
  * Bean to support rack layout view
@@ -180,7 +180,7 @@ public class RackLayoutManager implements Serializable {
 
     /**
      * is there a  next page?
-     * @return 
+     * @return false if last page
      */
     public boolean nextPage() {
         return currentPage < maximumPages;
@@ -189,7 +189,7 @@ public class RackLayoutManager implements Serializable {
     /**
      * is there a previous page?
      * 
-     * @return 
+     * @return false if first page
      */
     public boolean prevPage() {
         return currentPage > 1;
@@ -198,7 +198,7 @@ public class RackLayoutManager implements Serializable {
     /**
      * on last page?
      * 
-     * @return 
+     * @return true if last page
      */
     public boolean isLastPage() {
         return currentPage == maximumPages;
@@ -207,7 +207,7 @@ public class RackLayoutManager implements Serializable {
     /**
      * on first page?
      * 
-     * @return 
+     * @return true if first page
      */
     public boolean isFirstPage() {
         return currentPage == 1;
@@ -216,8 +216,8 @@ public class RackLayoutManager implements Serializable {
     /**
      * Find slots of a rack
      * 
-     * @param rack
-     * @return
+     * @param rack rack
+     * @return list of rack slots
      */
     public List<RackSlotView> slotsOfRack(Rack rack) {
         List<RackSlot> slots = rackEJB.findSlotsOrdered(rack);
@@ -264,9 +264,9 @@ public class RackLayoutManager implements Serializable {
     /**
      * Find the rack at given row, column
      * 
-     * @param row
-     * @param col
-     * @return 
+     * @param row row
+     * @param col column
+     * @return rack at given row and column
      */
     public Rack rackAt(int row, int col) {
         int index = (row - 1) * columns + (col - 1);

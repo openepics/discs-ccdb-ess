@@ -13,7 +13,7 @@
  *       East Lansing, MI 48824-1321
  *        http://frib.msu.edu
  */
-package org.openepics.discs.conf.converter;
+package org.openepics.discs.ccdb.gui.converter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

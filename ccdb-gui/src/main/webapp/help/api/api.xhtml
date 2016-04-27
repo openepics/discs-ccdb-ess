@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+   This software is Copyright by the Board of Trustees of Michigan
+   State University (c) Copyright 2013, 2014.
+   
+   You may use this software under the terms of the GNU public license
+   (GPL). The terms of this license are described at:
+   http://www.gnu.org/licenses/gpl.txt
+   
+   Contact Information:
+        Facility for Rare Isotope Beam
+        Michigan State University
+        East Lansing, MI 48824-1321
+        http://frib.msu.edu
+-->
+
+<!--API Manual-->
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"              
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fc="http://java.sun.com/jsf/composite/comps">
+
+    <h3>API</h3>
+    <p>The following table lists the interfaces to manage various CCDB resources. It lists the resource name, 
+        its URI, the HTTP method, its parameters, and the response from the API to the method. </p>
+    <p:panel header='Application Programming Interface'  toggleable="true">
+        <p:panelGrid style="text-align: left">  
+            <f:facet name="header">  
+                <p:row>  
+                    <p:column>Resource</p:column>  
+                    <p:column>Method</p:column>  
+                    <p:column>Resource ID</p:column>  
+                    <p:column>Description</p:column> 
+                    <p:column>Returns</p:column>
+                    <p:column>Path/Parameter</p:column> 
+                    <p:column>Examples</p:column> 
+                </p:row>  
+            </f:facet>  
+            <p:row>  
+                <p:column>Device</p:column>
+                <p:column>GET</p:column>  
+                <p:column>/device</p:column>  
+                <p:column>Device</p:column> 
+                <p:column>List of <i>device</i></p:column>
+                <p:column>
+                    <ul><li><b>deviceType</b> (optional): Device type</li></ul>                   
+                </p:column> 
+                <p:column>
+                    <ul><li>#{msgs.apiBaseUrl}/device</li></ul>
+                    <ul><li>#{msgs.apiBaseUrl}/device?deviceType=Q7</li></ul>
+                </p:column> 
+            </p:row>
+            <p:row>  
+                <p:column>Slot</p:column>  
+                <p:column>GET</p:column>  
+                <p:column>/slot</p:column>  
+                <p:column>List of slots</p:column>
+                <p:column>List of <i>slot</i></p:column>
+                <p:column> 
+                    <ul><li><b>deviceType</b> (optional): Device type</li></ul>
+                </p:column> 
+                <p:column>
+                    <ul><li>#{msgs.apiBaseUrl}/slot</li></ul>
+                    <ul><li>#{msgs.apiBaseUrl}/slot?deviceType=Q7</li></ul>
+                </p:column> 
+            </p:row>
+            <p:row>  
+                <p:column>Device type</p:column>
+                <p:column>GET</p:column>  
+                <p:column>/deviceType</p:column>  
+                <p:column>Device Types</p:column> 
+                <p:column>List of <i>deviceType</i></p:column>
+                <p:column>
+                    <ul><li><b>name</b>: Device type name</li></ul>                              
+                </p:column> 
+                <p:column>
+                    <ul><li>#{msgs.apiBaseUrl}/deviceType</li></ul>
+                    <ul><li>#{msgs.apiBaseUrl}/deviceType/ACC</li></ul>
+                </p:column> 
+            </p:row>
+            
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

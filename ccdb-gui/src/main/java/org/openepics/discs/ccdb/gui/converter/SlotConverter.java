@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.openepics.discs.conf.converter;
+package org.openepics.discs.ccdb.gui.converter;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -12,9 +12,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.inject.Named;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.Slot;
 
 /**
  *

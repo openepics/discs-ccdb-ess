@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.dl.annotations;
+package org.openepics.discs.ccdb.core.dl.annotations;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
-import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
 
 /**
  * Annotation to specify which implementation of {@link DataLoader} should be injected

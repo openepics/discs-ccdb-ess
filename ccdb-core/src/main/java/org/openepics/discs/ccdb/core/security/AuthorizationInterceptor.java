@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.security;
+package org.openepics.discs.ccdb.core.security;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.core.util.CRUDOperation;
 
 /**
  * Interceptor, that where defined, intercepts method call to check for user authorization permissions.

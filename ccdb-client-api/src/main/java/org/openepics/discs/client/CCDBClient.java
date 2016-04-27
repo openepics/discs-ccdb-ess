@@ -39,9 +39,9 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.openepics.discs.client.impl.CCDBClientConfigException;
 import org.openepics.discs.client.impl.ClosableResponse;
-import org.openepics.discs.conf.jaxrs.DeviceTypeResource;
-import org.openepics.discs.conf.jaxrs.InstallationSlotNameResource;
-import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
+import org.openepics.discs.ccdb.jaxrs.DeviceTypeResource;
+import org.openepics.discs.ccdb.jaxrs.InstallationSlotNameResource;
+import org.openepics.discs.ccdb.jaxrs.InstallationSlotResource;
 
 /**
  * This is CCDB service client API that clients can use to access the service.

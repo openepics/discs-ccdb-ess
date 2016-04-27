@@ -17,19 +17,19 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.dl.common;
+package org.openepics.discs.ccdb.core.dl.common;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.ejb.DAO;
-import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ent.EntityWithProperties;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.ccdb.core.ejb.DAO;
+import org.openepics.discs.ccdb.core.ejb.PropertyEJB;
+import org.openepics.discs.ccdb.model.EntityWithProperties;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.core.util.Conversion;
 
 import com.google.common.base.Preconditions;
 

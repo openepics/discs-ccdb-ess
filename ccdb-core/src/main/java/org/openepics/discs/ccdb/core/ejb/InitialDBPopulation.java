@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.Date;
 
@@ -25,18 +25,18 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Privilege;
-import org.openepics.discs.conf.ent.Role;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.ent.User;
-import org.openepics.discs.conf.ent.UserRole;
-import org.openepics.discs.conf.util.BuiltInDataType;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.DataType;
+import org.openepics.discs.ccdb.model.EntityType;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.Privilege;
+import org.openepics.discs.ccdb.model.Role;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotRelation;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.model.User;
+import org.openepics.discs.ccdb.model.UserRole;
+import org.openepics.discs.ccdb.core.util.BuiltInDataType;
 
 /**
  * This EJB populates an empty database with mandatory data (data-types etc) and optional

@@ -33,7 +33,7 @@
  *
  */
 
-package org.openepics.discs.conf.util;
+package org.openepics.discs.ccdb.core.util;
 
 import javax.enterprise.context.ApplicationScoped;
 

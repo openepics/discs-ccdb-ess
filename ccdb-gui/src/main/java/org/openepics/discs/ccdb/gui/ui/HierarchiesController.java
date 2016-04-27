@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,35 +50,35 @@ import javax.validation.constraints.Size;
 
 import joptsimple.internal.Strings;
 
-import org.openepics.discs.conf.dl.annotations.SignalsLoader;
-import org.openepics.discs.conf.dl.annotations.SlotsLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ejb.SlotPairEJB;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleTableExporter;
-import org.openepics.discs.conf.ui.trees.BasicTreeNode;
-import org.openepics.discs.conf.ui.trees.ConnectsTree;
-import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
-import org.openepics.discs.conf.ui.trees.RootNodeWithChildren;
-import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
-import org.openepics.discs.conf.ui.trees.Tree;
-import org.openepics.discs.conf.ui.util.ConnectsManager;
-import org.openepics.discs.conf.ui.util.ExportSimpleSlotsTableDialog;
-import org.openepics.discs.conf.ui.util.SlotRelationshipManager;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.ui.util.names.Names;
-import org.openepics.discs.conf.util.AppProperties;
-import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.SlotView;
+import org.openepics.discs.ccdb.core.dl.annotations.SignalsLoader;
+import org.openepics.discs.ccdb.core.dl.annotations.SlotsLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.core.ejb.InstallationEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotPairEJB;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.gui.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.ccdb.gui.ui.common.DataLoaderHandler;
+import org.openepics.discs.ccdb.gui.ui.common.UIException;
+import org.openepics.discs.ccdb.gui.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.ccdb.gui.ui.export.SimpleTableExporter;
+import org.openepics.discs.ccdb.gui.ui.trees.BasicTreeNode;
+import org.openepics.discs.ccdb.gui.ui.trees.ConnectsTree;
+import org.openepics.discs.ccdb.gui.ui.trees.FilteredTreeNode;
+import org.openepics.discs.ccdb.gui.ui.trees.RootNodeWithChildren;
+import org.openepics.discs.ccdb.gui.ui.trees.SlotRelationshipTree;
+import org.openepics.discs.ccdb.gui.ui.trees.Tree;
+import org.openepics.discs.ccdb.gui.ui.util.ConnectsManager;
+import org.openepics.discs.ccdb.gui.ui.util.ExportSimpleSlotsTableDialog;
+import org.openepics.discs.ccdb.gui.ui.util.SlotRelationshipManager;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.gui.ui.util.names.Names;
+import org.openepics.discs.ccdb.core.util.AppProperties;
+import org.openepics.discs.ccdb.core.util.Utility;
+import org.openepics.discs.ccdb.gui.views.SlotView;
 import org.openepics.names.jaxb.DeviceNameElement;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.NodeSelectEvent;

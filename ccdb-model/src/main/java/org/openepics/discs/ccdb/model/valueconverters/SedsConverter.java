@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.valueconverters;
+package org.openepics.discs.ccdb.model.valueconverters;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.ccdb.model.values.Value;
 
-import org.openepics.discs.conf.valueconverters.ValueConverter;
+import org.openepics.discs.ccdb.model.valueconverters.ValueConverter;
 
 /**
  * A JPA converter to convert between the Value object and the data serialized in the database.

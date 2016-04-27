@@ -13,9 +13,9 @@
  *   http://frib.msu.edu
  *
  */
-package org.openepics.discs.conf.rack;
+package org.openepics.discs.ccdb.gui.rack;
 
-import org.openepics.discs.conf.ejb.RackEJB;
+import org.openepics.discs.ccdb.core.ejb.RackEJB;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
@@ -23,7 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.openepics.discs.conf.ent.Rack;
+import org.openepics.discs.ccdb.model.Rack;
 
 /**
  * Bean to support rack layout view

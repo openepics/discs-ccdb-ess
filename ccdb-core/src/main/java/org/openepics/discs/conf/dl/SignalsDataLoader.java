@@ -30,15 +30,15 @@ import javax.inject.Inject;
 
 import joptsimple.internal.Strings;
 
-import org.openepics.discs.conf.dl.annotations.SignalsLoader;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.values.StrValue;
-import org.openepics.discs.conf.util.PropertyValueUnassignedException;
+import org.openepics.discs.ccdb.core.dl.annotations.SignalsLoader;
+import org.openepics.discs.ccdb.core.dl.common.AbstractDataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.ErrorMessage;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
+import org.openepics.discs.ccdb.model.values.StrValue;
+import org.openepics.discs.ccdb.core.util.PropertyValueUnassignedException;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;

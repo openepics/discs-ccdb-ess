@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.ccdb.core.util;
 
-import org.openepics.discs.conf.ent.ComptypeArtifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.InstallationArtifact;
-import org.openepics.discs.conf.ent.SlotArtifact;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.ccdb.model.ComptypeArtifact;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.DeviceArtifact;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.InstallationArtifact;
+import org.openepics.discs.ccdb.model.SlotArtifact;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
 
 /**
  * Helper class to retrieve owner of the relationship

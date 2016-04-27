@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.common;
+package org.openepics.discs.ccdb.gui.ui.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,32 +35,32 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.ejb.DAO;
-import org.openepics.discs.conf.ejb.DataTypeEJB;
-import org.openepics.discs.conf.ejb.TagEJB;
-import org.openepics.discs.conf.ent.Artifact;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityWithArtifacts;
-import org.openepics.discs.conf.ent.EntityWithProperties;
-import org.openepics.discs.conf.ent.EntityWithTags;
-import org.openepics.discs.conf.ent.NamedEntity;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.BlobStore;
-import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
-import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.EntityAttrArtifactView;
-import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
-import org.openepics.discs.conf.views.EntityAttrTagView;
-import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.ccdb.core.ejb.DAO;
+import org.openepics.discs.ccdb.core.ejb.DataTypeEJB;
+import org.openepics.discs.ccdb.core.ejb.TagEJB;
+import org.openepics.discs.ccdb.model.Artifact;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.ConfigurationEntity;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.EntityWithArtifacts;
+import org.openepics.discs.ccdb.model.EntityWithProperties;
+import org.openepics.discs.ccdb.model.EntityWithTags;
+import org.openepics.discs.ccdb.model.NamedEntity;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPropertyValue;
+import org.openepics.discs.ccdb.model.Tag;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.BlobStore;
+import org.openepics.discs.ccdb.core.util.PropertyValueNotUniqueException;
+import org.openepics.discs.ccdb.core.util.UnhandledCaseException;
+import org.openepics.discs.ccdb.core.util.Utility;
+import org.openepics.discs.ccdb.gui.views.EntityAttrArtifactView;
+import org.openepics.discs.ccdb.gui.views.EntityAttrPropertyValueView;
+import org.openepics.discs.ccdb.gui.views.EntityAttrTagView;
+import org.openepics.discs.ccdb.gui.views.EntityAttributeView;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;

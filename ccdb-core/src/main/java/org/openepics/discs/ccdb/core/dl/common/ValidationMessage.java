@@ -17,12 +17,12 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.dl.common;
+package org.openepics.discs.ccdb.core.dl.common;
 
 import java.util.Objects;
 
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.ccdb.model.EntityType;
+import org.openepics.discs.ccdb.model.EntityTypeOperation;
 
 /**
  * This holds one piece of validation information tied to a location.

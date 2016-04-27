@@ -2,7 +2,7 @@
  *
  * http://stackoverflow.com/questions/4693968/is-there-an-existing-fileinputstream-delete-on-close
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.ccdb.core.util;
 
 import java.io.File;
 import java.io.FileInputStream;

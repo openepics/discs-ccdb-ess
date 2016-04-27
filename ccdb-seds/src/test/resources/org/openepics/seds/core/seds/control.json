@@ -1,0 +1,12 @@
+
+{
+    "metadata":{
+        "type":"SedsControl",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "lowLimit":10.0,
+        "highLimit":100.0
+    }
+}

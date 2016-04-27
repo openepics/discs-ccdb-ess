@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"               
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fc="http://java.sun.com/jsf/composite/comps">
+
+    <h3>Resources</h3>
+    <p> A resource is an entity that is managed by CCDB. For example, a facility, a vault, a log entry, a shift, a beam etc.
+        The #{msgs.title} API provides access to the resources or entities that CCDB manages. 
+        These entities and their attributes are described below. Note that the names of attributes are important as they are 
+        used in the various representations of these resources (see Resource Representations Section below).</p>
+    
+    <p:panel header='Resources and Attributes' toggleable="true" >
+        <p:panelGrid style="text-align: left">  
+            <f:facet name="header">  
+                <p:row>  
+                    <p:column>Resource</p:column>  
+                    <p:column>Description</p:column>  
+                    <p:column>Attribute</p:column>  
+                    <p:column>Type</p:column> 
+                    <p:column>Description</p:column> 
+                    <p:column>Examples</p:column> 
+                </p:row>  
+            </f:facet> 
+
+            <p:row>
+                <p:column rowspan="2">device</p:column>  
+                <p:column rowspan="2">A device</p:column>  
+                <p:column>inventoryId</p:column>  
+                <p:column>String</p:column> 
+                <p:column>Unique identifier</p:column> 
+                <p:column>T30511-EDE-7400-0005-S38</p:column> 
+            </p:row>
+            <p:row>                   
+                <p:column>deviceType</p:column>                    
+                <p:column><i>deviceType</i></p:column> 
+                <p:column>Device Type</p:column>  
+                <p:column>See <i>deviceType</i> resource</p:column>                     
+            </p:row>
+
+            <p:row>
+                <p:column rowspan="2">deviceType</p:column>  
+                <p:column rowspan="2">Device Type</p:column>  
+                <p:column>name</p:column>  
+                <p:column>String</p:column> 
+                <p:column>BCM3</p:column> 
+                <p:column>Current monitor</p:column> 
+            </p:row>
+            <p:row>                   
+                <p:column>description</p:column>                    
+                <p:column>String</p:column> 
+                <p:column>Description</p:column>  
+                <p:column>Beam current monitor</p:column>                     
+            </p:row>
+            
+
+            
+            
+            <p:row>
+                <p:column rowspan="7">slot</p:column>  
+                <p:column rowspan="7">Slot</p:column>  
+                <p:column>name</p:column>  
+                <p:column>String</p:column> 
+                <p:column>Name</p:column> 
+                <p:column>FE_SCS2:QHE_D0705</p:column> 
+            </p:row>
+            <p:row>                    
+                <p:column>description</p:column>  
+                <p:column>String</p:column> 
+                <p:column>Description</p:column> 
+                <p:column>ES Quad</p:column> 
+            </p:row> 
+            <p:row>                    
+                <p:column>percentComplete</p:column>  
+                <p:column>Float</p:column> 
+                <p:column>Percentage of installation complete</p:column> 
+                <p:column>24.5</p:column> 
+            </p:row>
+           <p:row>                   
+                <p:column>deviceType</p:column>                    
+                <p:column><i>deviceType</i></p:column> 
+                <p:column>Device Type</p:column>  
+                <p:column>See <i>deviceType</i> resource</p:column>                     
+            </p:row>
+            <p:row>                   
+                <p:column>parents</p:column>                    
+                <p:column>List of <i>slot</i></p:column> 
+                <p:column>List of parent slots</p:column>  
+                <p:column>See <i>slot</i> resource</p:column>                     
+            </p:row>
+            <p:row>                   
+                <p:column>children</p:column>                    
+                <p:column>List of <i>slot</i></p:column> 
+                <p:column>List of children slots</p:column>  
+                <p:column>See <i>slot</i> resource</p:column>                     
+            </p:row>
+            <p:row>                   
+                <p:column>properties</p:column>                    
+                <p:column>List of <i>property</i></p:column> 
+                <p:column>List of properties</p:column>  
+                <p:column>See <i>property</i> resource</p:column>                     
+            </p:row>
+
+                    
+        </p:panelGrid>
+    </p:panel>
+</ui:composition>

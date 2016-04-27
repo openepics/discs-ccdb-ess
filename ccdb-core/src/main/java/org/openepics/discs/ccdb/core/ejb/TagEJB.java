@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.ccdb.model.Tag;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;

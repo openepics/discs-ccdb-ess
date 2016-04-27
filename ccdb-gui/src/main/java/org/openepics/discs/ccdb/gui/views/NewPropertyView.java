@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.util.Iterator;
 
@@ -26,9 +26,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.BatchIterator;
-import org.openepics.discs.conf.util.BatchSaveStage;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.BatchIterator;
+import org.openepics.discs.ccdb.core.util.BatchSaveStage;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>

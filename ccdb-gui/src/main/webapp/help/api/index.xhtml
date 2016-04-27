@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/WEB-INF/template/template.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fc="http://java.sun.com/jsf/composite/comps">
+
+    <ui:define name="content" >
+
+        <!--<ui:param name="restRoot" value="#{request.scheme}://#{request.serverName}:#{request.serverPort}#{request.contextPath}#{msgs.restURIbase}/v#{msgs.apiversion}" />-->    
+        <p:panel styleClass="noBorders">
+        
+            <h1> CCDB: Application Programming Interface</h1>
+
+            <h3>Introduction</h3>
+            <p>
+                CCDB (Central Configuration Database) is used by Facility for Rare Isotope Beams 
+                (FRIB) to manage configuration of the facility.
+                Data in CCDB can be accessed programmatically through a  
+                <a href="#{msgs.restReference}" target="_blank">RESTful</a>
+                Application Programming Interface (API), The CCDB API, which is described in this document. 
+            </p>
+
+            <h3>Version</h3>
+            The CCDB API follows
+            <a href="#{msgs.semverReference}" target="_blank">Semantic Versioning</a> for its version numbers. The current API version number is #{msgs.apiversion}.         
+
+            <ui:include src="resources.xhtml" />                        
+
+            <ui:include src="represent.xhtml" />
+
+            <h3>Base URI</h3>
+            The base URI for Resource Identifiers, on this server, is  #{msgs.apiBaseUrl}
+
+            <h3>Caching</h3>
+            Currently the #{msgs.title} API does not support caching. However, future versions of the API will support caching mechanisms such as 
+            Conditional GETs and Expiration Times.
+
+            <h3>Authentication and Authorization</h3>
+            <i>Note: Authentication mechanisms of CCDB API will be changed in future. So please be prepared to update you application.</i>
+            To use any part of the CCDB API, an application must first authenticate itself. Instead of the standard HTTP Basic, 
+            DIGEST, FORM or other authentication mechanisms, CCDB API requires the following HTTP Header to be sent with every request:
+            <p>
+                DISCS-Authorization: key:passcode
+            </p>
+            where <i>key</i> and <i>passcode</i> are supplied by the CCDB team to identify your application. Key and passcode must be separated by the ':' 
+            character in the header. You must use a key+passcode pair 
+            with only one application (and its versions). To use CCDB API with a different application, you must request a new key+passcode 
+            pair. 
+
+            <h3>Encryption</h3>
+            #{msgs.title} API forces the use of HTTPS protocol. If HTTP is used, CCDB will redirect it over to HTTPS. 
+            Note that the public key of the CCDB development 
+            and QA server may not be signed by trusted Certificate Authorities.
+            
+            <h3>CORS</h3>
+            For security reasons, #{msgs.title} API does not support <a href="#{msgs.cors}" target="_blank">Cross-origin Resource Sharing</a> (CORS).
+
+            <h3>Error Codes and Responses</h3>
+            The #{msgs.title} API attempts to return appropriate <a href="#{msgs.httpCodes}" target="_blank">HTTP Status Codes</a> for each request.
+
+            <ui:include src="api.xhtml" />
+
+            <ui:include src="examples.xhtml" />
+            
+            <h3>References</h3>
+            <ol>
+                <li>
+                    <a href='http://tinoweb.googlecode.com/files/O%27Reilly%20-RESTful.Web.Services.pdf' target="_blank">RESTful Web Services,</a>
+                    Leonard Richardson and Sam Ruby, 2007.
+                </li>
+                <li>
+                    <a href='https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm' target="_blank">
+                        Architectural Styles and the Design of Network-based Software Architectures,</a> 
+                    Roy Thomas Fielding, PhD Dissertation, 2000.
+                </li>
+            </ol>
+            
+        </p:panel>
+    </ui:define>
+
+</ui:composition>

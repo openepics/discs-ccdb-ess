@@ -6,146 +6,148 @@
                 template="/WEB-INF/template/template.xhtml">
 
     <ui:define name="content">
-        <div class="layout-portlets-box">
-            <div class="Container100">
-                <div class="ContainerIndent">
-                    <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Introduction</h2>
-                    <div class="Seperator"></div>
-                    <span class="gray">
-                       #{msgs.title} is a tool for managing the configuration of #{msgs.facility}.
-                    </span>
+        <p:panel>
+            <div class="layout-portlets-box">
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Introduction</h2>
+                        <div class="Seperator"></div>
+                        <span class="gray">
+                            #{msgs.title} is a tool for managing the configuration of #{msgs.facility}.
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- BOX END -->
+            <!-- BOX END -->
 
-        <div class="layout-portlets-box">
-            <div class="Container100">
-                <div class="ContainerIndent">
-                    <div class="BigTopic">
-                        <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Glossary</h2>
-                        <div class="Seperator"></div>
-                        <span class="Fs15 gray FontRalewayRegular DispBlock">
-                            <p:panelGrid style="text-align: left">  
-                                <f:facet name="header">  
+            <div class="layout-portlets-box">
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="BigTopic">
+                            <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Glossary</h2>
+                            <div class="Seperator"></div>
+                            <span class="Fs15 gray FontRalewayRegular DispBlock">
+                                <p:panelGrid style="text-align: left">  
+                                    <f:facet name="header">  
+                                        <p:row>  
+                                            <p:column>Term</p:column>  
+                                            <p:column>Definition</p:column>  
+                                            <p:column>Examples</p:column>                  
+                                        </p:row>  
+                                    </f:facet>  
                                     <p:row>  
-                                        <p:column>Term</p:column>  
-                                        <p:column>Definition</p:column>  
-                                        <p:column>Examples</p:column>                  
-                                    </p:row>  
-                                </f:facet>  
-                                <p:row>  
-                                    <p:column>Assembly</p:column>  
-                                    <p:column>A collection of parts.</p:column>  
-                                    <p:column>A coldmass</p:column>  
-                                </p:row> 
-                                <p:row>  
-                                    <p:column>Device</p:column>  
-                                    <p:column>A device can be independently installed and de-installed as a single unit. It must be measured, tested, tracked, and serialized. It is generally the final product from an engineering group. Devices may be controlled by the control system.</p:column>  
-                                    <p:column>A magnet or RF amplifier</p:column>                             
-                                </p:row> 
-                                <p:row>  
-                                    <p:column>FRIB Name</p:column>  
-                                    <p:column>An identifier that adheres to the FRIB Naming Convention. It identifies a system, subsystem, slot, element, or signal.</p:column>  
-                                    <p:column>FE:CHLR_N0002, FE_LEBT:FC_D0123:I_RD</p:column>                             
-                                </p:row> 
-                                <p:row>  
-                                    <p:column>Installation</p:column>  
-                                    <p:column>The process of placing a device in an appropriate slot and interfacing it with other devices.</p:column>  
-                                    <p:column>Placing a magnet in its slot in the tunnel.</p:column>                             
-                                </p:row> 
-                                <p:row>  
-                                    <p:column>Nick Name</p:column>  
-                                    <p:column>A unique alias for a Part Number. It is a more meaningful name assigned by a department or a group.</p:column>  
-                                    <p:column>CAV85-ROARK</p:column>                             
-                                </p:row> 
+                                        <p:column>Assembly</p:column>  
+                                        <p:column>A collection of parts.</p:column>  
+                                        <p:column>A coldmass</p:column>  
+                                    </p:row> 
+                                    <p:row>  
+                                        <p:column>Device</p:column>  
+                                        <p:column>A device can be independently installed and de-installed as a single unit. It must be measured, tested, tracked, and serialized. It is generally the final product from an engineering group. Devices may be controlled by the control system.</p:column>  
+                                        <p:column>A magnet or RF amplifier</p:column>                             
+                                    </p:row> 
+                                    <p:row>  
+                                        <p:column>FRIB Name</p:column>  
+                                        <p:column>An identifier that adheres to the FRIB Naming Convention. It identifies a system, subsystem, slot, element, or signal.</p:column>  
+                                        <p:column>FE:CHLR_N0002, FE_LEBT:FC_D0123:I_RD</p:column>                             
+                                    </p:row> 
+                                    <p:row>  
+                                        <p:column>Installation</p:column>  
+                                        <p:column>The process of placing a device in an appropriate slot and interfacing it with other devices.</p:column>  
+                                        <p:column>Placing a magnet in its slot in the tunnel.</p:column>                             
+                                    </p:row> 
+                                    <p:row>  
+                                        <p:column>Nick Name</p:column>  
+                                        <p:column>A unique alias for a Part Number. It is a more meaningful name assigned by a department or a group.</p:column>  
+                                        <p:column>CAV85-ROARK</p:column>                             
+                                    </p:row> 
 
-                                <p:row>  
-                                    <p:column>Part</p:column>  
-                                    <p:column>A physical entity that forms the basic building block, for a domain. The term part is used to refer to both its design and instances.</p:column>  
-                                    <p:column>Coupler, Bellow, Flange</p:column>                             
-                                </p:row>
-                                <p:row>  
-                                    <p:column>Part Number</p:column>  
-                                    <p:column>An identifier that uniquely identifies design (or type) of a part or assembly.</p:column>  
-                                    <p:column>T30602-MDE-0140-0060 Note the part number does not have the drawing revision number</p:column>                             
-                                </p:row>
-                                <p:row>  
-                                    <p:column>Serial Number</p:column>  
-                                    <p:column>An identifier that uniquely identifies instance of a part or assembly. Part Number and Serial Number together uniquely identify an entity (assembly, device, or serialized part).</p:column>  
-                                    <p:column>S01234</p:column>                             
-                                </p:row>
-                                <p:row>  
-                                    <p:column>Slot</p:column>  
-                                    <p:column>A space or location where a device is placed.</p:column>  
-                                    <p:column>FE_LEBT:FE_D1001, LS1_CA01</p:column>                             
-                                </p:row>
-                                <p:row>  
-                                    <p:column>Subsystem</p:column>  
-                                    <p:column>A set of one or more devices that together implement a higher functionality.</p:column>  
-                                    <p:column>A cryomodule, Bending Section, Beam Transport Section.</p:column>                             
-                                </p:row>
-                                <p:row>  
-                                    <p:column>System</p:column>  
-                                    <p:column>A set of subsystems that together implement a higher functionality.</p:column>  
-                                    <p:column>Linac segment, RF, Vacuum</p:column>                             
-                                </p:row>
-                            </p:panelGrid>           
-                        </span>
-                    </div>                  
-                </div>
-            </div>           
-        </div>
-        <!-- BOX END -->
+                                    <p:row>  
+                                        <p:column>Part</p:column>  
+                                        <p:column>A physical entity that forms the basic building block, for a domain. The term part is used to refer to both its design and instances.</p:column>  
+                                        <p:column>Coupler, Bellow, Flange</p:column>                             
+                                    </p:row>
+                                    <p:row>  
+                                        <p:column>Part Number</p:column>  
+                                        <p:column>An identifier that uniquely identifies design (or type) of a part or assembly.</p:column>  
+                                        <p:column>T30602-MDE-0140-0060 Note the part number does not have the drawing revision number</p:column>                             
+                                    </p:row>
+                                    <p:row>  
+                                        <p:column>Serial Number</p:column>  
+                                        <p:column>An identifier that uniquely identifies instance of a part or assembly. Part Number and Serial Number together uniquely identify an entity (assembly, device, or serialized part).</p:column>  
+                                        <p:column>S01234</p:column>                             
+                                    </p:row>
+                                    <p:row>  
+                                        <p:column>Slot</p:column>  
+                                        <p:column>A space or location where a device is placed.</p:column>  
+                                        <p:column>FE_LEBT:FE_D1001, LS1_CA01</p:column>                             
+                                    </p:row>
+                                    <p:row>  
+                                        <p:column>Subsystem</p:column>  
+                                        <p:column>A set of one or more devices that together implement a higher functionality.</p:column>  
+                                        <p:column>A cryomodule, Bending Section, Beam Transport Section.</p:column>                             
+                                    </p:row>
+                                    <p:row>  
+                                        <p:column>System</p:column>  
+                                        <p:column>A set of subsystems that together implement a higher functionality.</p:column>  
+                                        <p:column>Linac segment, RF, Vacuum</p:column>                             
+                                    </p:row>
+                                </p:panelGrid>           
+                            </span>
+                        </div>                  
+                    </div>
+                </div>           
+            </div>
+            <!-- BOX END -->
 
-        <div class="layout-portlets-box">
-            <div class="Container100">
-                <div class="ContainerIndent">
-                    <div class="BigTopic">
-                        <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Taxonomy</h2>
-                        <div class="Seperator"></div>
-                        <span class="Fs15 gray FontRalewayRegular DispBlock">
-                            <p:graphicImage value="#{resource['images/taxonomy.png']}" />
-                        </span>
-                    </div>                  
-                </div>
-            </div>           
-        </div>
-        <!-- BOX END -->
+            <div class="layout-portlets-box">
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="BigTopic">
+                            <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Taxonomy</h2>
+                            <div class="Seperator"></div>
+                            <span class="Fs15 gray FontRalewayRegular DispBlock">
+                                <p:graphicImage value="#{resource['images/taxonomy.png']}" />
+                            </span>
+                        </div>                  
+                    </div>
+                </div>           
+            </div>
+            <!-- BOX END -->
 
-        <div class="layout-portlets-box">
-            <div class="Container100">
-                <div class="ContainerIndent">
-                    <div class="BigTopic">
-                        <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Process</h2>
-                        <div class="Seperator"></div>
-                        <span class="Fs15 gray FontRalewayRegular DispBlock">
-                            <p:graphicImage value="#{resource['images/process.png']}" />
-                        </span>
-                    </div>                  
-                </div>
-            </div>           
-        </div>
-        <!-- BOX END -->
+            <div class="layout-portlets-box">
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="BigTopic">
+                            <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>Process</h2>
+                            <div class="Seperator"></div>
+                            <span class="Fs15 gray FontRalewayRegular DispBlock">
+                                <p:graphicImage value="#{resource['images/process.png']}" />
+                            </span>
+                        </div>                  
+                    </div>
+                </div>           
+            </div>
+            <!-- BOX END -->
 
-        <div class="layout-portlets-box">
-            <div class="Container100">
-                <div class="ContainerIndent">
-                    <div class="BigTopic">
-                        <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>References</h2>
-                        <div class="Seperator"></div>
-                        <span class="Fs15 gray FontRalewayRegular DispBlock">
-                            <ul>
-                                <li>
-                                    FRIB Configuration Control Procedure, 
-                                    
-                                </li>
-                            </ul>
-                        </span>
-                    </div>                  
-                </div>
-            </div>           
-        </div>
+            <div class="layout-portlets-box">
+                <div class="Container100">
+                    <div class="ContainerIndent">
+                        <div class="BigTopic">
+                            <h2 class="black Fs24 FontRalewayMedium"><i class="fa fa-ioxhost Fleft red MarRight10"></i>References</h2>
+                            <div class="Seperator"></div>
+                            <span class="Fs15 gray FontRalewayRegular DispBlock">
+                                <ul>
+                                    <li>
+                                        FRIB Configuration Control Procedure, 
+
+                                    </li>
+                                </ul>
+                            </span>
+                        </div>                  
+                    </div>
+                </div>           
+            </div>
+        </p:panel>
         <!-- BOX END -->
 
     </ui:define>

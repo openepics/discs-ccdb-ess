@@ -20,15 +20,15 @@ package org.openepics.discs.conf.webservice;
 
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.jaxb.InstallationSlotNames;
-import org.openepics.discs.conf.jaxrs.InstallationSlotNameResource;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.jaxb.InstallationSlotNames;
+import org.openepics.discs.ccdb.jaxrs.InstallationSlotNameResource;
 
 import com.google.common.base.Strings;
 import java.util.stream.Collectors;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.core.util.Utility;
 
 /**
  * An implementation of the InstallationSlotBasicResource interface.

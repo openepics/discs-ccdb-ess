@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.common;
+package org.openepics.discs.ccdb.gui.ui.common;
 
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.util.ImportFileStatistics;
+import org.openepics.discs.ccdb.core.dl.common.DataLoaderResult;
+import org.openepics.discs.ccdb.core.util.ImportFileStatistics;
 
 /**
  * The interface contains all the methods that the UI control handling the import of any number of excel files must implement.

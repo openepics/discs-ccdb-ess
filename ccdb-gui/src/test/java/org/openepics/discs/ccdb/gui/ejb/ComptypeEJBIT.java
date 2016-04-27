@@ -17,8 +17,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.gui.ejb;
 
+import org.openepics.discs.ccdb.core.ejb.PropertyEJB;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -40,13 +42,13 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ent.values.DblValue;
-import org.openepics.discs.conf.ent.values.IntValue;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.testutil.TestUtility;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.Tag;
+import org.openepics.discs.ccdb.model.values.DblValue;
+import org.openepics.discs.ccdb.model.values.IntValue;
+import org.openepics.discs.ccdb.model.values.Value;
+import org.openepics.discs.ccdb.gui.testutil.TestUtility;
 
 /**
  *

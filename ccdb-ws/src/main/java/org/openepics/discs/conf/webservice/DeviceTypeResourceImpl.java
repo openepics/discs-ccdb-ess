@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.jaxb.DeviceType;
-import org.openepics.discs.conf.jaxrs.DeviceTypeResource;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.jaxb.DeviceType;
+import org.openepics.discs.ccdb.jaxrs.DeviceTypeResource;
 
 /**
  * An implementation of the DeviceTypeResource interface.

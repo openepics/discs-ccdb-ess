@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with this program.
  * If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ent.values;
+package org.openepics.discs.ccdb.model.values;
 
 import com.google.common.base.Preconditions;
 

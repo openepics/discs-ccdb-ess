@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.auditlog;
+package org.openepics.discs.ccdb.core.auditlog;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.ccdb.model.Tag;
 
 /**
  * Class with static methods that are used in many entity loggers

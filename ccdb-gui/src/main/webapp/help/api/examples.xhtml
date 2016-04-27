@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+   This software is Copyright by the Board of Trustees of Michigan
+   State University (c) Copyright 2013, 2014.
+   
+   You may use this software under the terms of the GNU public license
+   (GPL). The terms of this license are described at:
+   http://www.gnu.org/licenses/gpl.txt
+   
+   Contact Information:
+        Facility for Rare Isotope Beam
+        Michigan State University
+        East Lansing, MI 48824-1321
+        http://frib.msu.edu
+-->
+
+<!--API Manual-->
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"              
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fc="http://java.sun.com/jsf/composite/comps">
+
+    <h3>Examples</h3>
+
+    <p:panel header='Examples'  toggleable="true">
+        <p:tabView>
+            <p:tab title="Curl">
+                <p>The following curl commands retrieve 'events' and 'summary report' resources respectively:</p>
+                <ul>
+                    <li>
+                        curl -v -k -L -H "Accept: application/json" -H "DISCS-Authorization: key:pass" -X GET '#{msgs.apiBaseUrl}/notes?facility=CCF&amp;from=2015-02-08'
+                    </li>
+                    <li>
+                        curl -v -k -L -H "Accept: application/xml" -H "DISCS-Authorization: key:pass" -X GET '#{msgs.apiBaseUrl}/reports/summary'
+                    </li>
+                </ul>
+            </p:tab>
+            
+            <p:tab title="PHP">
+                <p>The following PHP code snippet retrieves summary report resource in JSON. The API key/passcode has been replaced with dummy string.
+                   The baseUrl in the code should be replaced with appropriate one for your site.
+                </p>
+                <p:separator/>
+                
+                <pre name="code" class="brush:xml">
+var $baseUrl = 'https://server.nscl.msu.edu/ccdbapi/device?';
+    
+var $headers = array(
+    'http' => array(
+        'method' => "GET",
+        'header' => "DISCS-Authorization: xxxxx:ppppp \r\nAccept: application/json \r\n"
+    )
+);
+
+// You can optionally add your filter parameters by appending them to the base url.
+// Ex: $url = $this->baseUrl . "facility=CCF";
+
+// $url = $this->baseUrl . "$key=$value";
+        
+// Creates a stream context
+$context = stream_context_create($this->headers);
+
+// Open the URL with the HTTP headers (fopen wrappers must be enabled)
+$response = file_get_contents($url, false, $context);
+
+return json_decode($response);
+
+                </pre>
+            </p:tab>
+            
+            <p:tab title="JavaScript">
+            <p>The following JavaScript code snippet retrieves summary report resource in JSON. </p>   
+            <p:separator/>
+            
+            <pre name="code" class="brush:xml">
+var request = require('request');
+
+var summary = {};
+
+function getSummary() {
+  request({
+    url: dataconfig.ccdbreport,
+    strictSSL: false,
+    headers: {
+      Accept: 'application/json',
+      'DISCS-Authorization': dataconfig.ccdbkey
+    },
+    timeout: 30 * 1000
+  }, function (error, response, body) {
+    if (error) {
+      console.error(error);
+    } else {
+      if (response.statusCode === 200) {
+        summary = body;
+      }
+    }
+  });
+}
+
+app.get('/device/ACC', function (req, res) {
+    getSummary();
+    res.type('json');
+    res.send(summary);
+});
+                </pre>
+            </p:tab> 
+            
+        </p:tabView>
+    </p:panel>
+</ui:composition>

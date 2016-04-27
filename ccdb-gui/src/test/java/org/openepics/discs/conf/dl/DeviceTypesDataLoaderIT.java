@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.ApplyScriptAfter;
@@ -38,18 +39,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.values.DblValue;
-import org.openepics.discs.conf.testutil.TestUtility;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.ccdb.core.dl.annotations.ComponentTypesLoader;
+import org.openepics.discs.ccdb.core.dl.common.AbstractDataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoaderResult;
+import org.openepics.discs.ccdb.core.dl.common.ErrorMessage;
+import org.openepics.discs.ccdb.core.dl.common.ValidationMessage;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ComptypePropertyValue;
+import org.openepics.discs.ccdb.model.values.DblValue;
+import org.openepics.discs.ccdb.gui.testutil.TestUtility;
+import org.openepics.discs.ccdb.gui.ui.common.DataLoaderHandler;
 
 /**
  * Integration tests for {@link ComponentTypesLoader}

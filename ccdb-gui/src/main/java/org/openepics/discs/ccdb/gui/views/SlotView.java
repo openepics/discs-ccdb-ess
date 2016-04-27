@@ -17,17 +17,17 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.util.CCDBRuntimeException;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.model.SlotPair;
+import org.openepics.discs.ccdb.model.SlotRelationName;
+import org.openepics.discs.ccdb.core.util.CCDBRuntimeException;
 
 /**
  * View of container used to compose and manipulate with container presentation in tree view

@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.ccdb.core.ejb;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
 
-import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.ccdb.model.AuditRecord;
+import org.openepics.discs.ccdb.model.EntityType;
 
 /**
  * DAO Service for accessing {@link AuditRecord}s

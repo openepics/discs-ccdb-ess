@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,13 +26,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.io.FilenameUtils;
-import org.openepics.discs.conf.ent.Artifact;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.NamedEntity;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.ccdb.model.Artifact;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.ConfigurationEntity;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.NamedEntity;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.core.util.UnhandledCaseException;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.io.ByteStreams;

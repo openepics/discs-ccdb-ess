@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.testutil;
+package org.openepics.discs.ccdb.gui.testutil;
 
 import java.io.File;
 import java.util.List;
@@ -27,8 +27,8 @@ import javax.inject.Inject;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.security.SecurityPolicy;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.core.security.SecurityPolicy;
 
 import com.google.common.base.Preconditions;
 

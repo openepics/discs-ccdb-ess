@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.export;
+package org.openepics.discs.ccdb.gui.export;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,8 +29,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.DeleteOnCloseFileInputStream;
+import org.openepics.discs.ccdb.core.util.Conversion;
+import org.openepics.discs.ccdb.core.util.DeleteOnCloseFileInputStream;
 
 import com.google.common.collect.Lists;
 

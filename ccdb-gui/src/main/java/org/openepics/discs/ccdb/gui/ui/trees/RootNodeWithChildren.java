@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.trees;
+package org.openepics.discs.ccdb.gui.ui.trees;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.views.SlotView;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.gui.views.SlotView;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.collect.Lists;

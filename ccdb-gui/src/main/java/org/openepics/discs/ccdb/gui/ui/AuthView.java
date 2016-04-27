@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.AuthEJB;
-import org.openepics.discs.conf.ent.Privilege;
-import org.openepics.discs.conf.ent.Role;
-import org.openepics.discs.conf.ent.User;
-import org.openepics.discs.conf.ent.UserRole;
+import org.openepics.discs.ccdb.core.ejb.AuthEJB;
+import org.openepics.discs.ccdb.model.Privilege;
+import org.openepics.discs.ccdb.model.Role;
+import org.openepics.discs.ccdb.model.User;
+import org.openepics.discs.ccdb.model.UserRole;
 
 /**
  *

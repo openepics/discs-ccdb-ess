@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,25 +35,25 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ent.EntityWithProperties;
-import org.openepics.discs.conf.ent.NamedEntity;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
-import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleTableExporter;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.BatchSaveStage;
-import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.NewPropertyView;
-import org.openepics.discs.conf.views.PropertyView;
+import org.openepics.discs.ccdb.core.dl.annotations.PropertiesLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.ejb.PropertyEJB;
+import org.openepics.discs.ccdb.model.EntityWithProperties;
+import org.openepics.discs.ccdb.model.NamedEntity;
+import org.openepics.discs.ccdb.model.Property;
+import org.openepics.discs.ccdb.model.PropertyValue;
+import org.openepics.discs.ccdb.model.PropertyValueUniqueness;
+import org.openepics.discs.ccdb.gui.export.ExportTable;
+import org.openepics.discs.ccdb.gui.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.ccdb.gui.ui.common.DataLoaderHandler;
+import org.openepics.discs.ccdb.gui.ui.common.UIException;
+import org.openepics.discs.ccdb.gui.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.ccdb.gui.ui.export.SimpleTableExporter;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.BatchSaveStage;
+import org.openepics.discs.ccdb.core.util.Utility;
+import org.openepics.discs.ccdb.gui.views.NewPropertyView;
+import org.openepics.discs.ccdb.gui.views.PropertyView;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;

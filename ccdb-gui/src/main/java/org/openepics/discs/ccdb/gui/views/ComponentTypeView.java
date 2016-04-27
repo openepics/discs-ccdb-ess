@@ -17,14 +17,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.views;
+package org.openepics.discs.ccdb.gui.views;
 
 import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.ccdb.model.ComponentType;
 
 /**
  * The Component view to show in the Device Type screen.

@@ -15,7 +15,7 @@
  * https://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-package org.openepics.discs.conf.ui.common;
+package org.openepics.discs.ccdb.gui.ui.common;
 
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerFactory;

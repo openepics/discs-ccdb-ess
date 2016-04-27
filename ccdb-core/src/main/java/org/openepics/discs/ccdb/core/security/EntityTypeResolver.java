@@ -17,12 +17,12 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.security;
+package org.openepics.discs.ccdb.core.security;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.ccdb.model.EntityType;
 
 /**
  *
@@ -35,41 +35,41 @@ public class EntityTypeResolver {
     private static Map<String, EntityType> entityTypes = new HashMap<> ();
 
     static {
-        entityTypes.put(org.openepics.discs.conf.ent.Device.class.getCanonicalName(), EntityType.DEVICE);
-        entityTypes.put(org.openepics.discs.conf.ent.DevicePropertyValue.class.getCanonicalName(), EntityType.DEVICE);
-        entityTypes.put(org.openepics.discs.conf.ent.DeviceArtifact.class.getCanonicalName(), EntityType.DEVICE);
+        entityTypes.put(org.openepics.discs.ccdb.model.Device.class.getCanonicalName(), EntityType.DEVICE);
+        entityTypes.put(org.openepics.discs.ccdb.model.DevicePropertyValue.class.getCanonicalName(), EntityType.DEVICE);
+        entityTypes.put(org.openepics.discs.ccdb.model.DeviceArtifact.class.getCanonicalName(), EntityType.DEVICE);
 
-        entityTypes.put(org.openepics.discs.conf.ent.Slot.class.getCanonicalName(), EntityType.SLOT);
-        entityTypes.put(org.openepics.discs.conf.ent.SlotPropertyValue.class.getCanonicalName(), EntityType.SLOT);
-        entityTypes.put(org.openepics.discs.conf.ent.SlotArtifact.class.getCanonicalName(), EntityType.SLOT);
-        entityTypes.put(org.openepics.discs.conf.ent.SlotPair.class.getCanonicalName(), EntityType.SLOT);
+        entityTypes.put(org.openepics.discs.ccdb.model.Slot.class.getCanonicalName(), EntityType.SLOT);
+        entityTypes.put(org.openepics.discs.ccdb.model.SlotPropertyValue.class.getCanonicalName(), EntityType.SLOT);
+        entityTypes.put(org.openepics.discs.ccdb.model.SlotArtifact.class.getCanonicalName(), EntityType.SLOT);
+        entityTypes.put(org.openepics.discs.ccdb.model.SlotPair.class.getCanonicalName(), EntityType.SLOT);
 
-        entityTypes.put(org.openepics.discs.conf.ent.ComponentType.class.getCanonicalName(), EntityType.COMPONENT_TYPE);
-        entityTypes.put(org.openepics.discs.conf.ent.ComptypePropertyValue.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.ComponentType.class.getCanonicalName(), EntityType.COMPONENT_TYPE);
+        entityTypes.put(org.openepics.discs.ccdb.model.ComptypePropertyValue.class.getCanonicalName(),
                 EntityType.COMPONENT_TYPE);
-        entityTypes.put(org.openepics.discs.conf.ent.ComptypeArtifact.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.ComptypeArtifact.class.getCanonicalName(),
                 EntityType.COMPONENT_TYPE);
-        entityTypes.put(org.openepics.discs.conf.ent.ComptypeAsm.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.ComptypeAsm.class.getCanonicalName(),
                 EntityType.COMPONENT_TYPE);
 
-        entityTypes.put(org.openepics.discs.conf.ent.InstallationRecord.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.InstallationRecord.class.getCanonicalName(),
                 EntityType.INSTALLATION_RECORD);
-        entityTypes.put(org.openepics.discs.conf.ent.InstallationArtifact.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.InstallationArtifact.class.getCanonicalName(),
                 EntityType.INSTALLATION_RECORD);
 
-        entityTypes.put(org.openepics.discs.conf.ent.AlignmentRecord.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.AlignmentRecord.class.getCanonicalName(),
                 EntityType.ALIGNMENT_RECORD);
-        entityTypes.put(org.openepics.discs.conf.ent.AlignmentArtifact.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.AlignmentArtifact.class.getCanonicalName(),
                 EntityType.ALIGNMENT_RECORD);
-        entityTypes.put(org.openepics.discs.conf.ent.AlignmentPropertyValue.class.getCanonicalName(),
+        entityTypes.put(org.openepics.discs.ccdb.model.AlignmentPropertyValue.class.getCanonicalName(),
                 EntityType.ALIGNMENT_RECORD);
 
-        entityTypes.put(org.openepics.discs.conf.ent.Unit.class.getCanonicalName(), EntityType.UNIT);
+        entityTypes.put(org.openepics.discs.ccdb.model.Unit.class.getCanonicalName(), EntityType.UNIT);
 
-        entityTypes.put(org.openepics.discs.conf.ent.User.class.getCanonicalName(), EntityType.USER);
-        entityTypes.put(org.openepics.discs.conf.ent.Property.class.getCanonicalName(), EntityType.PROPERTY);
+        entityTypes.put(org.openepics.discs.ccdb.model.User.class.getCanonicalName(), EntityType.USER);
+        entityTypes.put(org.openepics.discs.ccdb.model.Property.class.getCanonicalName(), EntityType.PROPERTY);
 
-        entityTypes.put(org.openepics.discs.conf.ent.DataType.class.getCanonicalName(), EntityType.DATA_TYPE);
+        entityTypes.put(org.openepics.discs.ccdb.model.DataType.class.getCanonicalName(), EntityType.DATA_TYPE);
     }
 
     /**

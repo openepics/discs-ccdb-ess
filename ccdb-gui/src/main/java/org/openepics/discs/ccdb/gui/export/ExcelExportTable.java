@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.export;
+package org.openepics.discs.ccdb.gui.export;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,12 +39,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openepics.discs.conf.ent.values.DblValue;
-import org.openepics.discs.conf.ent.values.IntValue;
-import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.DeleteOnCloseFileInputStream;
+import org.openepics.discs.ccdb.model.values.DblValue;
+import org.openepics.discs.ccdb.model.values.IntValue;
+import org.openepics.discs.ccdb.model.values.TimestampValue;
+import org.openepics.discs.ccdb.model.values.Value;
+import org.openepics.discs.ccdb.core.util.Conversion;
+import org.openepics.discs.ccdb.core.util.DeleteOnCloseFileInputStream;
 
 /**
  * The class implements exporting the a single table into an Excel file.

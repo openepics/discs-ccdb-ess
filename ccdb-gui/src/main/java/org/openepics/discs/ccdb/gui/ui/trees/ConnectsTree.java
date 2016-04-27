@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.trees;
+package org.openepics.discs.ccdb.gui.ui.trees;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ui.util.ConnectsManager;
-import org.openepics.discs.conf.views.SlotView;
+import org.openepics.discs.ccdb.core.ejb.SlotEJB;
+import org.openepics.discs.ccdb.model.Slot;
+import org.openepics.discs.ccdb.gui.ui.util.ConnectsManager;
+import org.openepics.discs.ccdb.gui.views.SlotView;
 
 /**
  * Implements extrinsic method, that returns tree node's children based on connects database.

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.ccdb.core.util;
 
 /**
  * An exception signaling that an if/else-if/else or case branch that should be exhaustive encountered an unexpected

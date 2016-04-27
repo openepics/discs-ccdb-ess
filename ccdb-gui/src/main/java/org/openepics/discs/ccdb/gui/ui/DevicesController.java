@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui;
+package org.openepics.discs.ccdb.gui.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -41,29 +41,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.openepics.discs.conf.dl.annotations.DevicesLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.DeviceEJB;
-import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
-import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleTableExporter;
-import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.BatchIterator;
-import org.openepics.discs.conf.util.BatchSaveStage;
-import org.openepics.discs.conf.util.ImportFileStatistics;
-import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.DeviceView;
+import org.openepics.discs.ccdb.core.dl.annotations.DevicesLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoader;
+import org.openepics.discs.ccdb.core.dl.common.DataLoaderResult;
+import org.openepics.discs.ccdb.core.ejb.ComptypeEJB;
+import org.openepics.discs.ccdb.core.ejb.DeviceEJB;
+import org.openepics.discs.ccdb.core.ejb.InstallationEJB;
+import org.openepics.discs.ccdb.model.ComponentType;
+import org.openepics.discs.ccdb.model.Device;
+import org.openepics.discs.ccdb.model.DevicePropertyValue;
+import org.openepics.discs.ccdb.model.InstallationRecord;
+import org.openepics.discs.ccdb.gui.export.ExportTable;
+import org.openepics.discs.ccdb.gui.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.ccdb.gui.ui.common.DataLoaderHandler;
+import org.openepics.discs.ccdb.gui.ui.common.ExcelSingleFileImportUIHandlers;
+import org.openepics.discs.ccdb.gui.ui.common.UIException;
+import org.openepics.discs.ccdb.gui.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.ccdb.gui.ui.export.SimpleTableExporter;
+import org.openepics.discs.ccdb.gui.ui.util.UiUtility;
+import org.openepics.discs.ccdb.core.util.BatchIterator;
+import org.openepics.discs.ccdb.core.util.BatchSaveStage;
+import org.openepics.discs.ccdb.core.util.ImportFileStatistics;
+import org.openepics.discs.ccdb.core.util.Utility;
+import org.openepics.discs.ccdb.gui.views.DeviceView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 
