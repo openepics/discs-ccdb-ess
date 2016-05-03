@@ -109,7 +109,6 @@ public class AuditManager implements Serializable, SimpleTableExporter {
         }
     }
 
-
     /**
      * Creates a new instance of AuditManager
      */

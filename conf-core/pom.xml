@@ -46,16 +46,18 @@
         <dependency>
             <groupId>org.openepics.discs</groupId>
             <artifactId>ccdb-model</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openepics.discs</groupId>
             <artifactId>ccdb-business</artifactId>
+            <version>1.4.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>5.3</version>
+            <version>6.0.RC2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -193,6 +195,19 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <repositories>
+        <repository>
+            <id>org-primefaces-release-cadidates</id>
+            <url>https://artifactory01.esss.lu.se/artifactory/prime-repo/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <!-- This should be used to customize for Glassfish / JBoss -->
     <profiles>

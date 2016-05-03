@@ -70,6 +70,22 @@
                     </p:panel>
                 </p:outputPanel>
             </p:overlayPanel>
+
+            <script type="text/javascript">
+                // <![CDATA[
+                jQuery(document).ready(function() {
+                	var $this = PF('logTableVar');            
+
+                	$this.sortableColumns.on("click.dataTable", function(e, metaKeyOn) {
+                    	$this.scrollBody.scrollTop(1);
+                    	$this.allLoadedLiveScroll = false;
+                    	$this.scrollOffset = 0;
+                    });
+                });
+
+                // ]]>
+            </script>
+
         </h:form>
         <ui:include src="/resources/dialogs/export-table.xhtml">
             <ui:param name="formId" value="exportLogsForm" />

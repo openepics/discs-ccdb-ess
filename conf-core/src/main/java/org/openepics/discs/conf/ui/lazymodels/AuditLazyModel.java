@@ -9,9 +9,10 @@ import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.fields.AuditRecordFields;
 import org.openepics.discs.conf.ui.util.UiUtility;
+import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
-public class AuditLazyModel extends BaseLazyModel<AuditRecord> {
+public class AuditLazyModel extends LazyDataModel<AuditRecord> {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(AuditLazyModel.class.getCanonicalName());
 
@@ -35,9 +36,8 @@ public class AuditLazyModel extends BaseLazyModel<AuditRecord> {
         LOGGER.log(Level.INFO, "!!load   1 !!");
         LOGGER.log(Level.INFO, "pageSize: " + pageSize);
         LOGGER.log(Level.INFO, "first: " + first);
-
-        // setPageSize() is done to take care of the workaround
-        setPageSize(pageSize);
+        LOGGER.log(Level.INFO, "sortField: " + sortField);
+        LOGGER.log(Level.INFO, "sortOrder: " + sortOrder);
 
         final List<AuditRecord> results = auditRecordEJB.findLazy(first, getPageSize(),
                 selectSortField(sortField), UiUtility.translateToCCDBSortOrder(sortOrder),
