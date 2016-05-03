@@ -309,21 +309,19 @@
                                     update=":pasteSlotsForm:pasteSlots" />
                             </p:menuButton>
                             <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-minus"
-                                style="float: right; margin: 0.25em 1ex 0 0;"
-                                title="Collapse Selected Items"
+                                style="float: right; margin: 0.25em 1ex 0 0;" title="Collapse Selected Items"
                                 action="#{hierarchiesController.collapseTreeNodes}" oncomplete="hierarchiesResizeAll();"                                    
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
                                         :hierarchies:hierarchyTabs:powersTree
                                         :hierarchies:hierarchyTabs:connectsTree"
-                                disabled="#{hierarchiesController.displayedTreeEmpty}" />                            
+                                disabled="#{hierarchiesController.displayedTreeEmpty}" />
                             <p:commandButton value="Expand" id="expandButton" icon="ui-icon-plus"
-                                style="float: right; margin: 0.25em 1ex 0 0;"
-                                title="Expand Selected Items"
+                                style="float: right; margin: 0.25em 1ex 0 0;"  title="Expand Selected Items"
                                 action="#{hierarchiesController.expandTreeNodes}" oncomplete="hierarchiesResizeAll();"                                   
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
                                         :hierarchies:hierarchyTabs:powersTree
                                         :hierarchies:hierarchyTabs:connectsTree"
-                                disabled="#{hierarchiesController.displayedTreeEmpty}" />                            
+                                disabled="#{hierarchiesController.displayedTreeEmpty}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move Down"
                                 style="float: right; margin: 0.25em 1ex 0 0;"
                                 oncomplete="hierarchiesResizeAll(); scrollSelectedIntoView(PF('hierarchyWidget'));"

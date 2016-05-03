@@ -364,6 +364,32 @@ public class RelationshipController implements Serializable {
         }
     }
 
+    /** Expands the selected node or entire tree */
+    public void expandTreeNodes() {
+        final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
+        if (selectedNode == null) {
+            expandOrCollapseNode(containsTree.getRootNode(), true);
+        } else {
+            expandOrCollapseNode(selectedNode, true);
+        }
+    }
+
+    /** Collapses the selected node or entire tree */
+    public void collapseTreeNodes() {
+        final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
+        if (selectedNode == null) {
+            expandOrCollapseNode(containsTree.getRootNode(), false);
+        } else {
+            expandOrCollapseNode(selectedNode, false);
+        }
+    }
+
+    private void expandOrCollapseNode(final FilteredTreeNode<SlotView> parent, final boolean expand) {
+        parent.setExpanded(expand);
+        for (final  FilteredTreeNode<SlotView> node : parent.getFilteredChildren()) {
+            expandOrCollapseNode(node, expand);
+        }
+    }
 
     /** @return The list of relationships for the currently selected slot. */
     public List<SlotRelationshipView> getRelationships() {

@@ -26,7 +26,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- The system property jacoco.outputDir needs to be override on the command line
         with an absolute path if you want to merge results from all modules.
-        Example in a Jenkisn build where ${WORKSPACE} is defined and your project in the root directory of the workspace :
+        Example in a Jenkins build where ${WORKSPACE} is defined and your project in the root directory of the workspace :
         mvn clean install -Prun-its,coverage -Djacoco.outputDir=${WORKSPACE}/target
         Note that unfortunately using the following does not work because of
          
@@ -146,15 +146,6 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
