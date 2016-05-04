@@ -111,30 +111,37 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
                                 ? cb.asc(auditRecord.get(AuditRecord_.logTime))
                                 : cb.desc(auditRecord.get(AuditRecord_.logTime)));
+                break;
             case USER:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
                                 ? cb.asc(auditRecord.get(AuditRecord_.user))
                                 : cb.desc(auditRecord.get(AuditRecord_.user)));
+                break;
             case OPER:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
                                 ? cb.asc(auditRecord.get(AuditRecord_.oper))
                                 : cb.desc(auditRecord.get(AuditRecord_.oper)));
+                break;
             case ENTITY_ID:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
                                 ? cb.asc(auditRecord.get(AuditRecord_.entityId))
                                 : cb.desc(auditRecord.get(AuditRecord_.entityId)));
+                break;
             case ENTITY_TYPE:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
                                 ? cb.asc(auditRecord.get(AuditRecord_.entityType))
                                 : cb.desc(auditRecord.get(AuditRecord_.entityType)));
+                break;
             case ENTITY_KEY:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
                                 ? cb.asc(auditRecord.get(AuditRecord_.entityKey))
                                 : cb.desc(auditRecord.get(AuditRecord_.entityKey)));
+                break;
             case ENTRY:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
                                 ? cb.asc(auditRecord.get(AuditRecord_.entry))
                                 : cb.desc(auditRecord.get(AuditRecord_.entry)));
+                break;
             default:
                 break;
             }
