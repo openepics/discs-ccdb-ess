@@ -33,11 +33,12 @@ public class AuditLazyModel extends LazyDataModel<AuditRecord> {
     @Override
     public List<AuditRecord> load(int first, int pageSize, String sortField,
             SortOrder sortOrder, Map<String, Object> filters) {
-        LOGGER.log(Level.INFO, "!!load   1 !!");
-        LOGGER.log(Level.INFO, "pageSize: " + pageSize);
-        LOGGER.log(Level.INFO, "first: " + first);
-        LOGGER.log(Level.INFO, "sortField: " + sortField);
-        LOGGER.log(Level.INFO, "sortOrder: " + sortOrder);
+        LOGGER.log(Level.FINE, "---->pageSize: " + pageSize);
+        LOGGER.log(Level.FINE, "---->first: " + first);
+
+        for (final String filterKey : filters.keySet()) {
+            LOGGER.log(Level.INFO, "filter[" + filterKey + "]=   " + filters.get(filterKey).toString());
+        }
 
         final List<AuditRecord> results = auditRecordEJB.findLazy(first, getPageSize(),
                 selectSortField(sortField), UiUtility.translateToCCDBSortOrder(sortOrder),
