@@ -92,7 +92,7 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
 
         addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
 
-        final Predicate[] predicates =  buildPredicateList(cb, auditRecord, logTime, user, oper, entityName, entityType,
+        final Predicate[] predicates = buildPredicateList(cb, auditRecord, logTime, user, oper, entityName, entityType,
                 entityId, entry);
         cq.where(predicates);
 
@@ -160,13 +160,13 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
             predicates.add(cb.like(auditRecord.get(AuditRecord_.user), "%" + escapeDbString(user) + "%", '\\'));
         }
         if (oper != null) {
-            predicates.add(cb.equal(auditRecord.get(AuditRecord_.oper), oper.toString()));
+            predicates.add(cb.equal(auditRecord.get(AuditRecord_.oper), oper));
         }
         if (entityName != null) {
             predicates.add(cb.like(auditRecord.get(AuditRecord_.entityKey), "%" + escapeDbString(entityName) + "%", '\\'));
         }
         if (entityType != null) {
-            predicates.add(cb.equal(auditRecord.get(AuditRecord_.entityType), entityType.toString()));
+            predicates.add(cb.equal(auditRecord.get(AuditRecord_.entityType), entityType));
         }
         if (entityId != null) {
             predicates.add(cb.equal(auditRecord.get(AuditRecord_.entityId), entityId));
