@@ -35,7 +35,8 @@
 package org.openepics.discs.conf.ui.util;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +66,6 @@ public class UiUtility {
     public static final String MESSAGE_SUMMARY_DELETE_FAIL = "Deletion failed";
 
     private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
-    private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private UiUtility() {}
 
@@ -195,15 +195,15 @@ public class UiUtility {
      * @param inDateTime the user input we're trying to parse into date and time
      * @return date time string represented by the input, or today at midnight if input is invalid.
      */
-    public static String processUIDateTime(final String inDateTime) {
+    public static LocalDateTime processUIDateTime(final String inDateTime) {
         final String trimmedInput = inDateTime.trim().replaceAll(" +", " ");
         final String[] inputChunks = trimmedInput.split(" ");
         if ((inputChunks.length > 2) || (inputChunks.length < 1)) {
-            return LocalDate.now().atStartOfDay().format(dateTimeFormat);
+            return LocalDate.now().atStartOfDay();
         }
 
-        final String dateOut = tryParsingDate(inputChunks[0]);
-        final String timeOut;
+        final LocalDate dateOut = tryParsingDate(inputChunks[0]);
+        final LocalTime timeOut;
 
         if (inputChunks.length == 2) {
             timeOut = tryParsingTime(inputChunks[1]);
@@ -211,26 +211,18 @@ public class UiUtility {
             // we don't have date, time parsing must succeed
             timeOut = tryParsingTime(inputChunks[0]);
         } else {
-            timeOut = "00:00:00";
+            timeOut = LocalTime.of(0, 0);
         }
 
         // date and time parsing have failed
         if (timeOut == null) {
-            return LocalDate.now().atStartOfDay().format(dateTimeFormat);
+            return LocalDate.now().atStartOfDay();
         }
 
-        final StringBuilder result = new StringBuilder();
-        if (dateOut != null) {
-            result.append(dateOut);
-        } else {
-            result.append(LocalDate.now().toString());
-        }
-        result.append(' ').append(timeOut);
-
-        return result.toString();
+        return LocalDateTime.of(dateOut != null ? dateOut : LocalDate.now(), timeOut);
     }
 
-    private static String tryParsingDate(final String inputDate) {
+    private static LocalDate tryParsingDate(final String inputDate) {
         if (inputDate.isEmpty() || inputDate.matches("(^-.*)|(.*[^0-9\\-].*)")) {
             return null;
         }
@@ -242,65 +234,61 @@ public class UiUtility {
         }
     }
 
-    private static String parseSingleDateInput(final String inputDate) {
+    private static LocalDate parseSingleDateInput(final String inputDate) {
         final LocalDate today = LocalDate.now();
         final int currentMillenium = today.getYear() / 1000 * 1000;
 
         final int inputNumber = Integer.valueOf(inputDate);
         if (inputNumber == 0) {
             // year
-            return String.valueOf(currentMillenium) + "-01-01";
+            return LocalDate.of(currentMillenium, 1, 1);
         } else if (inputNumber <= today.getDayOfMonth()) {
             // day in this month
-            return String.valueOf(today.getYear()) + "-"
-                    + numberWithLeadingZero(today.getMonthValue()) + "-"
-                    + numberWithLeadingZero(inputNumber);
+            return LocalDate.of(today.getYear(), today.getMonthValue(), inputNumber);
         } else if (inputNumber <= today.minusMonths(1).lengthOfMonth()) {
             // day in previous month
-            return String.valueOf(today.minusMonths(1).getYear()) + "-"
-                    + numberWithLeadingZero(today.minusMonths(1).getMonthValue()) + "-"
-                    + numberWithLeadingZero(inputNumber); // adjust the day if necessary
+            return LocalDate.of(today.minusMonths(1).getYear(), today.minusMonths(1).getMonthValue(), inputNumber);
         } else if (inputNumber < 100) {
             // year in the century
             if (currentMillenium + inputNumber > today.getYear()) {
-                return String.valueOf(currentMillenium - 100 + inputNumber) + "-01-01";
+                return LocalDate.of(currentMillenium - 100 + inputNumber, 1, 1);
             } else {
                 // year in this century
-                return String.valueOf(currentMillenium + inputNumber) + "-01-01";
+                return LocalDate.of(currentMillenium + inputNumber, 1, 1);
             }
         } else if (inputNumber < 1900) {
             // error in year
             return null;
         } else {
             // it's a year
-            return String.valueOf(inputNumber) + "-01-01";
+            return LocalDate.of(inputNumber, 1, 1);
         }
     }
 
-    private static String parseMultiDateInput(final String inputDate) {
+    private static LocalDate parseMultiDateInput(final String inputDate) {
         final String[] dateChunks = inputDate.split("-");
 
         if (dateChunks.length > 3) {
             return null;
         }
 
-        final String yearStr = parseYear(dateChunks);
-        final String monthStr = parseMonth(dateChunks);
+        final Integer year = parseYear(dateChunks);
+        final Integer month = parseMonth(dateChunks);
 
-        if (yearStr == null || monthStr == null) {
+        if (year == null || month == null) {
             return null;
         }
 
-        final LocalDate testDate = LocalDate.of(Integer.valueOf(yearStr), Integer.valueOf(monthStr), 1);
-        final String dayStr = parseDay(dateChunks, testDate.lengthOfMonth());
-        if (dayStr == null) {
+        final LocalDate testDate = LocalDate.of(year, month, 1);
+        final Integer day = parseDay(dateChunks, testDate.lengthOfMonth());
+        if (day == null) {
             return null;
         }
 
-        return yearStr + "-" + monthStr + "-" + dayStr;
+        return LocalDate.of(year, month, day);
     }
 
-    private static String parseYear(final String[] dateChunks) {
+    private static Integer parseYear(final String[] dateChunks) {
         final LocalDate today = LocalDate.now();
         final int currentMillenium = today.getYear() / 1000 * 1000;
 
@@ -309,47 +297,47 @@ public class UiUtility {
             // year in the century
             if (currentMillenium + inputYear > today.getYear()) {
                 // year in previous century
-                return String.valueOf(currentMillenium - 100 + inputYear);
+                return currentMillenium - 100 + inputYear;
             } else {
                 // year in this century
-                return String.valueOf(currentMillenium + inputYear);
+                return currentMillenium + inputYear;
             }
         } else if (inputYear < 1900) {
             // error in year
             return null;
         } else {
             // it's a year
-            return String.valueOf(inputYear);
+            return inputYear;
         }
     }
 
-    private static String parseMonth(final String[] dateChunks) {
+    private static Integer parseMonth(final String[] dateChunks) {
         if ((dateChunks.length > 1) && !dateChunks[1].isEmpty()) {
             final int inputMonth = Integer.valueOf(dateChunks[1]);
             if ((inputMonth < 1) || (inputMonth > 12)) {
                 return null;
             } else {
-                return numberWithLeadingZero(inputMonth);
+                return inputMonth;
             }
         } else {
-            return "01";
+            return 1;
         }
     }
 
-    private static String parseDay(final String[] dateChunks, final int lastDayOfMonth) {
+    private static Integer parseDay(final String[] dateChunks, final int lastDayOfMonth) {
         if ((dateChunks.length > 2) && !dateChunks[2].isEmpty()) {
             final int inputDay = Integer.valueOf(dateChunks[2]);
             if ((inputDay < 1) || (inputDay > lastDayOfMonth)) {
                 return null;
             } else {
-                return numberWithLeadingZero(inputDay);
+                return inputDay;
             }
         } else {
-            return "01";
+            return 1;
         }
     }
 
-    private static String tryParsingTime(final String inputTime) {
+    private static LocalTime tryParsingTime(final String inputTime) {
         if (inputTime.matches("(^:.*)|(.*[^0-9:].*)") || !inputTime.contains(":")) {
             return null;
         }
@@ -359,45 +347,73 @@ public class UiUtility {
             return null;
         }
 
-        final String hoursStr = parseHours(timeChunks[0]);
-        final String minutesStr = parseMinutesOrSeconds(timeChunks, 1);
-        final String secondsStr = parseMinutesOrSeconds(timeChunks, 2);
+        final Integer hours = parseHours(timeChunks[0]);
+        final Integer minutes = parseMinutesOrSeconds(timeChunks, 1);
+        final Integer seconds = parseMinutesOrSeconds(timeChunks, 2);
 
-        if (hoursStr == null || minutesStr == null || secondsStr == null) {
+        if (hours == null || minutes == null || seconds == null) {
             return null;
         }
 
-        return hoursStr + ":" + minutesStr + ":" + secondsStr;
+        return LocalTime.of(hours, minutes, seconds);
     }
 
-    private static String parseHours(final String hour) {
+    private static Integer parseHours(final String hour) {
         if (!hour.isEmpty()) {
             final int inputHour = Integer.valueOf(hour);
             if ((inputHour < 0) || (inputHour > 23)) {
                 return null;
             } else {
-                return numberWithLeadingZero(inputHour);
+                return inputHour;
             }
         } else {
             return null;
         }
     }
 
-    private static String parseMinutesOrSeconds(final String[] timeChunks, final int index) {
+    private static Integer parseMinutesOrSeconds(final String[] timeChunks, final int index) {
         if ((timeChunks.length > index) && !timeChunks[index].isEmpty()) {
             final int inputNumber = Integer.valueOf(timeChunks[index]);
             if ((inputNumber < 0) || (inputNumber > 59)) {
                 return null;
             } else {
-                return numberWithLeadingZero(inputNumber);
+                return inputNumber;
             }
         } else {
-            return "00";
+            return 0;
         }
     }
 
-    private static String numberWithLeadingZero(int num) {
-        final String numStr = String.valueOf(num);
-        return ("0" + numStr).substring(numStr.length() - 1);
+    /**
+     * @param longStr the string to parse
+     * @return a number represented by the input string, <code>null</code> if there was an error.
+     */
+    public static Long processUILong(final String longStr) {
+        try {
+            if (longStr == null) {
+                return null;
+            }
+            return Long.valueOf(longStr);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * The method tries to parse the string into an enum constant.
+     *
+     * @param enumConstantName the enum constant name we're trying to parse
+     * @param enumClassToCheck the enum class that we're trying to construct
+     * @param <E> the enumeration to check for
+     * @return The enum constant E if successfully parsed, <code>null</code> otherwise.
+     */
+    @SuppressWarnings("unchecked")
+    public static <E extends Enum<E>> E parseIntoEnum(final String enumConstantName, Class<E> enumClassToCheck) {
+        for (final Enum<E> enumVal : enumClassToCheck.getEnumConstants()) {
+            if (enumVal.name().equalsIgnoreCase(enumConstantName)) {
+                return (E) enumVal;
+            }
+        }
+        return null;
     }
 }

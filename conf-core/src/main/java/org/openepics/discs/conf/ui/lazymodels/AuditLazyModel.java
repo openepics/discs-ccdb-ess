@@ -1,5 +1,27 @@
+/*
+ * Copyright (c) 2016 European Spallation Source
+ * Copyright (c) 2016 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ui.lazymodels;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -7,6 +29,8 @@ import java.util.logging.Logger;
 
 import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.fields.AuditRecordFields;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.primefaces.model.LazyDataModel;
@@ -33,18 +57,37 @@ public class AuditLazyModel extends LazyDataModel<AuditRecord> {
     @Override
     public List<AuditRecord> load(int first, int pageSize, String sortField,
             SortOrder sortOrder, Map<String, Object> filters) {
-        LOGGER.log(Level.FINE, "---->pageSize: " + pageSize);
-        LOGGER.log(Level.FINE, "---->first: " + first);
+        LOGGER.log(Level.FINEST, "---->pageSize: " + pageSize);
+        LOGGER.log(Level.FINEST, "---->first: " + first);
 
         for (final String filterKey : filters.keySet()) {
-            LOGGER.log(Level.INFO, "filter[" + filterKey + "]=   " + filters.get(filterKey).toString());
+            LOGGER.log(Level.FINER, "filter[" + filterKey + "] = " + filters.get(filterKey).toString());
         }
+
+        final Date logDateTime = parseLogDateTime(filters);
+        final String user = filters.containsKey(USER) ? filters.get(USER).toString() : null;
+        final String entityName = filters.containsKey(ENTITY_KEY) ? filters.get(ENTITY_KEY).toString() : null;
+        final String entry = filters.containsKey(ENTRY) ? filters.get(ENTRY).toString() : null;
+        final Long entityId = filters.containsKey(ENTITY_ID) ?
+                                    UiUtility.processUILong(filters.get(ENTITY_ID).toString()) : null;
+        final EntityTypeOperation oper = filters.containsKey(OPER) ?
+                UiUtility.parseIntoEnum(filters.get(OPER).toString(), EntityTypeOperation.class) : null;
+            final EntityType entityType = filters.containsKey(ENTITY_TYPE) ?
+                    UiUtility.parseIntoEnum(filters.get(ENTITY_TYPE).toString(), EntityType.class) : null;
 
         final List<AuditRecord> results = auditRecordEJB.findLazy(first, getPageSize(),
                 selectSortField(sortField), UiUtility.translateToCCDBSortOrder(sortOrder),
-                null, null, null, null, null, null, null);
+                logDateTime, user, oper, entityName, entityType, entityId, entry);
 
         return results;
+    }
+
+    private Date parseLogDateTime(final Map<String, Object> filters) {
+        if (filters.containsKey(LOG_TIME_FORMATTED)) {
+            final LocalDateTime filter = UiUtility.processUIDateTime(filters.get(LOG_TIME_FORMATTED).toString());
+            return Date.from(filter.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
     }
 
     @Override
