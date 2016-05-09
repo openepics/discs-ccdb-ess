@@ -107,20 +107,20 @@ public class DateTimeFilterParserTest {
 
     @Test
     public void invalidInputs() {
-        final LocalDateTime todayAtMidnight = LocalDate.now().atStartOfDay();
+        final LocalDateTime epochStart = LocalDate.ofEpochDay(0).atStartOfDay();
 
-        Assert.assertEquals("'' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime(""));
-        Assert.assertEquals("'a' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("a"));
-        Assert.assertEquals("'9a' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("9a"));
-        Assert.assertEquals("'2016/01/01' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("2016/01/01"));
-        Assert.assertEquals("'900' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("900"));
-        Assert.assertEquals("'2016-13-01' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("2016-13-01"));
-        Assert.assertEquals("'2016-01-01-00' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("2016-01-01-00"));
-        Assert.assertEquals("'2016-A-01' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("2016-A-01"));
-        Assert.assertEquals("'2016-01-01 12:70:00' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("2016-01-01 12:70:00"));
-        Assert.assertEquals("'2016-01-01 25:0:0' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("2016-01-01 25:0:0"));
-        Assert.assertEquals("'-01' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("-01"));
-        Assert.assertEquals("'2016--01-01' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("2016--01-01"));
-        Assert.assertEquals("'12:00:00:00' should return 'Today'", todayAtMidnight, UiUtility.processUIDateTime("12:00:00:00"));
+        Assert.assertEquals("'' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime(""));
+        Assert.assertEquals("'a' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("a"));
+        Assert.assertEquals("'9a' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("9a"));
+        Assert.assertEquals("'2016/01/01' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("2016/01/01"));
+        Assert.assertEquals("'900' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("900"));
+        Assert.assertEquals("'2016-13-01' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("2016-13-01"));
+        Assert.assertEquals("'2016-01-01-00' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("2016-01-01-00"));
+        Assert.assertEquals("'2016-A-01' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("2016-A-01"));
+        Assert.assertEquals("'2016-01-01 12:70:00' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("2016-01-01 12:70:00"));
+        Assert.assertEquals("'2016-01-01 25:0:0' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("2016-01-01 25:0:0"));
+        Assert.assertEquals("'-01' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("-01"));
+        Assert.assertEquals("'2016--01-01' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("2016--01-01"));
+        Assert.assertEquals("'12:00:00:00' should return 'Epoch start'", epochStart, UiUtility.processUIDateTime("12:00:00:00"));
     }
 }

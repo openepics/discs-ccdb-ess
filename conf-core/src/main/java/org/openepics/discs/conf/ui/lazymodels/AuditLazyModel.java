@@ -33,10 +33,9 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.fields.AuditRecordFields;
 import org.openepics.discs.conf.ui.util.UiUtility;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
-public class AuditLazyModel extends LazyDataModel<AuditRecord> {
+public class AuditLazyModel extends CCDBLazyModel<AuditRecord> {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(AuditLazyModel.class.getCanonicalName());
 
@@ -64,6 +63,8 @@ public class AuditLazyModel extends LazyDataModel<AuditRecord> {
             LOGGER.log(Level.FINER, "filter[" + filterKey + "] = " + filters.get(filterKey).toString());
         }
 
+        setLatestLoadData(sortField, sortOrder, filters);
+
         final Date logDateTime = parseLogDateTime(filters);
         final String user = filters.containsKey(USER) ? filters.get(USER).toString() : null;
         final String entityName = filters.containsKey(ENTITY_KEY) ? filters.get(ENTITY_KEY).toString() : null;
@@ -72,12 +73,14 @@ public class AuditLazyModel extends LazyDataModel<AuditRecord> {
                                     UiUtility.processUILong(filters.get(ENTITY_ID).toString()) : null;
         final EntityTypeOperation oper = filters.containsKey(OPER) ?
                 UiUtility.parseIntoEnum(filters.get(OPER).toString(), EntityTypeOperation.class) : null;
-            final EntityType entityType = filters.containsKey(ENTITY_TYPE) ?
-                    UiUtility.parseIntoEnum(filters.get(ENTITY_TYPE).toString(), EntityType.class) : null;
+        final EntityType entityType = filters.containsKey(ENTITY_TYPE) ?
+                UiUtility.parseIntoEnum(filters.get(ENTITY_TYPE).toString(), EntityType.class) : null;
 
-        final List<AuditRecord> results = auditRecordEJB.findLazy(first, getPageSize(),
+        final List<AuditRecord> results = auditRecordEJB.findLazy(first, pageSize,
                 selectSortField(sortField), UiUtility.translateToCCDBSortOrder(sortOrder),
                 logDateTime, user, oper, entityName, entityType, entityId, entry);
+
+        setEmpty(first, results);
 
         return results;
     }

@@ -14,7 +14,7 @@
                             scrollable="true" scrollWidth="100%" scrollHeight="100%" 
                             resizableColumns="true" tableStyle="word-wrap: break-word;" emptyMessage="No records found." 
                             lazy="true" liveScroll="true" scrollRows="50" rows="50">
-                        <p:ajax event="filter" ignoreAutoUpdate="true"/>
+                        <p:ajax event="filter" ignoreAutoUpdate="true" update=":logsForm:exportButton" />
     
                         <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
                                 sortBy="#{auditRecord.logTimeFormatted}" filterMatchMode="contains">
@@ -58,7 +58,7 @@
 
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportLogs').show();" 
-                    disabled="#{empty auditManager.auditRecords}" update=":exportLogsForm:exportLogs" 
+                    disabled="#{auditManager.isDataTableEmpty()}" update=":exportLogsForm:exportLogs" 
                     actionListener="#{auditManager.simpleTableDialog.prepareTableExportPopup}" />
             </p:fieldset>
 

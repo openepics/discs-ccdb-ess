@@ -21,7 +21,6 @@ package org.openepics.discs.conf.ui;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +39,7 @@ import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.ui.lazymodels.AuditLazyModel;
+import org.openepics.discs.conf.ui.lazymodels.CCDBLazyModel;
 import org.primefaces.model.LazyDataModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,8 +61,6 @@ public class AuditManager implements Serializable, SimpleTableExporter {
     private LazyDataModel<AuditRecord>lazyModel;
 
     private AuditRecord displayRecord;
-    private List<AuditRecord> auditRecords;
-    private List<AuditRecord> filteredAuditRecords;
     private List<SelectItem> auditOperations;
     private List<SelectItem> entityTypes;
     private String formattedDetails;
@@ -88,7 +86,9 @@ public class AuditManager implements Serializable, SimpleTableExporter {
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<AuditRecord> exportData = new ArrayList<>();
+            final CCDBLazyModel<AuditRecord> ccdbLazyMode = (CCDBLazyModel<AuditRecord>)lazyModel;
+            final List<AuditRecord> exportData = ccdbLazyMode.load(0, Integer.MAX_VALUE,
+                    ccdbLazyMode.getSortField(), ccdbLazyMode.getSortOrder(), ccdbLazyMode.getFilters());
             for (final AuditRecord record : exportData) {
                 exportTable.addDataRow(record.getLogTime(), record.getUser(), record.getOper().toString(),
                         record.getEntityKey(), record.getEntityType().getLabel(), record.getEntityId(),
@@ -121,7 +121,6 @@ public class AuditManager implements Serializable, SimpleTableExporter {
     @PostConstruct
     public void init() {
         lazyModel = new AuditLazyModel(auditRecordEJB);
-        //auditRecords = auditRecordEJB.findAllOrdered();
         simpleTableExporterDialog = new ExportSimpleAuditTableDialog();
         prepareAuditOperations();
         prepareEntityTypes();
@@ -182,24 +181,9 @@ public class AuditManager implements Serializable, SimpleTableExporter {
         return lazyModel;
     }
 
-
-    /** @return the auditRecords */
-    public List<AuditRecord> getAuditRecords() {
-        return auditRecords;
-    }
-
-    /**
-     * @return the filteredAuditRecords
-     */
-    public List<AuditRecord> getFilteredAuditRecords() {
-        return filteredAuditRecords;
-    }
-
-    /**
-     * @param filteredAuditRecords the filteredAuditRecords to set
-     */
-    public void setFilteredAuditRecords(List<AuditRecord> filteredAuditRecords) {
-        this.filteredAuditRecords = filteredAuditRecords;
+    /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
+    public boolean isDataTableEmpty() {
+        return ((CCDBLazyModel<AuditRecord>)lazyModel).isEmpty();
     }
 
     private void prepareAuditOperations() {
