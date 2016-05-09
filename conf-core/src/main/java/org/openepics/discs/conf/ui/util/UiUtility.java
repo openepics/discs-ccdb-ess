@@ -177,7 +177,7 @@ public class UiUtility {
     /**
      * The method tries to parse the string using the following rules. If input contains
      * <ol>
-     * <li>illegal characters (legal: [0-9\-: ]) then today at midnight is assumed</li>
+     * <li>illegal characters (legal: [0-9\-: ]) then 1970-01-01 at midnight is assumed</li>
      * <li>a number less than current date (day number in month), the day of this month is assumed</li>
      * <li>a number (XX) above current day (date) and under the number of days of previous month,
      *         the day of previous month is assumed</li>
@@ -199,7 +199,7 @@ public class UiUtility {
         final String trimmedInput = inDateTime.trim().replaceAll(" +", " ");
         final String[] inputChunks = trimmedInput.split(" ");
         if ((inputChunks.length > 2) || (inputChunks.length < 1)) {
-            return LocalDate.now().atStartOfDay();
+            return LocalDate.ofEpochDay(0).atStartOfDay();
         }
 
         final LocalDate dateOut = tryParsingDate(inputChunks[0]);
@@ -216,7 +216,7 @@ public class UiUtility {
 
         // date and time parsing have failed
         if (timeOut == null) {
-            return LocalDate.now().atStartOfDay();
+            return LocalDate.ofEpochDay(0).atStartOfDay();
         }
 
         return LocalDateTime.of(dateOut != null ? dateOut : LocalDate.now(), timeOut);
