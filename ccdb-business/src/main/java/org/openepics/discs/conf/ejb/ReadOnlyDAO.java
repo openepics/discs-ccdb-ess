@@ -113,4 +113,15 @@ public abstract class ReadOnlyDAO<T extends EntityWithId> {
      * @return the {@link Class} of the entity this DAO is for
      */
     protected abstract Class<T> getEntityClass();
+
+    /**
+     * Escapes the characters that have a special meaning in the database LIKE query, '%' and '_'.
+     *
+     * @param dbString the string to escape
+     * @return the escaped string
+     */
+    protected String escapeDbString(final String dbString) {
+        return dbString.replaceAll("%", "\\%").replaceAll("_", "\\_");
+    }
+
 }

@@ -18,11 +18,11 @@
             <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:fieldset id="unitsFieldset" legend="Units" style="box-sizing: border-box; height: calc(100vh - 7em);">
                 <div style="height: calc(100% - 3em)">
-                    <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
+                    <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.lazyModel}" 
                             scrollable="true" scrollWidth="100%" scrollHeight="100%" emptyMessage="No records found." 
                             selection="#{unitManager.selectedUnits}" selectionMode="multiple" rowKey="#{unit.unit.id}" 
                             resizableColumns="true" tableStyle="word-wrap: break-word;" 
-                            filteredValue="#{unitManager.filteredUnits}" liveScroll="true" scrollRows="50">
+                            lazy="true" liveScroll="true" scrollRows="50" rows="50">
                         <p:ajax event="filter" update="unitsForm:exportButton" />
                         <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton 
                                 :unitsForm:duplicateButton" />
@@ -52,7 +52,7 @@
                     oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                    
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportUnits').show();" 
-                    disabled="#{empty unitManager.filteredUnits}" update=":exportUnitsForm:exportUnits" 
+                    disabled="#{unitManager.isDataTableEmpty()}" update=":exportUnitsForm:exportUnits" 
                     actionListener="#{unitManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Units" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importUnits').show();" 
@@ -94,7 +94,8 @@
             <ui:param name="controller" value="#{unitManager}" />
             <ui:param name="duplicateList" value="#{unitManager.selectedUnits}" />
             <ui:param name="filteredDuplicateList" value="#{unitManager.filteredUnits}" />
-            <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:editButton :unitsForm:deleteButton :unitsForm:duplicateButton :unitsForm:growl" />
+            <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:editButton :unitsForm:deleteButton 
+                                                :unitsForm:duplicateButton :unitsForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="units" />
             <ui:param name="entityName" value="Unit" />

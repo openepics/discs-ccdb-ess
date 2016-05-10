@@ -58,7 +58,7 @@ public class AuditManager implements Serializable, SimpleTableExporter {
     private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
 
     @Inject private AuditRecordEJB auditRecordEJB;
-    private LazyDataModel<AuditRecord>lazyModel;
+    private CCDBLazyModel<AuditRecord> lazyModel;
 
     private AuditRecord displayRecord;
     private List<SelectItem> auditOperations;
@@ -86,9 +86,8 @@ public class AuditManager implements Serializable, SimpleTableExporter {
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final CCDBLazyModel<AuditRecord> ccdbLazyMode = (CCDBLazyModel<AuditRecord>)lazyModel;
-            final List<AuditRecord> exportData = ccdbLazyMode.load(0, Integer.MAX_VALUE,
-                    ccdbLazyMode.getSortField(), ccdbLazyMode.getSortOrder(), ccdbLazyMode.getFilters());
+            final List<AuditRecord> exportData = lazyModel.load(0, Integer.MAX_VALUE,
+                    lazyModel.getSortField(), lazyModel.getSortOrder(), lazyModel.getFilters());
             for (final AuditRecord record : exportData) {
                 exportTable.addDataRow(record.getLogTime(), record.getUser(), record.getOper().toString(),
                         record.getEntityKey(), record.getEntityType().getLabel(), record.getEntityId(),
@@ -183,7 +182,7 @@ public class AuditManager implements Serializable, SimpleTableExporter {
 
     /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
     public boolean isDataTableEmpty() {
-        return ((CCDBLazyModel<AuditRecord>)lazyModel).isEmpty();
+        return lazyModel.isEmpty();
     }
 
     private void prepareAuditOperations() {

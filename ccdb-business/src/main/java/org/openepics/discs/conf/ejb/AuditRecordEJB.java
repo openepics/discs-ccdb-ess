@@ -82,13 +82,29 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 
+    /**
+     * Returns only a subset of data based on sort column, sort order and filtered by all the fields.
+     *
+     * @param first the index of the first result to return
+     * @param pageSize the number of results
+     * @param sortField the field by which to sort
+     * @param sortOrder ascending/descending
+     * @param logTime timestamp
+     * @param user string
+     * @param oper operation
+     * @param entityName name of the entity
+     * @param entityType type of the entity
+     * @param entityId entity database ID
+     * @param entry the change description
+     * @return The required entities.
+     */
     public List<AuditRecord> findLazy(final int first, final int pageSize, final @Nullable AuditRecordFields sortField,
             final @Nullable SortOrder sortOrder, final @Nullable Date logTime, final @Nullable String user,
             final @Nullable EntityTypeOperation oper, final @Nullable String entityName,
             final @Nullable EntityType entityType, final @Nullable Long entityId, final @Nullable String entry) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final CriteriaQuery<AuditRecord> cq = cb.createQuery(AuditRecord.class);
-        final Root<AuditRecord> auditRecord = cq.from(AuditRecord.class);
+        final CriteriaQuery<AuditRecord> cq = cb.createQuery(getEntityClass());
+        final Root<AuditRecord> auditRecord = cq.from(getEntityClass());
 
         addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
 
@@ -176,9 +192,5 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
         }
 
         return predicates.toArray(new Predicate[] {});
-    }
-
-    private String escapeDbString(final String dbString) {
-        return dbString.replace("%", "\\%").replace("_", "\\_");
     }
 }

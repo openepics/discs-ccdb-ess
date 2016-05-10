@@ -49,10 +49,13 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.lazymodels.CCDBLazyModel;
+import org.openepics.discs.conf.ui.lazymodels.UnitLazyModel;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.LazyDataModel;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -74,7 +77,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @UnitsLoader private DataLoader unitsDataLoader;
 
-    private List<UnitView> unitViews;
+    private CCDBLazyModel<UnitView> lazyModel;
+
     private List<UnitView> filteredUnits;
     private List<UnitView> selectedUnits;
     private List<UnitView> usedUnits;
@@ -104,7 +108,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<UnitView> exportData = filteredUnits;
+            final List<UnitView> exportData = lazyModel.load(0, Integer.MAX_VALUE,
+                    lazyModel.getSortField(), lazyModel.getSortOrder(), lazyModel.getFilters());
             for (final UnitView unit : exportData) {
                 exportTable.addDataRow(DataLoader.CMD_UPDATE,  unit.getName(), unit.getDescription(), unit.getSymbol());
             }
@@ -137,14 +142,12 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
             refreshUnits();
             if (!Strings.isNullOrEmpty(unitIdStr)) {
                 final long unitId = Long.parseLong(unitIdStr);
-                int elementPosition = 0;
-                for (UnitView unit : unitViews) {
-                    if (unit.getUnit().getId() == unitId) {
-                        RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
-                                + ", 'unitsTableVar');");
-                        return;
-                    }
-                    ++elementPosition;
+                final Unit unit = unitEJB.findById(unitId);
+                if (unit != null) {
+                    // XXX getNamedPosition() might not be returning correct position
+                    long elementPosition = unitEJB.getNamedPosition(unit.getName());
+                    RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
+                            + ", 'unitsTableVar');");
                 }
             }
         } catch (NumberFormatException e) {
@@ -166,8 +169,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     private void refreshUnits() {
-        unitViews = unitEJB.findAllOrdered().stream().map(UnitView::new).collect(Collectors.toList());
-        filteredUnits = unitViews;
+        lazyModel = new UnitLazyModel(unitEJB);
         selectedUnits = null;
     }
 
@@ -186,7 +188,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
     }
 
-    /** Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog  */
+    /** Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog */
     public void onAdd() {
         try {
             Preconditions.checkNotNull(dialogUnit);
@@ -202,8 +204,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     /**
-     * Method that saves the modified unit definition when user presses the "Save" button in the
-     * "Modify unit" dialog.
+     * Method that saves the modified unit definition when user presses the "Save" button in the "Modify unit" dialog.
      */
     public void onModify() {
         try {
@@ -291,9 +292,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
     }
 
-    /**
-     * The method creates a new copy of the currently selected {@link Unit}(s)
-     */
+    /** The method creates a new copy of the currently selected {@link Unit}(s) */
     public void duplicate() {
         try {
             Preconditions.checkState(!Utility.isNullOrEmpty(selectedUnits));
@@ -315,9 +314,13 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         dataLoader = unitsDataLoader;
     }
 
-    /** @return The list of all user defined physics units in the database */
-    public List<UnitView> getUnitViews() {
-        return unitViews;
+    public LazyDataModel<UnitView> getLazyModel() {
+        return lazyModel;
+    }
+
+    /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
+    public boolean isDataTableEmpty() {
+        return lazyModel.isEmpty();
     }
 
     /** @return The list of filtered units used by the PrimeFaces filter field */
@@ -358,9 +361,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         this.filteredDialogUnits = filteredDialogUnits;
     }
 
-    /**
-     * @return the dialogUnit
-     */
+    /** @return the dialogUnit */
     public UnitView getDialogUnit() {
         return dialogUnit;
     }
