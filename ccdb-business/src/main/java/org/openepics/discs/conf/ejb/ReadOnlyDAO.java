@@ -121,7 +121,11 @@ public abstract class ReadOnlyDAO<T extends EntityWithId> {
      * @return the escaped string
      */
     protected String escapeDbString(final String dbString) {
-        return dbString.replaceAll("%", "\\%").replaceAll("_", "\\_");
+        return dbString.
+                replaceAll("%", "\\\\%").
+                replaceAll("_", "\\\\_").
+                replaceAll("\\[", "\\\\[").
+                replaceAll("]", "\\\\]");
     }
 
 }
