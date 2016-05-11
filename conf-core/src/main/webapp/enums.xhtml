@@ -18,12 +18,12 @@
             <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:fieldset id="enumsFieldset" legend="Enumerations" style="box-sizing: border-box; height: calc(100vh - 7em);">
                 <div style="height: calc(100% - 3em)">
-                    <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
+                    <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.lazyModel}" 
                             scrollable="true" scrollWidth="100%" scrollHeight="100%" emptyMessage="No records found." 
                             selection="#{dataTypeManager.selectedEnums}" selectionMode="multiple" rowKey="#{enum.enumeration.id}" 
                             resizableColumns="true" tableStyle="word-wrap: break-word;" 
-                            filteredValue="#{dataTypeManager.filteredDataTypeViews}" liveScroll="true" scrollRows="50">
-                        <p:ajax event="filter" update=":enumsForm:exportButton"/>
+                            lazy="true" liveScroll="true" scrollRows="50" rows="50">
+                        <p:ajax event="filter" update=":enumsForm:exportButton" />
                         <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton 
                                 :enumsForm:duplicateButton" />
                         <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton 
@@ -52,7 +52,7 @@
                     oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                       
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportEnums').show();" 
-                    disabled="#{empty dataTypeManager.filteredDataTypeViews}" update=":exportEnumsForm:exportEnums" 
+                    disabled="#{empty dataTypeManager.isDataTableEmpty()}" update=":exportEnumsForm:exportEnums" 
                     actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Enumerations" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importEnums').show();" 
@@ -71,6 +71,21 @@
                         disabled="#{not securityPolicy.getUIHint('ENUM_CREATE')}"
                         oncomplete="PF('addEnum').show();" update=":addEnumForm:addEnum" />
             </p:fieldset>
+
+            <script type="text/javascript">
+                // <![CDATA[
+                jQuery(document).ready(function() {
+                    var $this = PF("enumsTableVar");            
+
+                    $this.sortableColumns.on("click.dataTable", function(e, metaKeyOn) {
+                        $this.scrollBody.scrollTop(1);
+                        $this.allLoadedLiveScroll = false;
+                        $this.scrollOffset = 0;
+                    });
+                });
+                // ]]>
+            </script>
+
         </h:form>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
@@ -94,8 +109,9 @@
             <ui:param name="formId" value="duplicateForm" />
             <ui:param name="controller" value="#{dataTypeManager}" />
             <ui:param name="duplicateList" value="#{dataTypeManager.selectedEnums}" />
-            <ui:param name="filteredDuplicateList" value="#{dataTypeManager.filteredDataTypeViews}" />
-            <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:duplicateButton :enumsForm:growl" />
+            <ui:param name="filteredDuplicateList" value="#{dataTypeManager.filteredDialogEnums}" />
+            <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton 
+                                                :enumsForm:duplicateButton :enumsForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="enumerations" />
             <ui:param name="entityName" value="Enumeration" />
@@ -106,7 +122,8 @@
             <ui:param name="dialogTitle" value="Edit Enumeration" />
             <ui:param name="widgetName" value="modifyEnum" />
             <ui:param name="submitHandler" value="onModify" />
-            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:growl" />
+            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
+                                                :enumsForm:editButton :enumsForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions('modifyEnum');" />
         </ui:include>
 

@@ -70,7 +70,22 @@
                     update=":addUnitForm" title="Add New Unit" icon="ui-icon-plus" 
                     disabled="#{not securityPolicy.getUIHint('UNIT_CREATE')}" 
                     oncomplete="PF('addUnit').show()" style="float: right; margin: 1em 1ex 0 0;" />
-             </p:fieldset>
+            </p:fieldset>
+
+            <script type="text/javascript">
+                // <![CDATA[
+                jQuery(document).ready(function() {
+                    var $this = PF("unitsTableVar");            
+
+                    $this.sortableColumns.on("click.dataTable", function(e, metaKeyOn) {
+                        $this.scrollBody.scrollTop(1);
+                        $this.allLoadedLiveScroll = false;
+                        $this.scrollOffset = 0;
+                    });
+                });
+                // ]]>
+            </script>
+
         </h:form>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >

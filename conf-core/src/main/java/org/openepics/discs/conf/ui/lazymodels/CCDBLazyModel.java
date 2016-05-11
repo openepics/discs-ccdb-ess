@@ -34,7 +34,7 @@ import org.primefaces.model.SortOrder;
  *
  * @param <T> The class to display in the data table
  */
-public class CCDBLazyModel<T> extends LazyDataModel<T> {
+public abstract class CCDBLazyModel<T> extends LazyDataModel<T> {
     private static final long serialVersionUID = 1L;
 
     private boolean empty = true;

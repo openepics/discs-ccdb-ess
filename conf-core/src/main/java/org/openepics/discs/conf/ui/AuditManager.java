@@ -176,6 +176,7 @@ public class AuditManager implements Serializable, SimpleTableExporter {
         return formatEntryDetails(displayRecord);
     }
 
+    /** @return the lazy loading data model */
     public LazyDataModel<AuditRecord> getLazyModel() {
         return lazyModel;
     }

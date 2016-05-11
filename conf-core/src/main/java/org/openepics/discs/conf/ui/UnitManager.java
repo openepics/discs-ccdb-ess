@@ -314,6 +314,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         dataLoader = unitsDataLoader;
     }
 
+    /** @return the lazy loading data model */
     public LazyDataModel<UnitView> getLazyModel() {
         return lazyModel;
     }
