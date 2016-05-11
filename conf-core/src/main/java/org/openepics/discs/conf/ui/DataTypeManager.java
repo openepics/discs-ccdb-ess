@@ -318,6 +318,11 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     //* * * * * * * * * * * * * * * * * getters and setters * * * * * * * * * * * * * * * * *
     //
 
+    /** @return a list of all {@link DataType}s */
+    public List<DataType> getDataTypes() {
+        return ImmutableList.copyOf(dataTypeEJB.findAll());
+    }
+
     /** @return the lazy loading data model */
     public LazyDataModel<UserEnumerationView> getLazyModel() {
         return lazyModel;

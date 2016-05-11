@@ -21,16 +21,30 @@ package org.openepics.discs.conf.ejb;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.DataType_;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.Property_;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.ent.Unit_;
+import org.openepics.discs.conf.ent.fields.PropertyFields;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.SortOrder;
 import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.collect.Lists;
@@ -125,5 +139,96 @@ public class PropertyEJB extends DAO<Property> {
             ++duplicated;
         }
         return duplicated;
+    }
+
+    /**
+     * Returns only a subset of data based on sort column, sort order and filtered by all the fields.
+     *
+     * @param first the index of the first result to return
+     * @param pageSize the number of results
+     * @param sortField the field by which to sort
+     * @param sortOrder ascending/descending
+     * @param name the unit name
+     * @param description the unit description
+     * @param unit the unit symbol
+     * @return The required entities.
+     */
+    public List<Property> findLazy(final int first, final int pageSize,
+            final @Nullable PropertyFields sortField, final @Nullable SortOrder sortOrder,
+            final @Nullable String name, final @Nullable String description, final @Nullable String unit,
+            final @Nullable String dataType) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Property> cq = cb.createQuery(getEntityClass());
+        final Root<Property> auditRecord = cq.from(getEntityClass());
+
+        addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
+
+        final Predicate[] predicates = buildPredicateList(cb, cq, auditRecord, name, description, unit, dataType);
+        cq.where(predicates);
+
+        final TypedQuery<Property> query = em.createQuery(cq);
+        query.setFirstResult(first);
+        query.setMaxResults(pageSize);
+
+        return query.getResultList();
+    }
+
+    private void addSortingOrder(final PropertyFields sortField, final SortOrder sortOrder, final CriteriaBuilder cb,
+            final CriteriaQuery<Property> cq, final Root<Property> unitRecord) {
+        if ((sortField != null) && (sortOrder != null) && (sortOrder != SortOrder.UNSORTED)) {
+            switch (sortField) {
+            case NAME:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(unitRecord.get(Property_.name))
+                                : cb.desc(unitRecord.get(Property_.name)));
+            case DESCRIPTION:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(unitRecord.get(Property_.description))
+                                : cb.desc(unitRecord.get(Property_.description)));
+                break;
+            case UNIT:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(unitRecord.get(Property_.unit))
+                                : cb.desc(unitRecord.get(Property_.unit)));
+                break;
+            case DATA_TYPE:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(unitRecord.get(Property_.dataType))
+                                : cb.desc(unitRecord.get(Property_.dataType)));
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    private Predicate[] buildPredicateList(final CriteriaBuilder cb, final CriteriaQuery<Property> cq,
+            final Root<Property> propertyRecord, final @Nullable String name, final @Nullable String description,
+            final @Nullable String unit, final @Nullable String dataType) {
+        final List<Predicate> predicates = Lists.newArrayList();
+
+        if (name != null) {
+            predicates.add(cb.like(propertyRecord.get(Property_.name), "%" + escapeDbString(name) + "%", '\\'));
+        }
+        if (description != null) {
+            predicates.add(cb.like(propertyRecord.get(Property_.description),
+                                                                "%" + escapeDbString(description) + "%", '\\'));
+        }
+        if (unit != null) {
+            Subquery<Unit> unitQuery = cq.subquery(Unit.class);
+            Root<Unit> unitRecord = unitQuery.from(Unit.class);
+            unitQuery.select(unitRecord);
+            unitQuery.where(cb.like(unitRecord.get(Unit_.name), "%" + escapeDbString(unit) + "%", '\\'));
+            predicates.add(cb.equal(propertyRecord.get(Property_.unit), cb.any(unitQuery)));
+        }
+        if (dataType != null) {
+            Subquery<DataType> enumQuery = cq.subquery(DataType.class);
+            Root<DataType> enumRecord = enumQuery.from(DataType.class);
+            enumQuery.select(enumRecord);
+            enumQuery.where(cb.like(enumRecord.get(DataType_.name), "%" + escapeDbString(dataType) + "%", '\\'));
+            predicates.add(cb.equal(propertyRecord.get(Property_.dataType), cb.any(enumQuery)));
+        }
+
+        return predicates.toArray(new Predicate[] {});
     }
 }

@@ -47,9 +47,10 @@ public class AuditLazyModel extends CCDBLazyModel<AuditRecord> {
     private static final String ENTITY_ID = "entityId";
     private static final String ENTRY = "entry";
 
-    final private AuditRecordEJB auditRecordEJB;
+    private final AuditRecordEJB auditRecordEJB;
 
     public AuditLazyModel(AuditRecordEJB auditRecordEJB) {
+        super(auditRecordEJB);
         this.auditRecordEJB = auditRecordEJB;
     }
 
@@ -101,12 +102,6 @@ public class AuditLazyModel extends CCDBLazyModel<AuditRecord> {
     @Override
     public AuditRecord getRowData(String rowKey) {
         return auditRecordEJB.findById(Long.parseLong(rowKey));
-    }
-
-    @Override
-    public int getRowCount() {
-        final long rowCount = auditRecordEJB.getRowCount();
-        return rowCount > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)rowCount;
     }
 
     private AuditRecordFields selectSortField(final String sortField) {

@@ -25,30 +25,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.openepics.discs.conf.ejb.UnitEJB;
-import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.ent.fields.UnitFields;
+import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.fields.PropertyFields;
 import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.views.UnitView;
+import org.openepics.discs.conf.views.PropertyView;
 import org.primefaces.model.SortOrder;
 
-public class UnitLazyModel extends CCDBLazyModel<UnitView> {
+public class PropertyLazyModel extends CCDBLazyModel<PropertyView> {
     private static final long serialVersionUID = 1L;
-    private static final Logger LOGGER = Logger.getLogger(UnitLazyModel.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(PropertyLazyModel.class.getCanonicalName());
 
     private static final String NAME = "name";
     private static final String DESCRIPTION = "description";
-    private static final String SYMBOL = "symbol";
+    private static final String UNIT = "unit.name";
+    private static final String DATA_TYPE = "dataType.name";
 
-    private final UnitEJB unitEJB;
+    private final PropertyEJB propertyEJB;
 
-    public UnitLazyModel(UnitEJB unitEJB) {
-        super(unitEJB);
-        this.unitEJB = unitEJB;
+    public PropertyLazyModel(final PropertyEJB propertyEJB) {
+        super(propertyEJB);
+        this.propertyEJB = propertyEJB;
     }
 
     @Override
-    public List<UnitView> load(int first, int pageSize, String sortField,
+    public List<PropertyView> load(int first, int pageSize, String sortField,
             SortOrder sortOrder, Map<String, Object> filters) {
         LOGGER.log(Level.FINEST, "---->pageSize: " + pageSize);
         LOGGER.log(Level.FINEST, "---->first: " + first);
@@ -61,44 +62,49 @@ public class UnitLazyModel extends CCDBLazyModel<UnitView> {
 
         final String name = filters.containsKey(NAME) ? filters.get(NAME).toString() : null;
         final String description = filters.containsKey(DESCRIPTION) ? filters.get(DESCRIPTION).toString() : null;
-        final String symbol = filters.containsKey(SYMBOL) ? filters.get(SYMBOL).toString() : null;
+        final String unit = filters.containsKey(UNIT) ? filters.get(UNIT).toString() : null;
+        final String dataType = filters.containsKey(DATA_TYPE) ? filters.get(DATA_TYPE).toString() : null;
 
         // sort by name is the default
-        final List<Unit> results = unitEJB.findLazy(first, pageSize,
+        final List<Property> results = propertyEJB.findLazy(first, pageSize,
                 selectSortField(sortField), (sortField == null) ? org.openepics.discs.conf.util.SortOrder.ASCENDING :
                 UiUtility.translateToCCDBSortOrder(sortOrder),
-                name, description, symbol);
+                name, description, unit, dataType);
 
-        final List<UnitView> transformedResults = results == null ? null
-                                                    : results.stream().map(UnitView::new).collect(Collectors.toList());
+        final List<PropertyView> transformedResults = results == null ? null : results.stream().map(PropertyView::new).
+                                                                                        collect(Collectors.toList());
         setEmpty(first, transformedResults);
 
         return transformedResults;
     }
 
     @Override
-    public Object getRowKey(UnitView object) {
-        return object.getUnit().getId();
+    public Object getRowKey(PropertyView object) {
+        return object.getDataType().getId();
     }
 
     @Override
-    public UnitView getRowData(String rowKey) {
-        final Unit foundUnit = unitEJB.findById(Long.parseLong(rowKey));
-        return foundUnit != null ? new UnitView(foundUnit) : null;
+    public PropertyView getRowData(String rowKey) {
+        final Property foundProp = propertyEJB.findById(Long.parseLong(rowKey));
+        return foundProp != null ? new PropertyView(foundProp) : null;
     }
 
-    private UnitFields selectSortField(final String sortField) {
-        if (sortField == null) return UnitFields.NAME;
+    private PropertyFields selectSortField(final String sortField) {
+        if (sortField == null) return PropertyFields.NAME;
 
         switch (sortField) {
         case NAME:
-            return UnitFields.NAME;
+            return PropertyFields.NAME;
         case DESCRIPTION:
-            return UnitFields.DESCRIPTION;
-        case SYMBOL:
-            return UnitFields.SYMBOL;
+            return PropertyFields.DESCRIPTION;
+        case UNIT:
+            return PropertyFields.UNIT;
+        case DATA_TYPE:
+            return PropertyFields.DATA_TYPE;
         default:
             return null;
         }
     }
+
+
 }

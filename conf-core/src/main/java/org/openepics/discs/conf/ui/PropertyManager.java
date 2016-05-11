@@ -49,12 +49,15 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.lazymodels.CCDBLazyModel;
+import org.openepics.discs.conf.ui.lazymodels.PropertyLazyModel;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.NewPropertyView;
 import org.openepics.discs.conf.views.PropertyView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.LazyDataModel;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -80,13 +83,13 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoader private DataLoader propertiesDataLoader;
 
-    private List<PropertyView> properties;
-    private List<PropertyView> filteredProperties;
+    private CCDBLazyModel<PropertyView> lazyModel;
+
     private List<PropertyView> selectedProperties;
     private List<PropertyView> usedProperties;
     private List<PropertyView> filteredDialogProperties;
 
-    private PropertyView dialogProperty;
+    private NewPropertyView dialogProperty;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
@@ -108,7 +111,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<PropertyView> exportData = filteredProperties;
+            final List<PropertyView> exportData = lazyModel.load(0, Integer.MAX_VALUE,
+                    lazyModel.getSortField(), lazyModel.getSortOrder(), lazyModel.getFilters());
             for (final PropertyView prop : exportData) {
                 final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : null;
                 exportTable.addDataRow(DataLoader.CMD_UPDATE, prop.getName(), prop.getDescription(),
@@ -138,9 +142,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         super.init();
         try {
             simpleTableExporterDialog = new ExportSimplePropertyTableDialog();
-            properties = propertyEJB.findAllOrderedByName().stream().map(PropertyView::new).collect(Collectors.toList());
+            lazyModel = new PropertyLazyModel(propertyEJB);
             selectedProperties = null;
-            filteredProperties = properties;
             resetFields();
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
@@ -154,8 +157,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
     /** Called when the user presses the "Save" button in the "Add new property" dialog */
     public void onAdd() {
-        NewPropertyView propView = (NewPropertyView)dialogProperty;
-        if (propView.isBatchCreation()) {
+        if (dialogProperty.isBatchCreation()) {
             if (!multiPropertyAdd()) {
                 return;
             }
@@ -174,21 +176,20 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     }
 
     private boolean multiPropertyAdd() {
-        final NewPropertyView propView = (NewPropertyView)dialogProperty;
         final Property prop = dialogProperty.getProperty();
 
-        if (propView.getBatchSaveStage().equals(BatchSaveStage.VALIDATION)) {
+        if (dialogProperty.getBatchSaveStage().equals(BatchSaveStage.VALIDATION)) {
             StringBuilder batchPropertyConflicts = new StringBuilder();
-            for (String batchNumber : propView) {
+            for (String batchNumber : dialogProperty) {
                 final String propertyName = prop.getName().replace("{i}", batchNumber);
                 if (propertyEJB.findByName(propertyName) != null) {
                     batchPropertyConflicts.append(propertyName).append(CRLF);
                 }
             }
             if (batchPropertyConflicts.length() == 0) {
-                propView.setBatchSaveStage(BatchSaveStage.CREATION);
+                dialogProperty.setBatchSaveStage(BatchSaveStage.CREATION);
             } else {
-                propView.setBatchPropertyConflicts(batchPropertyConflicts.toString());
+                dialogProperty.setBatchPropertyConflicts(batchPropertyConflicts.toString());
                 RequestContext.getCurrentInstance().update("batchConflictForm");
                 RequestContext.getCurrentInstance().execute("PF('batchConflict').show();");
                 return false;
@@ -196,10 +197,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         }
 
         // validation complete. Batch creation of all the properties.
-        if (propView.getBatchSaveStage().equals(BatchSaveStage.CREATION)) {
+        if (dialogProperty.getBatchSaveStage().equals(BatchSaveStage.CREATION)) {
             int propertiesCreated = 0;
 
-            for (final String batchNumber : propView) {
+            for (final String batchNumber : dialogProperty) {
                 final String propertyName = prop.getName().replace("{i}", batchNumber);
                 if (propertyEJB.findByName(propertyName) == null) {
                     final Property propertyToAdd = new Property(prop);
@@ -218,7 +219,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     /** Called when the user confirms the batch property creation if there were some conflicts */
     public void creationProceed() {
         try {
-            ((NewPropertyView)dialogProperty).setBatchSaveStage(BatchSaveStage.CREATION);
+            dialogProperty.setBatchSaveStage(BatchSaveStage.CREATION);
             multiPropertyAdd();
         } finally {
             init();
@@ -247,7 +248,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     /** Prepares the data to be used in the "Modify a property" dialog */
     public void prepareModifyPopup() {
         Preconditions.checkState(isSinglePropertySelected());
-        dialogProperty = selectedProperties.get(0);
+        dialogProperty = new NewPropertyView(selectedProperties.get(0));
         initUsedBy(dialogProperty);
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
@@ -301,26 +302,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
             UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                                                                 "Deleted " + deletedProperties + " properties.");
         } finally {
-            selectedProperties = null;
-            usedProperties = null;
-
             init();
         }
-    }
-
-    /** @return The list of filtered properties used by the PrimeFaces filter field */
-    public List<PropertyView> getFilteredProperties() {
-        return filteredProperties;
-    }
-
-    /** @param filteredObjects The list of filtered properties used by the PrimeFaces filter field */
-    public void setFilteredProperties(List<PropertyView> filteredObjects) {
-        this.filteredProperties = filteredObjects;
-    }
-
-    /** @return The list of all properties in the database ordered by name */
-    public List<PropertyView> getProperties() {
-        return properties;
     }
 
     @Override
@@ -348,8 +331,15 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         }
     }
 
+    /** @return the lazy loading data model */
+    public LazyDataModel<PropertyView> getLazyModel() {
+        return lazyModel;
+    }
 
-
+    /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
+    public boolean isDataTableEmpty() {
+        return lazyModel.isEmpty();
+    }
 
     /** @return The {@link List} of {@link Property} selected in the table */
     public List<PropertyView> getSelectedProperties() {
@@ -367,7 +357,9 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
     /** This method resets all dialog fields */
     public void resetFields() {
+        filteredDialogProperties = null;
         dialogProperty = null;
+        usedProperties = null;
     }
 
     /** @return the set of possible uniqueness values to show in the drop-down control */
@@ -415,10 +407,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         this.filteredDialogProperties = filteredDialogProperties;
     }
 
-    /**
-     * @return the dialogProperty
-     */
-    public PropertyView getDialogProperty() {
+    /** @return the dialogProperty */
+    public NewPropertyView getDialogProperty() {
         return dialogProperty;
     }
 }

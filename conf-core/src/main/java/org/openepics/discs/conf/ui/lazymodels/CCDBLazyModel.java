@@ -24,6 +24,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.openepics.discs.conf.ejb.ReadOnlyDAO;
+import org.openepics.discs.conf.ent.EntityWithId;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
@@ -41,6 +43,12 @@ public abstract class CCDBLazyModel<T> extends LazyDataModel<T> {
     private String sortField;
     private SortOrder sortOrder;
     private Map<String, Object> filters;
+
+    private ReadOnlyDAO<? extends EntityWithId> dao;
+
+    protected CCDBLazyModel(ReadOnlyDAO<? extends EntityWithId> dao) {
+        this.dao = dao;
+    }
 
     /** @return <code>true</code> if the current filter returns no data, <code>false</code> otherwise */
     public boolean isEmpty() {
@@ -82,5 +90,11 @@ public abstract class CCDBLazyModel<T> extends LazyDataModel<T> {
 
     public Map<String, Object> getFilters() {
         return filters;
+    }
+
+    @Override
+    public int getRowCount() {
+        final long rowCount = dao.getRowCount();
+        return rowCount > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)rowCount;
     }
 }

@@ -21,10 +21,11 @@ public class DataTypeLazyModel extends CCDBLazyModel<UserEnumerationView> {
     private static final String DESCRIPTION = "description";
     private static final String DISPLAY_DEFINITION = "displayDefinition";
 
-    private DataTypeEJB dataTypeEJB;
+    private final DataTypeEJB dataTypeEJB;
     private List<String> builtInDataTypeNames;
 
     public DataTypeLazyModel(final DataTypeEJB dataTypeEJB, final List<String> builtInDataTypeNames) {
+        super(dataTypeEJB);
         this.dataTypeEJB = dataTypeEJB;
         this.builtInDataTypeNames = builtInDataTypeNames;
     }
@@ -72,12 +73,6 @@ public class DataTypeLazyModel extends CCDBLazyModel<UserEnumerationView> {
     public UserEnumerationView getRowData(String rowKey) {
         final DataType foundEnum = dataTypeEJB.findById(Long.parseLong(rowKey));
         return foundEnum != null ? new UserEnumerationView(foundEnum) : null;
-    }
-
-    @Override
-    public int getRowCount() {
-        final long rowCount = dataTypeEJB.getRowCount();
-        return rowCount > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)rowCount;
     }
 
     private EnumFields selectSortField(final String sortField) {

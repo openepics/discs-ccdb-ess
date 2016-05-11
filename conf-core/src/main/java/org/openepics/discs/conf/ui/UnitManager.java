@@ -314,6 +314,11 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         dataLoader = unitsDataLoader;
     }
 
+    /** @return a list of all {@link UnitView}s */
+    public List<UnitView> getUnitViews() {
+        return unitEJB.findAllOrdered().stream().map(UnitView::new).collect(Collectors.toList());
+    }
+
     /** @return the lazy loading data model */
     public LazyDataModel<UnitView> getLazyModel() {
         return lazyModel;
