@@ -167,11 +167,11 @@ public class DataTypeEJB extends DAO<DataType> {
             final @Nullable String name, final @Nullable String description, final @Nullable String definition) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<DataType> cq = cb.createQuery(getEntityClass());
-        final Root<DataType> auditRecord = cq.from(getEntityClass());
+        final Root<DataType> dataTypeRecord = cq.from(getEntityClass());
 
-        addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
+        addSortingOrder(sortField, sortOrder, cb, cq, dataTypeRecord);
 
-        final Predicate[] predicates = buildPredicateList(cb, auditRecord, name, description, definition);
+        final Predicate[] predicates = buildPredicateList(cb, dataTypeRecord, name, description, definition);
         cq.where(predicates);
 
         final TypedQuery<DataType> query = em.createQuery(cq);

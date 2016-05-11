@@ -29,7 +29,7 @@
                         <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton 
                                 :unitsForm:duplicateButton" />
     
-                        <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}"
+                        <p:column headerText="Name" sortBy="#{unit.name}" filterBy="#{unit.name}"
                                 filterMatchMode="contains" styleClass="tableColWidth30">
                             <h:outputText value="#{unit.name}" />
                         </p:column>

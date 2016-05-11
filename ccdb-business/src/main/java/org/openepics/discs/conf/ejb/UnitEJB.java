@@ -150,17 +150,18 @@ public class UnitEJB extends DAO<Unit> {
             switch (sortField) {
             case NAME:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(unitRecord.get(Unit_.name))
-                                : cb.desc(unitRecord.get(Unit_.name)));
+                                ? cb.asc(cb.lower(unitRecord.get(Unit_.name)))
+                                : cb.desc(cb.lower(unitRecord.get(Unit_.name))));
+                break;
             case DESCRIPTION:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(unitRecord.get(Unit_.description))
-                                : cb.desc(unitRecord.get(Unit_.description)));
+                                ? cb.asc(cb.lower(unitRecord.get(Unit_.description)))
+                                : cb.desc(cb.lower(unitRecord.get(Unit_.description))));
                 break;
             case SYMBOL:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(unitRecord.get(Unit_.symbol))
-                                : cb.desc(unitRecord.get(Unit_.symbol)));
+                                ? cb.asc(cb.lower(unitRecord.get(Unit_.symbol)))
+                                : cb.desc(cb.lower(unitRecord.get(Unit_.symbol))));
                 break;
             default:
                 break;

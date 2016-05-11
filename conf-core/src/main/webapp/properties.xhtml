@@ -32,7 +32,7 @@
                         <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
                                 :propertiesForm:duplicateButton" />
         
-                        <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" 
+                        <p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" 
                                 filterMatchMode="contains" styleClass="tableColWidth20">
                             <h:outputText value="#{property.name}" />
                         </p:column>

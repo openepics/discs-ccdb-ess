@@ -159,11 +159,11 @@ public class PropertyEJB extends DAO<Property> {
             final @Nullable String dataType) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<Property> cq = cb.createQuery(getEntityClass());
-        final Root<Property> auditRecord = cq.from(getEntityClass());
+        final Root<Property> propertyRecord = cq.from(getEntityClass());
 
-        addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
+        addSortingOrder(sortField, sortOrder, cb, cq, propertyRecord);
 
-        final Predicate[] predicates = buildPredicateList(cb, cq, auditRecord, name, description, unit, dataType);
+        final Predicate[] predicates = buildPredicateList(cb, cq, propertyRecord, name, description, unit, dataType);
         cq.where(predicates);
 
         final TypedQuery<Property> query = em.createQuery(cq);
@@ -174,27 +174,28 @@ public class PropertyEJB extends DAO<Property> {
     }
 
     private void addSortingOrder(final PropertyFields sortField, final SortOrder sortOrder, final CriteriaBuilder cb,
-            final CriteriaQuery<Property> cq, final Root<Property> unitRecord) {
+            final CriteriaQuery<Property> cq, final Root<Property> propertyRecord) {
         if ((sortField != null) && (sortOrder != null) && (sortOrder != SortOrder.UNSORTED)) {
             switch (sortField) {
             case NAME:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(unitRecord.get(Property_.name))
-                                : cb.desc(unitRecord.get(Property_.name)));
+                                ? cb.asc(cb.lower(propertyRecord.get(Property_.name)))
+                                : cb.desc(cb.lower(propertyRecord.get(Property_.name))));
+                break;
             case DESCRIPTION:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(unitRecord.get(Property_.description))
-                                : cb.desc(unitRecord.get(Property_.description)));
+                                ? cb.asc(cb.lower(propertyRecord.get(Property_.description)))
+                                : cb.desc(cb.lower(propertyRecord.get(Property_.description))));
                 break;
             case UNIT:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(unitRecord.get(Property_.unit))
-                                : cb.desc(unitRecord.get(Property_.unit)));
+                                ? cb.asc(propertyRecord.get(Property_.unit))
+                                : cb.desc(propertyRecord.get(Property_.unit)));
                 break;
             case DATA_TYPE:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(unitRecord.get(Property_.dataType))
-                                : cb.desc(unitRecord.get(Property_.dataType)));
+                                ? cb.asc(propertyRecord.get(Property_.dataType))
+                                : cb.desc(propertyRecord.get(Property_.dataType)));
                 break;
             default:
                 break;
