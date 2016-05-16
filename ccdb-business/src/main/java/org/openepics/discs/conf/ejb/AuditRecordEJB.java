@@ -130,8 +130,8 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
                 break;
             case USER:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(auditRecord.get(AuditRecord_.user))
-                                : cb.desc(auditRecord.get(AuditRecord_.user)));
+                                ? cb.asc(cb.lower(auditRecord.get(AuditRecord_.user)))
+                                : cb.desc(cb.lower(auditRecord.get(AuditRecord_.user))));
                 break;
             case OPER:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
@@ -150,8 +150,8 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
                 break;
             case ENTITY_KEY:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(auditRecord.get(AuditRecord_.entityKey))
-                                : cb.desc(auditRecord.get(AuditRecord_.entityKey)));
+                                ? cb.asc(cb.lower(auditRecord.get(AuditRecord_.entityKey)))
+                                : cb.desc(cb.lower(auditRecord.get(AuditRecord_.entityKey))));
                 break;
             case ENTRY:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
@@ -173,13 +173,15 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
             predicates.add(cb.greaterThanOrEqualTo(auditRecord.get(AuditRecord_.logTime), logTime));
         }
         if (user != null) {
-            predicates.add(cb.like(auditRecord.get(AuditRecord_.user), "%" + escapeDbString(user) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(auditRecord.get(AuditRecord_.user)),
+                                                        "%" + escapeDbString(user).toLowerCase() + "%", '\\'));
         }
         if (oper != null) {
             predicates.add(cb.equal(auditRecord.get(AuditRecord_.oper), oper));
         }
         if (entityName != null) {
-            predicates.add(cb.like(auditRecord.get(AuditRecord_.entityKey), "%" + escapeDbString(entityName) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(auditRecord.get(AuditRecord_.entityKey)),
+                                                        "%" + escapeDbString(entityName).toLowerCase() + "%", '\\'));
         }
         if (entityType != null) {
             predicates.add(cb.equal(auditRecord.get(AuditRecord_.entityType), entityType));
@@ -188,7 +190,8 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
             predicates.add(cb.equal(auditRecord.get(AuditRecord_.entityId), entityId));
         }
         if (entry != null) {
-            predicates.add(cb.like(auditRecord.get(AuditRecord_.entry), "%" + escapeDbString(entry) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(auditRecord.get(AuditRecord_.entry)),
+                                                        "%" + escapeDbString(entry).toLowerCase() + "%", '\\'));
         }
 
         return predicates.toArray(new Predicate[] {});

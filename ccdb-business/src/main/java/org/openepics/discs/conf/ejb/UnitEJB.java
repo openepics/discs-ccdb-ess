@@ -174,13 +174,16 @@ public class UnitEJB extends DAO<Unit> {
         final List<Predicate> predicates = Lists.newArrayList();
 
         if (name != null) {
-            predicates.add(cb.like(unitRecord.get(Unit_.name), "%" + escapeDbString(name) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(unitRecord.get(Unit_.name)),
+                                                        "%" + escapeDbString(name).toLowerCase() + "%", '\\'));
         }
         if (description != null) {
-            predicates.add(cb.like(unitRecord.get(Unit_.description), "%" + escapeDbString(description) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(unitRecord.get(Unit_.description)),
+                                                        "%" + escapeDbString(description).toLowerCase() + "%", '\\'));
         }
         if (symbol != null) {
-            predicates.add(cb.like(unitRecord.get(Unit_.symbol), "%" + escapeDbString(symbol) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(unitRecord.get(Unit_.symbol)),
+                                                        "%" + escapeDbString(symbol).toLowerCase() + "%", '\\'));
         }
 
         return predicates.toArray(new Predicate[] {});

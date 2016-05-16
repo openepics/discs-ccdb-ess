@@ -48,11 +48,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 /**
- * DAO service for accesing {@link DataType} entities
+ * DAO service for accessing {@link DataType} entities
  *
  * @author vuppala
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
 public class DataTypeEJB extends DAO<DataType> {
@@ -187,18 +187,18 @@ public class DataTypeEJB extends DAO<DataType> {
             switch (sortField) {
             case NAME:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(enumRecord.get(DataType_.name))
-                                : cb.desc(enumRecord.get(DataType_.name)));
+                                ? cb.asc(cb.lower(enumRecord.get(DataType_.name)))
+                                : cb.desc(cb.lower(enumRecord.get(DataType_.name))));
                 break;
             case DESCRIPTION:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(enumRecord.get(DataType_.description))
-                                : cb.desc(enumRecord.get(DataType_.description)));
+                                ? cb.asc(cb.lower(enumRecord.get(DataType_.description)))
+                                : cb.desc(cb.lower(enumRecord.get(DataType_.description))));
                 break;
             case DEFINITION:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(enumRecord.get(DataType_.definition))
-                                : cb.desc(enumRecord.get(DataType_.definition)));
+                                ? cb.asc(cb.lower(enumRecord.get(DataType_.definition)))
+                                : cb.desc(cb.lower(enumRecord.get(DataType_.definition))));
                 break;
             default:
                 break;
@@ -211,13 +211,16 @@ public class DataTypeEJB extends DAO<DataType> {
         final List<Predicate> predicates = Lists.newArrayList();
 
         if (name != null) {
-            predicates.add(cb.like(enumRecord.get(DataType_.name), "%" + escapeDbString(name) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(enumRecord.get(DataType_.name)),
+                                                        "%" + escapeDbString(name).toLowerCase() + "%", '\\'));
         }
         if (description != null) {
-            predicates.add(cb.like(enumRecord.get(DataType_.description), "%" + escapeDbString(description) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(enumRecord.get(DataType_.description)),
+                                                        "%" + escapeDbString(description).toLowerCase() + "%", '\\'));
         }
         if (definition != null) {
-            predicates.add(cb.like(enumRecord.get(DataType_.definition), "%" + escapeDbString(definition) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(enumRecord.get(DataType_.definition)),
+                                                        "%" + escapeDbString(definition).toLowerCase() + "%", '\\'));
         }
 
         return predicates.toArray(new Predicate[] {});

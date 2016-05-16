@@ -209,24 +209,27 @@ public class PropertyEJB extends DAO<Property> {
         final List<Predicate> predicates = Lists.newArrayList();
 
         if (name != null) {
-            predicates.add(cb.like(propertyRecord.get(Property_.name), "%" + escapeDbString(name) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(propertyRecord.get(Property_.name)),
+                                                        "%" + escapeDbString(name).toLowerCase() + "%", '\\'));
         }
         if (description != null) {
-            predicates.add(cb.like(propertyRecord.get(Property_.description),
-                                                                "%" + escapeDbString(description) + "%", '\\'));
+            predicates.add(cb.like(cb.lower(propertyRecord.get(Property_.description)),
+                                                        "%" + escapeDbString(description).toLowerCase() + "%", '\\'));
         }
         if (unit != null) {
             Subquery<Unit> unitQuery = cq.subquery(Unit.class);
             Root<Unit> unitRecord = unitQuery.from(Unit.class);
             unitQuery.select(unitRecord);
-            unitQuery.where(cb.like(unitRecord.get(Unit_.name), "%" + escapeDbString(unit) + "%", '\\'));
+            unitQuery.where(cb.like(cb.lower(unitRecord.get(Unit_.name)),
+                                                        "%" + escapeDbString(unit).toLowerCase() + "%", '\\'));
             predicates.add(cb.equal(propertyRecord.get(Property_.unit), cb.any(unitQuery)));
         }
         if (dataType != null) {
             Subquery<DataType> enumQuery = cq.subquery(DataType.class);
             Root<DataType> enumRecord = enumQuery.from(DataType.class);
             enumQuery.select(enumRecord);
-            enumQuery.where(cb.like(enumRecord.get(DataType_.name), "%" + escapeDbString(dataType) + "%", '\\'));
+            enumQuery.where(cb.like(cb.lower(enumRecord.get(DataType_.name)),
+                                                        "%" + escapeDbString(dataType).toLowerCase() + "%", '\\'));
             predicates.add(cb.equal(propertyRecord.get(Property_.dataType), cb.any(enumQuery)));
         }
 
