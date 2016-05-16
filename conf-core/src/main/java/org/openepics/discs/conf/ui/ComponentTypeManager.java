@@ -50,12 +50,15 @@ import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.lazymodels.CCDBLazyModel;
+import org.openepics.discs.conf.ui.lazymodels.ComponentTypeLazyModel;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.ImportFileStatistics;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.ComponentTypeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.LazyDataModel;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -85,8 +88,8 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
     private ComponentTypeView selectedComponent;
 
-    private List<ComponentTypeView> deviceTypes;
-    private List<ComponentTypeView> filteredDeviceTypes;
+    private CCDBLazyModel<ComponentTypeView> lazyModel;
+
     private List<ComponentTypeView> selectedDeviceTypes;
     private List<ComponentTypeView> usedDeviceTypes;
     private List<ComponentTypeView> filteredDialogTypes;
@@ -133,9 +136,8 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<ComponentTypeView> exportData = Utility.isNullOrEmpty(filteredDeviceTypes)
-                                                            ? deviceTypes
-                                                            : filteredDeviceTypes;
+            final List<ComponentTypeView> exportData = lazyModel.load(0, Integer.MAX_VALUE,
+                    lazyModel.getSortField(), lazyModel.getSortOrder(), lazyModel.getFilters());
             for (final ComponentTypeView devType : exportData) {
                 exportTable.addDataRow(DataLoader.CMD_UPDATE_DEVICE_TYPE, devType.getName(), devType.getDescription());
                 for (final ComptypePropertyValue pv : devType.getComponentType().getComptypePropertyList()) {
@@ -172,21 +174,19 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
         final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
         try {
+            lazyModel = new ComponentTypeLazyModel(comptypeEJB);
             excelSingleFileImportUI = new ExcelSingleFileImportUI();
             simpleTableExporterDialog = new ExportSimpleDevTypeTableDialog();
-            reloadDeviceTypes();
             resetFields();
 
             if (!Strings.isNullOrEmpty(deviceTypeIdStr)) {
                 final long deviceTypeId = Long.parseLong(deviceTypeIdStr);
-                int elementPosition = 0;
-                for (final ComponentTypeView deviceType : deviceTypes) {
-                    if (deviceType.getId() == deviceTypeId) {
-                        RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
-                                + ", 'deviceTypeTableVar');");
-                        return;
-                    }
-                    ++elementPosition;
+                final ComponentType compType = comptypeEJB.findById(deviceTypeId);
+                if (compType != null) {
+                    // XXX getNamedPosition() might not be returning correct position
+                    final long elementPosition = comptypeEJB.getNamedPosition(compType.getName());
+                    RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
+                            + ", 'deviceTypeTableVar');");
                 }
             }
         } catch (NumberFormatException e) {
@@ -202,7 +202,6 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
     public void doImport() {
         excelSingleFileImportUI.doImport();
         clearDeviceTypeRelatedInformation();
-        reloadDeviceTypes();
     }
 
     /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#prepareImportPopup() */
@@ -257,10 +256,6 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
         return excelSingleFileImportUI.getSimpleErrorTableExportDialog();
     }
 
-    private void reloadDeviceTypes() {
-        deviceTypes = comptypeEJB.findAll().stream().map(ComponentTypeView::new).collect(Collectors.toList());
-    }
-
     /** Called when user selects a row */
     public void onRowSelect() {
         if (selectedDeviceTypes != null && !selectedDeviceTypes.isEmpty()) {
@@ -293,13 +288,11 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
                     "Duplicated " + duplicated + " device types.");
         } finally {
             clearDeviceTypeRelatedInformation();
-            reloadDeviceTypes();
         }
     }
 
     private void clearDeviceTypeRelatedInformation() {
         selectedDeviceTypes = null;
-        filteredDeviceTypes = null;
         selectedComponent = null;
         comptypeAttributesController.clearRelatedAttributeInformation();
         resetFields();
@@ -337,7 +330,6 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
             }
         } finally {
             clearDeviceTypeRelatedInformation();
-            reloadDeviceTypes();
         }
     }
 
@@ -362,7 +354,6 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
             }
         } finally {
             refreshSelectedComponent();
-            reloadDeviceTypes();
         }
     }
 
@@ -403,7 +394,6 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
                     "Deleted " + deletedDeviceTypes + " device types.");
         } finally {
             clearDeviceTypeRelatedInformation();
-            reloadDeviceTypes();
         }
     }
 
@@ -419,6 +409,16 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
     // -------------------- Getters and Setters ---------------------------------------
 
+    /** @return the lazy loading data model */
+    public LazyDataModel<ComponentTypeView> getLazyModel() {
+        return lazyModel;
+    }
+
+    /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
+    public boolean isDataTableEmpty() {
+        return lazyModel.isEmpty();
+    }
+
     /** @return the selectedDeviceTypes */
     public List<ComponentTypeView> getSelectedDeviceTypes() {
         return selectedDeviceTypes;
@@ -431,20 +431,6 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
     /** @return the {@link List} of used device types */
     public List<ComponentTypeView> getUsedDeviceTypes() {
         return usedDeviceTypes;
-    }
-
-    /** @return The list of filtered device types used by the PrimeFaces filter field. */
-    public List<ComponentTypeView> getFilteredDeviceTypes() {
-        return filteredDeviceTypes;
-    }
-    /** @param filteredDeviceTypes The list of filtered device types used by the PrimeFaces filter field. */
-    public void setFilteredDeviceTypes(List<ComponentTypeView> filteredDeviceTypes) {
-        this.filteredDeviceTypes = filteredDeviceTypes;
-    }
-
-    /** @return The list of all device types in the database. */
-    public List<ComponentTypeView> getDeviceTypes() {
-        return deviceTypes;
     }
 
     @Override

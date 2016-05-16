@@ -50,15 +50,13 @@ function selectEntityInTable(globalIndex, tableVarName) {
     //     an entity form another screen.
     var tableWidget = PF(tableVarName);
 
-    if (tableWidget.cfg.scrollLimit < 1 || tableWidget.cfg.scrollLimit < globalIndex) return;
-
-    if (tableWidget.scrollOffset < globalIndex) {
+    if (tableWidget.cfg.scrollLimit < 1 || globalIndex < tableWidget.cfg.scrollLimit) {
+        tableWidget.selectRow(globalIndex);
+        scrollSelectedIntoView(tableWidget);
+    } else if (tableWidget.scrollOffset < globalIndex) {
         tableWidget.loadLiveRows();
         setTimeout(function(){ selectEntityInTable(globalIndex, tableVarName); }, 50);
-        return;
     }
-    tableWidget.selectRow(globalIndex);
-    scrollSelectedIntoView(tableWidget);
 }
 
 function resizeDeleteList(deleteDialogId) {

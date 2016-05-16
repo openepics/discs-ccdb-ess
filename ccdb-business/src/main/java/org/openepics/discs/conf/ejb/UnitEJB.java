@@ -110,7 +110,7 @@ public class UnitEJB extends DAO<Unit> {
      */
     public long getNamedPosition(String name) {
         return em.createQuery("SELECT COUNT(*) FROM Unit u WHERE u.name <= :name", Long.class).
-                setParameter("name", name).getSingleResult();
+                setParameter("name", name).getSingleResult() - 1;
     }
 
     /**

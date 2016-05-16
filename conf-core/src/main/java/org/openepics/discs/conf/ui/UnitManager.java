@@ -145,7 +145,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
                 final Unit unit = unitEJB.findById(unitId);
                 if (unit != null) {
                     // XXX getNamedPosition() might not be returning correct position
-                    long elementPosition = unitEJB.getNamedPosition(unit.getName());
+                    final long elementPosition = unitEJB.getNamedPosition(unit.getName());
                     RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
                             + ", 'unitsTableVar');");
                 }
