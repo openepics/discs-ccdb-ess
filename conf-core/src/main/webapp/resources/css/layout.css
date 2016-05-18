@@ -283,6 +283,20 @@ a {
 	background-position: 0px -94px;
 }
 
+#modifyPropertyValueForm\:valueInputGroup .ui-messages-error {
+    padding: 2px 10px 2px 10px;
+}
+
+#modifyPropertyValueForm\:valueInputGroup .ui-messages-error ul {
+    margin-right: 0;
+}
+
+#modifyPropertyValueForm\:valueInputGroup .ui-messages-error-icon {
+    width: 16px;
+    height: 16px;
+    background-position: 0px -94px;
+}
+
 .dialogWithList .ui-dialog-content {
     overflow: hidden !important;
 }

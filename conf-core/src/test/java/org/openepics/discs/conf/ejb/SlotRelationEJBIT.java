@@ -58,9 +58,11 @@ public class SlotRelationEJBIT {
 
     @Test
     public void testFindById() {
-        final SlotRelation slotRelation = slotRelationService.findById( slotRelationService.findBySlotRelationName(SlotRelationName.CONTAINS).getId() );
+        // findById is implicitly tested (called by refreshEntity)
+        final SlotRelation slotRelation = slotRelationService.
+                                refreshEntity(slotRelationService.findBySlotRelationName(SlotRelationName.CONTAINS));
         assertNotNull(slotRelation);
-        assertEquals(slotRelation.getName(), SlotRelationName.CONTAINS);
+        assertEquals(SlotRelationName.CONTAINS, slotRelation.getName());
     }
 
     @Test

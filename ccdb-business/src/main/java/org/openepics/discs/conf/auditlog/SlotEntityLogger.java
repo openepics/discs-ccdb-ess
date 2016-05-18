@@ -76,7 +76,8 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         if (slot.getSlotPropertyList() != null) {
             for (SlotPropertyValue propValue : slot.getSlotPropertyList()) {
                 final String entryValue = propValue.getPropValue() == null ? null
-                                                : propValue.getPropValue().auditLogString(100, 50);
+                            : propValue.getPropValue().auditLogString(EntityLoggerUtil.AUDIT_LOG_ROWS,
+                                                                                EntityLoggerUtil.AUDIT_LOG_COLUMNS);
                 propertiesMap.put(propValue.getProperty().getName(), entryValue);
             }
         }

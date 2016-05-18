@@ -83,13 +83,19 @@ public class SlotPairEJB extends DAO<SlotPair> {
     @Authorized
     public void delete(SlotPair entity) {
         Preconditions.checkNotNull(entity);
-        entity.getChildSlot().getPairsInWhichThisSlotIsAChildList().remove(entity);
-        entity.getParentSlot().getPairsInWhichThisSlotIsAParentList().remove(entity);
-        em.merge(entity.getChildSlot());
-        em.merge(entity.getParentSlot());
+        final Slot childSlot = refreshSlot(entity.getChildSlot());
+        final Slot parentSlot = refreshSlot(entity.getParentSlot());
+        childSlot.getPairsInWhichThisSlotIsAChildList().remove(entity);
+        parentSlot.getPairsInWhichThisSlotIsAParentList().remove(entity);
+        em.merge(childSlot);
+        em.merge(parentSlot);
         super.delete(entity);
     }
 
+    // cannot use slotEJB.refreshEtity because the circular injection does not agree with Arquillian
+    private Slot refreshSlot(final Slot slotToRefresh) {
+        return em.find(Slot.class, slotToRefresh.getId());
+    }
 
     @Override
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
@@ -200,7 +206,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
             if (pair.getParentSlot().equals(parentSlot) &&
                     pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                 // when moving the slot, this "pair" information gets stale very fast. We need to fetch from DB.
-                mySlotPair = findById(pair.getId());
+                mySlotPair = refreshEntity(pair);
                 break;
             }
         }
@@ -239,7 +245,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
             add(newRelationship);
             explicitAuditLog(newRelationship, EntityTypeOperation.UPDATE);
             // pull in the new parent slot info
-            final SlotPair freshPair = findById(relationship.getId());
+            final SlotPair freshPair = refreshEntity(relationship);
             delete(freshPair);
             explicitAuditLog(freshPair, EntityTypeOperation.UPDATE);
         }

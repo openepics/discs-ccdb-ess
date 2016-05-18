@@ -58,7 +58,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AuditRecord.findByEntityIdAndType", query = "SELECT a FROM AuditRecord a "
             + "WHERE a.entityId = :entityId AND a.entityType = :entityType ORDER BY a.logTime DESC")
 })
-public class AuditRecord implements Serializable {
+public class AuditRecord implements EntityWithId, Serializable {
     private static final long serialVersionUID = 5144501646584495649L;
 
     @Id
@@ -118,6 +118,7 @@ public class AuditRecord implements Serializable {
         this.entityId = entityId;
     }
 
+    @Override
     public Long getId() {
         return id;
     }

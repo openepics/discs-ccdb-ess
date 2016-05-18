@@ -80,7 +80,8 @@ public class SlotEJBIT {
             "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindById() {
-        final Slot slot = slotService.findById( slotService.findByName("FE_SRC1").getId() );
+        // findById is implicitly tested (called by refreshEntity)
+        final Slot slot = slotService.refreshEntity(slotService.findByName("FE_SRC1"));
         assertNotNull(slot);
         assertEquals("FE_SRC1", slot.getName());
     }

@@ -51,10 +51,21 @@ public class ComponentTypeEntityLogger implements EntityLogger<ComponentType> {
         final ComponentType compType = (ComponentType) value;
 
         final Map<String, String> propertiesMap = new TreeMap<>();
+        final Map<String, String> devPropMap = new TreeMap<>();
+        final Map<String, String> slotPropMap = new TreeMap<>();
+
         if (compType.getComptypePropertyList() != null) {
             for (ComptypePropertyValue propValue : compType.getComptypePropertyList()) {
-                final String entryValue = propValue.getPropValue() == null ? null : propValue.getPropValue().auditLogString(100, 50);
-                propertiesMap.put(propValue.getProperty().getName(), entryValue);
+                final String entryValue = propValue.getPropValue() == null ? null
+                        : propValue.getPropValue().auditLogString(EntityLoggerUtil.AUDIT_LOG_ROWS,
+                                                                                EntityLoggerUtil.AUDIT_LOG_COLUMNS);
+                if (!propValue.isPropertyDefinition()) {
+                    propertiesMap.put(propValue.getProperty().getName(), entryValue);
+                } else if (propValue.isDefinitionTargetDevice()) {
+                    devPropMap.put(propValue.getProperty().getName(), entryValue);
+                } else if (propValue.isDefinitionTargetSlot()) {
+                    slotPropMap.put(propValue.getProperty().getName(), entryValue);
+                }
             }
         }
 
@@ -68,6 +79,8 @@ public class ComponentTypeEntityLogger implements EntityLogger<ComponentType> {
         return ImmutableList.of(new AuditLogUtil(compType)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "name"))
                                 .addArrayOfMappedProperties("comptypePropertyList", propertiesMap)
+                                .addArrayOfMappedProperties("devicePropertyList", devPropMap)
+                                .addArrayOfMappedProperties("slotPropertyList", slotPropMap)
                                 .addArrayOfMappedProperties("comptypeArtifactList", artifactsMap)
                                 .addArrayOfProperties("tagsList", EntityLoggerUtil.getTagNamesFromTagsSet(compType.getTags()))
                                 .auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(),

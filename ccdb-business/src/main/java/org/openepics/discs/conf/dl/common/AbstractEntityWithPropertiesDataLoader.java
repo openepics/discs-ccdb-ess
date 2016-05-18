@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ent.EntityWithId;
 import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
@@ -106,5 +107,5 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
      * @param <T> configuration entity class
      * @return the DAO EJB
      */
-    protected abstract <T> DAO<T> getDAO();
+    protected abstract <T extends EntityWithId> DAO<T> getDAO();
 }

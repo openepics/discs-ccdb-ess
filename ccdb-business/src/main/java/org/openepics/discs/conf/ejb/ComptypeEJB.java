@@ -175,6 +175,19 @@ public class ComptypeEJB extends DAO<ComponentType> {
         save(newDeviceType);
     }
 
+    @Override
+    public <S> void addChild(S child) {
+        if (child instanceof ComptypePropertyValue) {
+            final ComptypePropertyValue ctpv = (ComptypePropertyValue) child;
+            // by business logic property definitions that are UNIQUE cannot have a default value
+            if (ctpv.isPropertyDefinition()
+                    && (ctpv.getProperty().getValueUniqueness() != PropertyValueUniqueness.NONE)) {
+                ctpv.setPropValue(null);
+            }
+        }
+        super.addChild(child);
+    }
+
     private void duplicateArtifactsFromSource(final ComponentType newDeviceType, final ComponentType copyDeviceType) {
         for (final ComptypeArtifact artifact : copyDeviceType.getComptypeArtifactList()) {
             String uri = artifact.getUri();

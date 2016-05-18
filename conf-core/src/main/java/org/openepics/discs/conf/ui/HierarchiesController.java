@@ -111,7 +111,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
-    private static final String     CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
+    private static final String     CABLEDB_DEVICE_PAGE = "cables.xhtml?cableNumber=";
 
     @Inject private SlotEJB slotEJB;
     @Inject private SlotPairEJB slotPairEJB;
@@ -251,7 +251,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     protected void refreshSlot(final Slot slot) {
-        final Slot freshSlot = slotEJB.findById(slot.getId());
+        final Slot freshSlot = slotEJB.refreshEntity(slot);
         if (selectedSlot != null) {
             selectedSlot = freshSlot;
         }
@@ -1085,6 +1085,19 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return activeTab == ActiveTab.INCLUDES;
     }
 
+    /** @return <code>true</code> if the currently shown hierarchy tree has no nodes under the current filter,
+     * <code>false</code> otherwise. */
+    public boolean isDisplayedTreeEmpty() {
+        return (activeTab == ActiveTab.INCLUDES
+                    && (containsTree == null || containsTree.getRootNode().getFilteredChildren().isEmpty()))
+                || (activeTab == ActiveTab.CONTROLS
+                        && (controlsTree == null || controlsTree.getRootNode().getFilteredChildren().isEmpty()))
+                || (activeTab == ActiveTab.POWERS
+                        && (powersTree == null || powersTree.getRootNode().getFilteredChildren().isEmpty()))
+                || (activeTab == ActiveTab.CONNECTS
+                        && (connectsTree == null || connectsTree.getRootNode().getFilteredChildren().isEmpty()));
+    }
+
     public boolean isSingleNodeSelected() {
         return (selectedTree.getSelectedNodes() != null) && (selectedTree.getSelectedNodes().size() == 1);
     }
@@ -1231,7 +1244,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     protected Slot getSelectedEntity() {
         if (selectedSlot != null) {
-            Slot slot = slotEJB.findById(selectedSlot.getId());
+            Slot slot = slotEJB.refreshEntity(selectedSlot);
             return slot;
         }
         throw new IllegalArgumentException("No slot selected");

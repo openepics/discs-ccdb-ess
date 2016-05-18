@@ -48,6 +48,7 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -155,7 +156,7 @@ public class ComptypeAttributesController
 
         for (final ComponentTypeView selectedMember : componentTypeManager.getSelectedDeviceTypes()) {
             // refresh the component type from database. This refreshes all related collections as well.
-            final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
+            final ComponentType freshComponentType = comptypeEJB.refreshEntity(selectedMember.getComponentType());
 
             for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
                 attributes.add(new EntityAttrPropertyValueView<ComponentType>(prop, freshComponentType));
@@ -302,6 +303,15 @@ public class ComptypeAttributesController
                                                             : selectionPropertyValuesFiltered.get(event.getRowIndex());
             final DataType dataType = editedPropVal.getDataType();
             final String newValueStr = getEditEventValue(newValue, editedPropVal.getPropertyValueUIElement());
+            if ((editedPropVal.getProperty().getValueUniqueness() != PropertyValueUniqueness.NONE)
+                    && !Strings.isNullOrEmpty(newValueStr)) {
+                final String formName = getFormId(event.getComponent());
+                FacesContext.getCurrentInstance().addMessage(formName + ":inputValidationFail",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
+                                "Unique property cannot have a default value."));
+                FacesContext.getCurrentInstance().validationFailed();
+                return;
+            }
             try {
                 switch (editedPropVal.getPropertyValueUIElement()) {
                     case INPUT:
@@ -385,23 +395,26 @@ public class ComptypeAttributesController
      * type and property values to already existing installation slots or device instances.
      */
     public void addNewPropertyValueDefs() {
+        Preconditions.checkState(isPropertyDefinition);
         int created = 0;
         for (final MultiPropertyValueView pv : selectedPropertyValues) {
             final ComptypePropertyValue newPropertyValueInstance = newPropertyValue();
             newPropertyValueInstance.setInRepository(false);
             newPropertyValueInstance.setProperty(pv.getProperty());
-            newPropertyValueInstance.setPropValue(pv.getValue());
             newPropertyValueInstance.setPropertiesParent(getSelectedEntity());
-
-            if (isPropertyDefinition) {
-                final ComptypePropertyValue ctPropValueInstance = newPropertyValueInstance;
-                ctPropValueInstance.setPropertyDefinition(true);
-                if (definitionTarget == DefinitionTarget.SLOT) {
-                    ctPropValueInstance.setDefinitionTargetSlot(true);
-                } else {
-                    ctPropValueInstance.setDefinitionTargetDevice(true);
-                }
+            newPropertyValueInstance.setPropertyDefinition(true);
+            if (definitionTarget == DefinitionTarget.SLOT) {
+                newPropertyValueInstance.setDefinitionTargetSlot(true);
+            } else {
+                newPropertyValueInstance.setDefinitionTargetDevice(true);
             }
+
+            // This should be checked in UI, but let's normalize in case of an error.
+            if (pv.getProperty().getValueUniqueness() != PropertyValueUniqueness.NONE) {
+                pv.setValue(null);
+            }
+
+            newPropertyValueInstance.setPropValue(pv.getValue());
             comptypeEJB.addChild(newPropertyValueInstance);
             componentTypeManager.refreshSelectedComponent();
             addPropertyValueBasedOnDef(newPropertyValueInstance);
@@ -451,6 +464,26 @@ public class ComptypeAttributesController
         }
     }
 
+    @Override
+    public void modifyPropertyValue() {
+        final EntityAttributeViewKind kind = dialogAttribute.getKind();
+        if ((kind == EntityAttributeViewKind.DEVICE_PROPERTY)
+                || (kind == EntityAttributeViewKind.INSTALL_SLOT_PROPERTY)) {
+            final ComptypePropertyValue editedPropVal = (ComptypePropertyValue) dialogAttribute.getEntity();
+            if (editedPropVal.isPropertyDefinition()
+                    && (editedPropVal.getProperty().getValueUniqueness() != PropertyValueUniqueness.NONE)
+                    && !Strings.isNullOrEmpty(dialogAttribute.getValue())) {
+                final EntityAttrPropertyValueView<?> propAttribute = (EntityAttrPropertyValueView<?>)dialogAttribute;
+                propAttribute.setPropertyValue(null);
+                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Default value is never unique."));
+                FacesContext.getCurrentInstance().validationFailed();
+                return;
+            }
+        }
+        super.modifyPropertyValue();
+    }
+
     /** Checks whether it is safe to add a new property (definition) to the entity.
      * @param entityProperties the list of properties the entity already has
      * @param propertyToAdd the property we want to add
@@ -479,7 +512,7 @@ public class ComptypeAttributesController
             final Long typeId = selectedComponent.getId();
             // for "Add new device type" the selectedComponent will contain a ComponentType which has not been persisted
             if (typeId != null)
-                return comptypeEJB.findById(selectedComponent.getId());
+                return comptypeEJB.refreshEntity(selectedComponent.getComponentType());
             else
                 return selectedComponent.getComponentType();
         }

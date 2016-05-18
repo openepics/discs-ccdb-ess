@@ -394,7 +394,7 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
             int deletedDeviceTypes = 0;
             for (final ComponentTypeView deviceTypeToDelete : selectedDeviceTypes) {
-                final ComponentType freshEntity = comptypeEJB.findById(deviceTypeToDelete.getId());
+                final ComponentType freshEntity = comptypeEJB.refreshEntity(deviceTypeToDelete.getComponentType());
                 freshEntity.getTags().clear();
                 comptypeEJB.delete(freshEntity);
                 ++deletedDeviceTypes;
@@ -414,7 +414,7 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
 
     /** Pulls a fresh ComponentType entity from the database for the <code>selectedComponent</code>. */
     protected void refreshSelectedComponent() {
-        selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
+        selectedComponent.setComponentType(comptypeEJB.refreshEntity(selectedComponent.getComponentType()));
     }
 
     // -------------------- Getters and Setters ---------------------------------------

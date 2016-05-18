@@ -210,8 +210,6 @@ public class RelationshipController implements Serializable {
         if (canRelationshipBeDeleted()) {
             for (SlotRelationshipView selectedRelationship : selectedRelationships) {
                 final SlotPair slotPairToBeRemoved = selectedRelationship.getSlotPair();
-                final boolean isContainsRemoved =
-                        (slotPairToBeRemoved.getSlotRelation().getName() == SlotRelationName.CONTAINS);
                 final Long parentSlotId = slotPairToBeRemoved.getParentSlot().getId();
                 final Long childSlotId = slotPairToBeRemoved.getChildSlot().getId();
                 relationships.remove(selectedRelationship);
@@ -326,7 +324,7 @@ public class RelationshipController implements Serializable {
             if (!slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(),
                     slotRelation.getName()).isEmpty()) {
                 UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                        "This relationship already exists.");  // TODO why is this message not show?!
+                        "This relationship already exists.");  // XXX why is this message not show?!
                 return;
             }
 
@@ -341,14 +339,14 @@ public class RelationshipController implements Serializable {
 
             if (editedRelationshipView.getSlotPair() == null) {
                 slotPairEJB.add(newSlotPair);
-                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()),
+                relationships.add(new SlotRelationshipView(slotPairEJB.refreshEntity(newSlotPair),
                                                 hierarchiesController.getSelectedNodeSlot()));
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship added.");
             } else {
                 slotPairEJB.save(newSlotPair);
                 relationships.remove(selectedRelationships.get(0));
-                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()),
+                relationships.add(new SlotRelationshipView(slotPairEJB.refreshEntity(newSlotPair),
                                                                 selectedRelationships.get(0).getSourceSlot()));
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship modified.");
@@ -366,6 +364,32 @@ public class RelationshipController implements Serializable {
         }
     }
 
+    /** Expands the selected node or entire tree */
+    public void expandTreeNodes() {
+        final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
+        if (selectedNode == null) {
+            expandOrCollapseNode(containsTree.getRootNode(), true);
+        } else {
+            expandOrCollapseNode(selectedNode, true);
+        }
+    }
+
+    /** Collapses the selected node or entire tree */
+    public void collapseTreeNodes() {
+        final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
+        if (selectedNode == null) {
+            expandOrCollapseNode(containsTree.getRootNode(), false);
+        } else {
+            expandOrCollapseNode(selectedNode, false);
+        }
+    }
+
+    private void expandOrCollapseNode(final FilteredTreeNode<SlotView> parent, final boolean expand) {
+        parent.setExpanded(expand);
+        for (final  FilteredTreeNode<SlotView> node : parent.getFilteredChildren()) {
+            expandOrCollapseNode(node, expand);
+        }
+    }
 
     /** @return The list of relationships for the currently selected slot. */
     public List<SlotRelationshipView> getRelationships() {

@@ -84,9 +84,11 @@ public class ComptypeEJBIT {
 
     @Test
     @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
-    public void testFindComponentTypeLong() {
-        final ComponentType compType = compTypesService.findById( compTypesService.findByName(SEARCH_COMP_TYPE_NAME).getId() );
+    public void testFindById() {
+        // findById is implicitly tested (called by refreshEntity)
+        final ComponentType compType = compTypesService.refreshEntity(compTypesService.findByName(SEARCH_COMP_TYPE_NAME));
         assertNotNull(compType);
+        assertEquals(SEARCH_COMP_TYPE_NAME, compType.getName());
     }
 
     @Test

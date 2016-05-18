@@ -30,6 +30,7 @@ import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.EntityWithArtifacts;
+import org.openepics.discs.conf.ent.EntityWithId;
 import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
@@ -52,7 +53,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <T> The entity type for which this DAO is defined.
  */
-public abstract class DAO<T> extends ReadOnlyDAO<T> {
+public abstract class DAO<T extends EntityWithId> extends ReadOnlyDAO<T> {
     private static final String PROPERTY_PARAM = "property";
     private static final String PROPERTY_VALUE_PARAM = "propValue";
 

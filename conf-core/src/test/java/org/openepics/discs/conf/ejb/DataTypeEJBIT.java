@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -60,8 +61,10 @@ public class DataTypeEJBIT {
 
     @Test
     public void testFindById() {
-        final DataType result = dataTypeService.findById(  dataTypeService.findByName("Double").getId() );
+        // findById is implicitly tested (called by refreshEntity)
+        final DataType result = dataTypeService.refreshEntity(dataTypeService.findByName("Double"));
         assertNotNull(result);
+        assertEquals("Double", result.getName());
     }
 
     @Test

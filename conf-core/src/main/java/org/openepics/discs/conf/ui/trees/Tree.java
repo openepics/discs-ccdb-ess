@@ -37,88 +37,88 @@ import org.primefaces.model.TreeNode;
  *
  * @author ilist
  *
- * @param <D> the class of the elements used to build a tree of
+ * @param <T> the class of the elements used to build a tree of
  */
-public abstract class Tree<D> {
+public abstract class Tree<T> {
     private static final Logger LOGGER = Logger.getLogger(Tree.class.getCanonicalName());
-	private List<FilteredTreeNode<D>> selectedNodes = new ArrayList<>();
-	private String filter = "";
-	private String appliedFilter = "";
-	final protected SlotEJB slotEJB;
-	private FilteredTreeNode<D> rootNode;
+    private List<FilteredTreeNode<T>> selectedNodes = new ArrayList<>();
+    private String filter = "";
+    private String appliedFilter = "";
+    final protected SlotEJB slotEJB;
+    private FilteredTreeNode<T> rootNode;
 
-	/**
-	 * Constructs the tree.
-	 * Tree knows how to generate new descendant nodes, so it needs slotEJB.
-	 *
-	 * @param slotEJB slotEJB
-	 */
-	public Tree(SlotEJB slotEJB) {
-		this.slotEJB = slotEJB;
-	}
+    /**
+     * Constructs the tree.
+     * Tree knows how to generate new descendant nodes, so it needs slotEJB.
+     *
+     * @param slotEJB slotEJB
+     */
+    public Tree(SlotEJB slotEJB) {
+        this.slotEJB = slotEJB;
+    }
 
-	/**
-	 * The master method to create/get children of the tree.
-	 *
-	 * @param parent the parent node
-	 * @return children
-	 */
-	public abstract List<? extends BasicTreeNode<D>> getAllChildren(BasicTreeNode<D> parent);
+    /**
+     * The master method to create/get children of the tree.
+     *
+     * @param parent the parent node
+     * @return children
+     */
+    public abstract List<? extends BasicTreeNode<T>> getAllChildren(BasicTreeNode<T> parent);
 
-	/**
-	 * The root node of this tree.
-	 *
-	 * @param rootNode root node
-	 */
-	public void setRootNode(FilteredTreeNode<D> rootNode) {
-		this.rootNode = rootNode;
-	}
+    /**
+     * The root node of this tree.
+     *
+     * @param rootNode root node
+     */
+    public void setRootNode(FilteredTreeNode<T> rootNode) {
+        this.rootNode = rootNode;
+    }
 
-	/**
-	 * Returns the root node.
-	 *
-	 * @return the root node
-	 */
-	public FilteredTreeNode<D> getRootNode() {
-		return rootNode;
-	}
+    /**
+     * Returns the root node.
+     *
+     * @return the root node
+     */
+    public FilteredTreeNode<T> getRootNode() {
+        return rootNode;
+    }
 
-	/**
-	 * Returns currently selected nodes.
-	 * @return selected nodes
-	 */
-	public List<FilteredTreeNode<D>> getSelectedNodes()	{
-		return selectedNodes;
-	}
+    /**
+     * Returns currently selected nodes.
+     * @return selected nodes
+     */
+    public List<FilteredTreeNode<T>> getSelectedNodes()	{
+        return selectedNodes;
+    }
 
-	/**
-	 * Returns currently selected nodes as an array. Used for primefaces.
-	 * @return array of selected nodes
-	 */
-	public TreeNode[] getSelectedNodesArray() {
-		return selectedNodes.toArray(new TreeNode[selectedNodes.size()]);
-	}
+    /**
+     * Returns currently selected nodes as an array. Used for primefaces.
+     * @return array of selected nodes
+     */
+    public TreeNode[] getSelectedNodesArray() {
+        return selectedNodes.toArray(new TreeNode[selectedNodes.size()]);
+    }
 
-	/**
-	 * Sets selected nodes from an array. Used for primefaces.
-	 * Unchecked typecast is needed.
-	 *
-	 * @param selectedNodes array of selected nodes
-	 */
-	@SuppressWarnings("unchecked")
-	public void setSelectedNodesArray(TreeNode[] selectedNodes)	{
-		this.selectedNodes.clear();
-		if (selectedNodes != null) {
-			for (TreeNode node : selectedNodes) {
-				if (node != null) {
-					this.selectedNodes.add((FilteredTreeNode<D>)node);
-				}
-			}
-		}
-		print(0, (FilteredTreeNode<SlotView>)getRootNode());
-	}
+    /**
+     * Sets selected nodes from an array. Used for primefaces.
+     * Unchecked typecast is needed.
+     *
+     * @param selectedNodes array of selected nodes
+     */
+    @SuppressWarnings("unchecked")
+    public void setSelectedNodesArray(TreeNode[] selectedNodes)	{
+        this.selectedNodes.clear();
+        if (selectedNodes != null) {
+            for (TreeNode node : selectedNodes) {
+                if (node != null) {
+                    this.selectedNodes.add((FilteredTreeNode<T>)node);
+                }
+            }
+        }
+        print(0, (FilteredTreeNode<SlotView>)getRootNode());
+    }
 
-	/** Clears the selection globally. */
+    /** Clears the selection globally. */
     public void unselectAllTreeNodes() {
     	for (final TreeNode node : selectedNodes) {
     		node.setSelected(false);
@@ -126,46 +126,46 @@ public abstract class Tree<D> {
         selectedNodes.clear();
     }
 
-	/**
-	 * Gets current filter field. Which might not be applied. Used for textboxes.
-	 * @return filter text
-	 */
-	public String getFilter() {
-		return filter;
-	}
+    /**
+     * Gets current filter field. Which might not be applied. Used for textboxes.
+     * @return filter text
+     */
+    public String getFilter() {
+        return filter;
+    }
 
-	/**
-	 * Sets current filter field but it doesn't apply it. Used for textboxes.
-	 * @param filter filter text
-	 */
-	public void setFilter(String filter) {
-		this.filter = filter;
-	}
+    /**
+     * Sets current filter field but it doesn't apply it. Used for textboxes.
+     * @param filter filter text
+     */
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
 
-	/**
-	 * Returns currently applied filter.
-	 * @return the applied filter
-	 */
-	public String getAppliedFilter() {
-		return appliedFilter;
-	}
+    /**
+     * Returns currently applied filter.
+     * @return the applied filter
+     */
+    public String getAppliedFilter() {
+        return appliedFilter;
+    }
 
-	/** Applies the filter. AppliedFilter filed becomes filter field. */
-	public void applyFilter() {
-		appliedFilter = filter == null ? "" : filter.toUpperCase();
-		getRootNode().cleanFilterCache();
-		unselectAllTreeNodes();
-		// TODO old selection could be kept by fixing getSelectedNodesArray not to return filtered nodes
-	}
+    /** Applies the filter. AppliedFilter filed becomes filter field. */
+    public void applyFilter() {
+        appliedFilter = filter == null ? "" : filter.toUpperCase();
+        getRootNode().cleanFilterCache();
+        unselectAllTreeNodes();
+        // NOTE: old selection could be kept by fixing getSelectedNodesArray not to return filtered nodes
+    }
 
-	/**
-	 * Returns whether the node should be displayed when filtering or not.
-	 * Implementation depends on the data in the tree.
-	 *
-	 * @param node the node
-	 * @return should the node be displayed
-	 */
-    public abstract boolean isNodeInFilter(BasicTreeNode<D> node);
+    /**
+     * Returns whether the node should be displayed when filtering or not.
+     * Implementation depends on the data in the tree.
+     *
+     * @param node the node
+     * @return should the node be displayed
+     */
+    public abstract boolean isNodeInFilter(BasicTreeNode<T> node);
 
     /**
      * Refreshes nodes which contain slot with the given IDs.
@@ -185,14 +185,14 @@ public abstract class Tree<D> {
      * @param node currently visited node
      * @param ids set of IDs
      */
-    private void refreshIds(FilteredTreeNode<D> node, HashSet<Long> ids) {
-	   if (ids.contains(((SlotView)node.getData()).getId())) {
-		   node.refreshCache();
-	   } else {
-		   for (final FilteredTreeNode<D> child : node.getBufferedAllChildren()) {
-			   refreshIds(child, ids);
-		   }
-	   }
+    private void refreshIds(FilteredTreeNode<T> node, HashSet<Long> ids) {
+        if (ids.contains(((SlotView)node.getData()).getId())) {
+            node.refreshCache();
+        } else {
+            for (final FilteredTreeNode<T> child : node.getBufferedAllChildren()) {
+                refreshIds(child, ids);
+            }
+        }
     }
 
     /**
@@ -200,14 +200,14 @@ public abstract class Tree<D> {
      * @param i the starting level
      * @param rootNode the starting node
      */
-	private static void print(int i, FilteredTreeNode<SlotView> rootNode) {
-		LOGGER.log(Level.FINEST, String.format("%" + (i + 1) + "s%s", "", rootNode.getData().getName()));
-		if (rootNode.bufferedAllChildren == null) {
-			LOGGER.log(Level.FINEST, String.format("%" + (i + 2) + "s%s", "", "children not yet loaded"));
-		} else {
-			for (FilteredTreeNode<SlotView> node : rootNode.getFilteredChildren()) {
-				print(i + 1, node);
-			}
-		}
-	}
+    private static void print(int i, FilteredTreeNode<SlotView> rootNode) {
+        LOGGER.log(Level.FINEST, String.format("%" + (i + 1) + "s%s", "", rootNode.getData().getName()));
+        if (rootNode.bufferedAllChildren == null) {
+            LOGGER.log(Level.FINEST, String.format("%" + (i + 2) + "s%s", "", "children not yet loaded"));
+        } else {
+            for (FilteredTreeNode<SlotView> node : rootNode.getFilteredChildren()) {
+                print(i + 1, node);
+            }
+        }
+    }
 }

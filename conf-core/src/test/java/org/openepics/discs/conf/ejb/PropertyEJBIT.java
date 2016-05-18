@@ -65,7 +65,8 @@ public class PropertyEJBIT {
     @UsingDataSet(value= {"unit.xml", "property.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindById() {
-        final Property property = propertyService.findById( propertyService.findByName("APERTURE").getId() );
+        // findById is implicitly tested (called by refreshEntity)
+        final Property property = propertyService.refreshEntity(propertyService.findByName("APERTURE"));
 
         assertNotNull(property);
         assertEquals("APERTURE", property.getName());

@@ -290,7 +290,7 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
         if (selectedDevices != null && !selectedDevices.isEmpty()) {
             // selectedDeviceTypes = getFreshTypes(deviceTypes);
             if (selectedDevices.size() == 1) {
-                device = deviceEJB.findById(selectedDevices.get(0).getDevice().getId());
+                device = deviceEJB.refreshEntity(selectedDevices.get(0).getDevice());
             } else {
                 device = null;
             }
@@ -388,7 +388,7 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     /** Updates an existing device with new information from the dialog */
     public void onDeviceEdit() {
         Preconditions.checkState(isSingleDeviceSelected());
-        device = deviceEJB.findById(selectedDevices.get(0).getDevice().getId());
+        device = deviceEJB.refreshEntity(selectedDevices.get(0).getDevice());
         device.setSerialNumber(serialNumber);
         final boolean deviceTypeChange = !device.getComponentType().equals(selectedComponentType);
         if (deviceTypeChange) {
@@ -397,7 +397,7 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
             deviceEJB.save(device);
         }
 
-        selectedDevices.get(0).refreshDevice(deviceEJB.findById(device.getId()));
+        selectedDevices.get(0).refreshDevice(deviceEJB.refreshEntity(device));
         if (deviceTypeChange) {
             deviceAttributesController.clearRelatedAttributeInformation();
             deviceAttributesController.populateAttributesList();
@@ -430,7 +430,7 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
 
         int deletedDevices = 0;
         for (final DeviceView deviceToDelete : selectedDevices) {
-            final Device deleteDevice = deviceEJB.findById(deviceToDelete.getDevice().getId());
+            final Device deleteDevice = deviceEJB.refreshEntity(deviceToDelete.getDevice());
             deviceEJB.delete(deleteDevice);
             ++deletedDevices;
         }

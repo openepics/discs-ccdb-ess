@@ -63,7 +63,8 @@ public class UnitEJBIT {
     @UsingDataSet(value= {"unit.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindById() {
-        final Unit unit = unitService.findById( unitService.findByName("meter").getId() );
+        // findById is implicitly tested (called by refreshEntity)
+        final Unit unit = unitService.refreshEntity(unitService.findByName("meter"));
 
         assertNotNull(unit);
         assertEquals("meter", unit.getName());

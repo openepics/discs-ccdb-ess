@@ -43,7 +43,7 @@
                                         :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree
                                         :hierarchies:hierarchyTabs:connectsTree :hierarchies:clipboardOperations
-                                        :hierarchies:slotExport"                                    
+                                        :hierarchies:slotExport :hierarchies:collapseButton :hierarchies:expandButton"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
                                 <p:tab id="INCLUDES" title="Contains" style="height: 100%">
                                     <p:inputText id="filterContainsTree" value="#{hierarchiesController.containsTree.filter}"
@@ -284,21 +284,7 @@
                             </p:menuButton>
                         </div>
                         <div style="height: 2.75em;">
-                            <p:menuButton value="+/-" id="expandColapseOp" style="float: right; margin-top: 0.25em;">
-                                <p:menuitem value="Expand" id="expandButton" icon="ui-icon-plus"
-                                    title="Expand Selected Items"
-                                    action="#{hierarchiesController.expandTreeNodes}" oncomplete="hierarchiesResizeAll();"                                   
-                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
-                                            :hierarchies:hierarchyTabs:powersTree
-                                            :hierarchies:hierarchyTabs:connectsTree" />
-                                <p:menuitem value="Collapse" id="collapseButton" icon="ui-icon-minus"
-                                    title="Collapse Selected Items"
-                                    action="#{hierarchiesController.collapseTreeNodes}" oncomplete="hierarchiesResizeAll();"                                    
-                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
-                                            :hierarchies:hierarchyTabs:powersTree
-                                            :hierarchies:hierarchyTabs:connectsTree" />                            
-                            </p:menuButton>
-                            <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin: 0.25em 1ex 0 0;"
+                            <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin-top: 0.25em;"
                                     disabled="#{not hierarchiesController.includesActive 
                                                 or not securityPolicy.getUIHint('HIERARCHY_CREATE')}"
                                     title="Clipboard Operations">
@@ -322,6 +308,20 @@
                                     action="#{hierarchiesController.checkPasteAction}"
                                     update=":pasteSlotsForm:pasteSlots" />
                             </p:menuButton>
+                            <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-minus"
+                                style="float: right; margin: 0.25em 1ex 0 0;" title="Collapse Selected Items"
+                                action="#{hierarchiesController.collapseTreeNodes}" oncomplete="hierarchiesResizeAll();"                                    
+                                update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
+                                        :hierarchies:hierarchyTabs:powersTree
+                                        :hierarchies:hierarchyTabs:connectsTree"
+                                disabled="#{hierarchiesController.displayedTreeEmpty}" />
+                            <p:commandButton value="Expand" id="expandButton" icon="ui-icon-plus"
+                                style="float: right; margin: 0.25em 1ex 0 0;"  title="Expand Selected Items"
+                                action="#{hierarchiesController.expandTreeNodes}" oncomplete="hierarchiesResizeAll();"                                   
+                                update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
+                                        :hierarchies:hierarchyTabs:powersTree
+                                        :hierarchies:hierarchyTabs:connectsTree"
+                                disabled="#{hierarchiesController.displayedTreeEmpty}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move Down"
                                 style="float: right; margin: 0.25em 1ex 0 0;"
                                 oncomplete="hierarchiesResizeAll(); scrollSelectedIntoView(PF('hierarchyWidget'));"
