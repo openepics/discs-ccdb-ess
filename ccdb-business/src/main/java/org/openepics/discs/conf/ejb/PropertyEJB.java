@@ -26,6 +26,8 @@ import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -161,8 +163,9 @@ public class PropertyEJB extends DAO<Property> {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<Property> cq = cb.createQuery(getEntityClass());
         final Root<Property> propertyRecord = cq.from(getEntityClass());
+        final Join<Property, Unit> unitJoin = propertyRecord.join(Property_.unit, JoinType.LEFT);
 
-        addSortingOrder(sortField, sortOrder, cb, cq, propertyRecord);
+        addSortingOrder(sortField, sortOrder, cb, cq, propertyRecord, unitJoin);
 
         final Predicate[] predicates = buildPredicateList(cb, cq, propertyRecord, name, description, unit, dataType);
         cq.where(predicates);
@@ -175,7 +178,8 @@ public class PropertyEJB extends DAO<Property> {
     }
 
     private void addSortingOrder(final PropertyFields sortField, final SortOrder sortOrder, final CriteriaBuilder cb,
-            final CriteriaQuery<Property> cq, final Root<Property> propertyRecord) {
+            final CriteriaQuery<Property> cq, final Root<Property> propertyRecord,
+            final Join<Property, Unit> unitJoin) {
         if ((sortField != null) && (sortOrder != null) && (sortOrder != SortOrder.UNSORTED)) {
             switch (sortField) {
             case NAME:
@@ -190,13 +194,14 @@ public class PropertyEJB extends DAO<Property> {
                 break;
             case UNIT:
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(propertyRecord.get(Property_.unit))
-                                : cb.desc(propertyRecord.get(Property_.unit)));
+                                ? cb.asc(cb.lower(unitJoin.get(Unit_.name)))
+                                : cb.desc(cb.lower(unitJoin.get(Unit_.name))));
                 break;
             case DATA_TYPE:
+                // required - data type != NULL
                 cq.orderBy(sortOrder == SortOrder.ASCENDING
-                                ? cb.asc(propertyRecord.get(Property_.dataType))
-                                : cb.desc(propertyRecord.get(Property_.dataType)));
+                                ? cb.asc(cb.lower(propertyRecord.get(Property_.dataType).get(DataType_.name)))
+                                : cb.desc(cb.lower(propertyRecord.get(Property_.dataType).get(DataType_.name))));
                 break;
             default:
                 break;
