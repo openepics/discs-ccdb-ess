@@ -27,7 +27,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -289,17 +288,6 @@ public class DeviceEJB extends DAO<Device> {
                     .setParameter("propValue", value).setMaxResults(2).getResultList();
         // value is unique if there is no property value with the same value, or the only one found us the entity itself
         return (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
-    }
-
-    /**
-     * If the serial number does not exist, the {@link NoResultException} will get thrown.
-     *
-     * @param serialNumber the name MUST exist
-     * @return the position of this entity if ordered b name
-     */
-    public long getNamedPosition(String serialNumber) {
-        return em.createQuery("SELECT COUNT(*) FROM Device d WHERE d.serialNumber <= :serialNumber", Long.class).
-                setParameter("serialNumber", serialNumber).getSingleResult() - 1;
     }
 
     /**

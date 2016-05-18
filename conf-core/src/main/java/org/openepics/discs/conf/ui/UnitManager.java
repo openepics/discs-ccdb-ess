@@ -144,10 +144,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
                 final long unitId = Long.parseLong(unitIdStr);
                 final Unit unit = unitEJB.findById(unitId);
                 if (unit != null) {
-                    // XXX getNamedPosition() might not be returning correct position
-                    final long elementPosition = unitEJB.getNamedPosition(unit.getName());
-                    RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
-                            + ", 'unitsTableVar');");
+                    RequestContext.getCurrentInstance().execute("CCDB.config.jumpToElementOnLoad = true;"
+                            + "selectEntityInTable(" + unitId + ", 'unitsTableVar');");
                 }
             }
         } catch (NumberFormatException e) {

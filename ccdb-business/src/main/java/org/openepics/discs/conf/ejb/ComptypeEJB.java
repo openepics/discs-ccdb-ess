@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -230,20 +229,6 @@ public class ComptypeEJB extends DAO<ComponentType> {
             }
             addChild(pv);
         }
-    }
-
-    /**
-     * If the name does not exist, the {@link NoResultException} will get thrown.
-     *
-     * @param name the name MUST exist
-     * @return the position of this entity if ordered b name
-     */
-    public long getNamedPosition(String name) {
-        return em.createQuery("SELECT COUNT(*) FROM ComponentType c WHERE c.name <= :name AND c.name <> :internalType1 "
-                + "AND c.name <> :internalType2", Long.class).
-                setParameter("internalType1", SlotEJB.ROOT_COMPONENT_TYPE).
-                setParameter("internalType2", SlotEJB.GRP_COMPONENT_TYPE).
-                setParameter("name", name).getSingleResult() - 1;
     }
 
     /**

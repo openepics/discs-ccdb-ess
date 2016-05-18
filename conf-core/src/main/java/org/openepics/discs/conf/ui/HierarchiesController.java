@@ -198,7 +198,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             initHierarchies();
             initNamingInformation();
 
-            navigateToUrlSelectedSlot();
+            // TODO why has this stopped working
+            //navigateToUrlSelectedSlot();
 
             simpleTableExporterDialog = new ExportSimpleSlotsTableDialog(this, slotEJB.getRootNode(), installationEJB);
         } catch (Exception e) {

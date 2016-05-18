@@ -201,10 +201,8 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
                 final long deviceId = Long.valueOf(deviceIdStr);
                 final Device device = deviceEJB.findById(deviceId);
                 if (device != null) {
-                    // XXX getNamedPosition() might not be returning correct position
-                    final long elementPosition = deviceEJB.getNamedPosition(device.getName());
-                    RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
-                            + ", 'devicesTableVar');");
+                    RequestContext.getCurrentInstance().execute("CCDB.config.jumpToElementOnLoad = true;"
+                            + "selectEntityInTable(" + deviceId + ", 'devicesTableVar');");
                 }
             }
         } catch (NumberFormatException e) {

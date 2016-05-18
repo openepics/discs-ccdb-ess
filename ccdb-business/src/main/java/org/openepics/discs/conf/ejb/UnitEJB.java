@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -100,17 +99,6 @@ public class UnitEJB extends DAO<Unit> {
             ++duplicated;
         }
         return duplicated;
-    }
-
-    /**
-     * If the name does not exist, the {@link NoResultException} will get thrown.
-     *
-     * @param name the name MUST exist
-     * @return the position of this entity if ordered b name
-     */
-    public long getNamedPosition(String name) {
-        return em.createQuery("SELECT COUNT(*) FROM Unit u WHERE u.name <= :name", Long.class).
-                setParameter("name", name).getSingleResult() - 1;
     }
 
     /**

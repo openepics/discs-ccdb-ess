@@ -183,10 +183,8 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
                 final long deviceTypeId = Long.parseLong(deviceTypeIdStr);
                 final ComponentType compType = comptypeEJB.findById(deviceTypeId);
                 if (compType != null) {
-                    // XXX getNamedPosition() might not be returning correct position
-                    final long elementPosition = comptypeEJB.getNamedPosition(compType.getName());
-                    RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
-                            + ", 'deviceTypeTableVar');");
+                    RequestContext.getCurrentInstance().execute("CCDB.config.jumpToElementOnLoad = true;"
+                            + "selectEntityInTable(" + deviceTypeId + ", 'deviceTypeTableVar');");
                 }
             }
         } catch (NumberFormatException e) {

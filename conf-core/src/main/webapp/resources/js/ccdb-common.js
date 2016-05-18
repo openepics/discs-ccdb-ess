@@ -2,6 +2,17 @@
  * 
  */
 
+/** Global CCDB environment */
+var CCDB = {
+		"config" : { 
+			"jumpToElementOnLoad" : false
+		},
+		"jumpToElementOnLoadHandler" : function(xhr, target) {
+			selectEntityInTable(CCDB.dataLoaderInternal.dataKey, CCDB.dataLoaderInternal.tableVarName);
+        },
+        "dataLoaderInternal" : {}
+}
+
 function removeParametersFromUrl() {
     if (window.location.search != '') {
         window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
@@ -42,21 +53,42 @@ function scrollSelectedIntoView(tableWidget) {
 
 /**
  * selectEntityInTable() only works on page load, so it can be used for navigating to an entity form another screen. 
- * @param globalIndex the global index of the entity
+ * @param dataKey the global index of the entity
  * @param tableVarName the name of the PrimeFaces table variable
  */
-function selectEntityInTable(globalIndex, tableVarName) {
+function selectEntityInTable(dataKey, tableVarName) {
     // selectEntityInTable() only works on page load, so it can be used for navigating to
     //     an entity form another screen.
+	bootstrapDataLoader(dataKey, tableVarName);
     var tableWidget = PF(tableVarName);
-
-    if (tableWidget.cfg.scrollLimit < 1 || globalIndex < tableWidget.cfg.scrollLimit) {
-        tableWidget.selectRow(globalIndex);
+    // search for entity
+    var lineRef = $('#' + tableWidget.id.replace(':', '\\:') + ' tr[data-rk=' + dataKey + ']');
+    
+    if (lineRef.length > 0) {
+    	// entity found
+    	jQuery(document).off('pfAjaxComplete', CCDB.jumpToElementOnLoadHandler);
+    	var rowNumber = Number(lineRef[0].getAttribute('data-ri'));
+        tableWidget.selectRow(rowNumber);
         scrollSelectedIntoView(tableWidget);
-    } else if (tableWidget.scrollOffset < globalIndex) {
+    } else if (!tableWidget.allLoadedLiveScroll) {
+    	// not found, but there's more data
         tableWidget.loadLiveRows();
-        setTimeout(function(){ selectEntityInTable(globalIndex, tableVarName); }, 50);
+    } else {
+    	// entity not found
+    	jQuery(document).off('pfAjaxComplete', CCDB.jumpToElementOnLoadHandler);
     }
+}
+
+function bootstrapDataLoader(dataKey, tableVarName) {
+	if (CCDB.config.jumpToElementOnLoad) {
+		CCDB.config.jumpToElementOnLoad = false;
+		// store the parameters
+		CCDB.dataLoaderInternal = {
+				"dataKey" : dataKey,
+				"tableVarName" : tableVarName
+		}
+		jQuery(document).on('pfAjaxComplete', CCDB.jumpToElementOnLoadHandler);
+	}
 }
 
 function resizeDeleteList(deleteDialogId) {
