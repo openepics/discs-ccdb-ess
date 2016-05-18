@@ -32,6 +32,9 @@ import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.model.SortOrder;
 
+/**
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public class UnitLazyModel extends CCDBLazyModel<UnitView> {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(UnitLazyModel.class.getCanonicalName());

@@ -90,7 +90,7 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
      * @param sortField the field by which to sort
      * @param sortOrder ascending/descending
      * @param logTime timestamp
-     * @param user string
+     * @param user the user name
      * @param oper operation
      * @param entityName name of the entity
      * @param entityType type of the entity

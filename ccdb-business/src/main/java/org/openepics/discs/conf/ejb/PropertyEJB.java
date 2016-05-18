@@ -148,9 +148,10 @@ public class PropertyEJB extends DAO<Property> {
      * @param pageSize the number of results
      * @param sortField the field by which to sort
      * @param sortOrder ascending/descending
-     * @param name the unit name
-     * @param description the unit description
-     * @param unit the unit symbol
+     * @param name the {@link Property} name
+     * @param description the {@link Property} description
+     * @param unit the {@link Unit} name
+     * @param dataType the {@link DataType} name
      * @return The required entities.
      */
     public List<Property> findLazy(final int first, final int pageSize,

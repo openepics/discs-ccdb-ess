@@ -253,8 +253,8 @@ public class ComptypeEJB extends DAO<ComponentType> {
      * @param pageSize the number of results
      * @param sortField the field by which to sort
      * @param sortOrder ascending/descending
-     * @param name the device type name
-     * @param description the devices type description
+     * @param name the {@link ComponentType} name
+     * @param description the {@link ComponentType} description
      * @return The required entities.
      */
     public List<ComponentType> findLazy(final int first, final int pageSize,
@@ -262,11 +262,11 @@ public class ComptypeEJB extends DAO<ComponentType> {
             final @Nullable String name, final @Nullable String description) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<ComponentType> cq = cb.createQuery(getEntityClass());
-        final Root<ComponentType> auditRecord = cq.from(getEntityClass());
+        final Root<ComponentType> deviceTypeRecord = cq.from(getEntityClass());
 
-        addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
+        addSortingOrder(sortField, sortOrder, cb, cq, deviceTypeRecord);
 
-        final Predicate[] predicates = buildPredicateList(cb, auditRecord, name, description);
+        final Predicate[] predicates = buildPredicateList(cb, deviceTypeRecord, name, description);
         cq.where(predicates);
 
         final TypedQuery<ComponentType> query = em.createQuery(cq);

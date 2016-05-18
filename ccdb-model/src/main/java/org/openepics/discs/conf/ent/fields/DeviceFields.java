@@ -20,5 +20,5 @@
 package org.openepics.discs.conf.ent.fields;
 
 public enum DeviceFields {
-    NAME, DESCRIPTION, INSTALLATION_SLOT, TIMESTAMP
+    DEVICE_TYPE, SERIAL_NUMBER, INSTALLATION_SLOT, TIMESTAMP
 }

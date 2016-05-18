@@ -120,9 +120,9 @@ public class UnitEJB extends DAO<Unit> {
      * @param pageSize the number of results
      * @param sortField the field by which to sort
      * @param sortOrder ascending/descending
-     * @param name the unit name
-     * @param description the unit description
-     * @param symbol the unit symbol
+     * @param name the {@link Unit} name
+     * @param description the {@link Unit} description
+     * @param symbol the {@link Unit} symbol
      * @return The required entities.
      */
     public List<Unit> findLazy(final int first, final int pageSize,
@@ -130,11 +130,11 @@ public class UnitEJB extends DAO<Unit> {
             final @Nullable String name, final @Nullable String description, final @Nullable String symbol) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<Unit> cq = cb.createQuery(getEntityClass());
-        final Root<Unit> auditRecord = cq.from(getEntityClass());
+        final Root<Unit> unitRecord = cq.from(getEntityClass());
 
-        addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
+        addSortingOrder(sortField, sortOrder, cb, cq, unitRecord);
 
-        final Predicate[] predicates = buildPredicateList(cb, auditRecord, name, description, symbol);
+        final Predicate[] predicates = buildPredicateList(cb, unitRecord, name, description, symbol);
         cq.where(predicates);
 
         final TypedQuery<Unit> query = em.createQuery(cq);

@@ -157,9 +157,9 @@ public class DataTypeEJB extends DAO<DataType> {
      * @param pageSize the number of results
      * @param sortField the field by which to sort
      * @param sortOrder ascending/descending
-     * @param name the unit name
-     * @param description the unit description
-     * @param definition the unit symbol
+     * @param name the {@link DataType} name
+     * @param description the {@link DataType} description
+     * @param definition the {@link DataType} definition
      * @return The required entities.
      */
     public List<DataType> findLazy(final int first, final int pageSize,

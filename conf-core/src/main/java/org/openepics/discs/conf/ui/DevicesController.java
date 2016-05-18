@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,11 +45,9 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
-import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -58,6 +55,8 @@ import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.lazymodels.CCDBLazyModel;
+import org.openepics.discs.conf.ui.lazymodels.DeviceLazyModel;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
@@ -66,6 +65,7 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.LazyDataModel;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -88,14 +88,13 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @DevicesLoader private DataLoader devicesDataLoader;
     @Inject private ComptypeEJB componentTypesEJB;
-    @Inject private InstallationEJB installationEJB;
     @Inject private DeviceEJB deviceEJB;
     @Inject private DeviceAttributesController deviceAttributesController;
 
     private Device device;
 
-    private List<DeviceView> devices;
-    private List<DeviceView> filteredDevices;
+    private CCDBLazyModel<DeviceView> lazyModel;
+
     private List<DeviceView> selectedDevices;
     private List<DeviceView> usedDevices;
     private List<DeviceView> filteredDialogDevices;
@@ -114,7 +113,6 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     private String batchSerialConflicts;
     private BatchSaveStage batchSaveStage;
     private boolean batchSkipExisting;
-    private int selectedIndex = -1;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
@@ -160,8 +158,8 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<DeviceView> exportData = Utility.isNullOrEmpty(filteredDevices) ? devices
-                    : filteredDevices;
+            final List<DeviceView> exportData = lazyModel.load(0, Integer.MAX_VALUE,
+                                    lazyModel.getSortField(), lazyModel.getSortOrder(), lazyModel.getFilters());
             for (final DeviceView deviceInstance : exportData) {
                 exportTable.addDataRow(DataLoader.CMD_UPDATE_DEVICE,
                         deviceInstance.getDevice().getComponentType().getName(), deviceInstance.getInventoryId(),
@@ -191,29 +189,27 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
+        final String deviceIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                getRequest()).getParameter("id");
+
         try {
-            final String deviceId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
-                    getRequest()).getParameter("id");
             excelSingleFileImportUI = new ExcelSingleFileImportUI();
             simpleTableExporterDialog = new ExportSimpleDeviceTableDialog();
             availableDeviceTypes = componentTypesEJB.findAll();
-
-            Long selectedDeviceId = null;
-            if (!Strings.isNullOrEmpty(deviceId)) {
-                try {
-                    selectedDeviceId = Long.valueOf(deviceId);
-                } catch (NumberFormatException e) {
-                    // just log
-                    LOGGER.log(Level.WARNING, "URL contained strange unit ID: " + deviceId );
-                    selectedDeviceId = null;
+            lazyModel = new DeviceLazyModel(deviceEJB);
+            if (!Strings.isNullOrEmpty(deviceIdStr)) {
+                final long deviceId = Long.valueOf(deviceIdStr);
+                final Device device = deviceEJB.findById(deviceId);
+                if (device != null) {
+                    // XXX getNamedPosition() might not be returning correct position
+                    final long elementPosition = deviceEJB.getNamedPosition(device.getName());
+                    RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
+                            + ", 'devicesTableVar');");
                 }
             }
-
-            prepareDevicesForDisplay(selectedDeviceId);
-            if (selectedIndex > -1) {
-                RequestContext.getCurrentInstance().execute("selectEntityInTable(" + selectedIndex
-                        + ", 'devicesTableVar');");
-            }
+        } catch (NumberFormatException e) {
+            // just log
+            LOGGER.log(Level.WARNING, "URL contained strange unit ID: " + deviceIdStr);
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
@@ -224,7 +220,6 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     public void doImport() {
         excelSingleFileImportUI.doImport();
         deviceAttributesController.clearRelatedAttributeInformation();
-        prepareDevicesForDisplay(null);
     }
 
     /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#prepareImportPopup() */
@@ -316,7 +311,6 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
         }
 
         clearDeviceDialogFields();
-        prepareDevicesForDisplay(null);
         deviceAttributesController.clearRelatedAttributeInformation();
     }
 
@@ -376,7 +370,6 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
         batchSkipExisting = true;
         multiDeviceAdd();
         clearDeviceDialogFields();
-        prepareDevicesForDisplay(null);
     }
 
     private Device createNewDevice(String deviceSerailNo) {
@@ -435,8 +428,6 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
             ++deletedDevices;
         }
 
-        prepareDevicesForDisplay(null);
-        filteredDevices = null;
         selectedDevices = null;
         usedDevices = null;
         deviceAttributesController.clearRelatedAttributeInformation();
@@ -471,53 +462,6 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
         batchSkipExisting = false;
     }
 
-    /** @return The ID of device type of the device the user is adding or editing in device manager */
-    public Long getDeviceTypeSelection() {
-        return selectedComponentType == null ? null : selectedComponentType.getId();
-    }
-
-    /** @param deviceTypeId The ID of the device type of device the user is adding or editing in device manager */
-    public void setDeviceTypeSelection(Long deviceTypeId) {
-        if (deviceTypeId == null) {
-            selectedComponentType = null;
-        } else {
-            selectedComponentType = componentTypesEJB.findById(deviceTypeId);
-        }
-    }
-
-    /** @return <code>true</code> if a single device type is selected , <code>false</code> otherwise */
-    public boolean isSingleDeviceSelected() {
-        return (selectedDevices != null) && (selectedDevices.size() == 1);
-    }
-
-    /** The method prepares the list of all {@link Device} instances in the database to show to the user. */
-    private void prepareDevicesForDisplay(final Long deviceToSelect) {
-        if (selectedDevices == null) {
-            selectedDevices = Lists.newArrayList();
-        }
-        selectedDevices.clear();
-        isDeviceBeingEdited = false;
-        final List<Device> deviceList = deviceEJB.findAll();
-
-        int devTableRowCounter = 0;
-        devices = Lists.newArrayList();
-        // transform the list of Device into an immutable list of DeviceView
-        for (final Device dev : deviceList) {
-            final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(dev);
-            final String installationSlot = installationRecord == null ? "-": installationRecord.getSlot().getName();
-            final String installationSlotId = installationRecord == null ? null
-                                                    : Long.toString(installationRecord.getSlot().getId());
-            final Date installationDate = installationRecord == null ? null: installationRecord.getInstallDate();
-            final DeviceView devView = new DeviceView(dev, installationSlot, installationSlotId, installationDate);
-            if (deviceToSelect != null && selectedDevices.isEmpty() && dev.getId().equals(deviceToSelect)) {
-                selectedIndex = devTableRowCounter;
-                selectedDevices.add(devView);
-            }
-            devTableRowCounter++;
-            devices.add(devView);
-        }
-    }
-
     /**
      * The method creates a new copy of the currently selected {@link Device}(s)
      */
@@ -529,36 +473,8 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
             UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                                                                 "Duplicated " + duplicated + " devices.");
         } finally {
-            prepareDevicesForDisplay(null);
             deviceAttributesController.clearRelatedAttributeInformation();
         }
-    }
-
-    /** @return The list of all {@link Device} instances to display to the the user */
-    public List<DeviceView> getDevices() {
-        return devices;
-    }
-
-    /** @return The reference to the device instance displayed in the row the user clicked the action for */
-    public List<DeviceView> getSelectedDevices() {
-        return selectedDevices;
-    }
-    /**
-     * @param selectedDevices The reference to the device instance displayed in the row the user clicked the action for.
-     */
-    public void setSelectedDevices(List<DeviceView> selectedDevices) {
-        this.selectedDevices = selectedDevices;
-    }
-
-    /** @return The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device} */
-    @NotNull
-    @Size(min = 1, max = 64, message="Inventory ID can have at most 64 characters.")
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-    /** @param serialNumber The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device} */
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
     }
 
     /** The validator for the inventory ID input field. Called when creating a new device {@link Device}
@@ -596,19 +512,89 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
         }
     }
 
+    /** The validator for the end index field
+     * @param ctx the context
+     * @param component the component
+     * @param value the value
+     * @throws ValidatorException validation failed
+     */
+    public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (batchStartIndex >= (Integer)value) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
+                    "End index must be greater than start index."));
+        }
+    }
+
+    /** The validator for the start index field
+     * @param ctx the context
+     * @param component the component
+     * @param value the value
+     * @throws ValidatorException validation failed
+     */
+    public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if ((Integer)value >= batchEndIndex) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
+                    "Start index must be less than end index."));
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------
+    //                              Getters and setters
+    //-------------------------------------------------------------------------------------------
+    /** @return The reference to the device instance displayed in the row the user clicked the action for */
+    public List<DeviceView> getSelectedDevices() {
+        return selectedDevices;
+    }
+    /**
+     * @param selectedDevices The reference to the device instance displayed in the row the user clicked the action for.
+     */
+    public void setSelectedDevices(List<DeviceView> selectedDevices) {
+        this.selectedDevices = selectedDevices;
+    }
+
+    /** @return The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device} */
+    @NotNull
+    @Size(min = 1, max = 64, message="Inventory ID can have at most 64 characters.")
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+    /** @param serialNumber The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device} */
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    /** @return The ID of device type of the device the user is adding or editing in device manager */
+    public Long getDeviceTypeSelection() {
+        return selectedComponentType == null ? null : selectedComponentType.getId();
+    }
+
+    /** @param deviceTypeId The ID of the device type of device the user is adding or editing in device manager */
+    public void setDeviceTypeSelection(Long deviceTypeId) {
+        if (deviceTypeId == null) {
+            selectedComponentType = null;
+        } else {
+            selectedComponentType = componentTypesEJB.findById(deviceTypeId);
+        }
+    }
+
+    /** @return <code>true</code> if a single device type is selected , <code>false</code> otherwise */
+    public boolean isSingleDeviceSelected() {
+        return (selectedDevices != null) && (selectedDevices.size() == 1);
+    }
+
+    /** @return the lazy loading data model */
+    public LazyDataModel<DeviceView> getLazyModel() {
+        return lazyModel;
+    }
+
+    /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
+    public boolean isDataTableEmpty() {
+        return lazyModel.isEmpty();
+    }
+
     /** @return the usedDevices */
     public List<DeviceView> getUsedDevices() {
         return usedDevices;
-    }
-
-    /** @return the filteredDevices */
-    public List<DeviceView> getFilteredDevices() {
-        return filteredDevices;
-    }
-
-    /** @param filteredDevices the filteredDevices to set */
-    public void setFilteredDevices(List<DeviceView> filteredDevices) {
-        this.filteredDevices = filteredDevices;
     }
 
     /** @return the availableDeviceTypes */
@@ -650,32 +636,6 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     /** @param batchLeadingZeros the batchLeadingZeros to set */
     public void setBatchLeadingZeros(int batchLeadingZeros) {
         this.batchLeadingZeros = batchLeadingZeros;
-    }
-
-    /** The validator for the end index field
-     * @param ctx the context
-     * @param component the component
-     * @param value the value
-     * @throws ValidatorException validation failed
-     */
-    public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
-        if (batchStartIndex >= (Integer)value) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                    "End index must be greater than start index."));
-        }
-    }
-
-    /** The validator for the start index field
-     * @param ctx the context
-     * @param component the component
-     * @param value the value
-     * @throws ValidatorException validation failed
-     */
-    public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
-        if ((Integer)value >= batchEndIndex) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                    "Start index must be less than end index."));
-        }
     }
 
     /** @return a new line separated list of all devices in conflict */
