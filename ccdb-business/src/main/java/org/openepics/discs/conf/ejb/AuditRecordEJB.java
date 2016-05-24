@@ -161,6 +161,9 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
             default:
                 break;
             }
+        } else {
+            // default sort order
+            cq.orderBy(cb.desc(auditRecord.get(AuditRecord_.logTime)));
         }
     }
 

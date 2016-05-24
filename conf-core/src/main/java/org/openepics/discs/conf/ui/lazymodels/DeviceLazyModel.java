@@ -105,9 +105,9 @@ public class DeviceLazyModel extends CCDBLazyModel<DeviceView> {
         final InstallationRecord activeInstallation = findActiveInstallation(device);
 
         return new DeviceView(device,
-                activeInstallation != null ? activeInstallation.getSlot().getName() : null,
-                activeInstallation != null ? activeInstallation.getSlot().getId().toString() : null,
-                activeInstallation != null ? activeInstallation.getInstallDate() : null);
+                activeInstallation == null ? "-" : activeInstallation.getSlot().getName(),
+                activeInstallation == null ? null : Long.toString(activeInstallation.getSlot().getId()),
+                activeInstallation == null ? null : activeInstallation.getInstallDate());
     }
 
     private DeviceFields selectSortField(final String sortField) {
