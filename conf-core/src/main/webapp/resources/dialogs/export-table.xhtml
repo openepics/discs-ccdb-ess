@@ -38,11 +38,12 @@
 
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Export" id="export" styleClass="dialogButton defaultCommand" update="grp" ajax="false" 
-                        tabindex="3" onclick="PrimeFaces.monitorDownload(startDownload, #{widgetName}_stopDownload);">
+                        tabindex="3" onclick="PrimeFaces.monitorDownload(startDownload, #{widgetName}_stopDownload);"
+                        icon="ui-icon-disk">
                     <p:fileDownload value="#{tableFile}" />
                 </p:commandButton>
                 <p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
-                        update="grp" resetValues="true" tabindex="4" />
+                        update="grp" resetValues="true" tabindex="4" icon="ui-icon-close" />
             </p:panel>
 
             <p:defaultCommand target="export" />

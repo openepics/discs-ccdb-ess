@@ -18,9 +18,9 @@
 
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Proceed" id="confirm" styleClass="dialogButton defaultCommand" 
-                        oncomplete="PF('#{widgetName}').hide();PF('#{relatedDialog}').hide();#{saveActions}"
-                        action="#{controller[submitHandler]}" update="#{formToUpdate}" />
-                <p:commandButton value="Abort" styleClass="dialogButton" 
+                        icon="ui-icon-check" action="#{controller[submitHandler]}" update="#{formToUpdate}" 
+                        oncomplete="PF('#{widgetName}').hide();PF('#{relatedDialog}').hide();#{saveActions}" />
+                <p:commandButton value="Abort" styleClass="dialogButton" icon="ui-icon-cancel"
                     onclick="PF('#{widgetName}').hide();PF('#{relatedDialog}').show();" />
             </p:panel>
 

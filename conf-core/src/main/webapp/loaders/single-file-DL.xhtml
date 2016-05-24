@@ -17,10 +17,12 @@
                     rendered="#{controller.excelImportFileName == null}" />
                 <h:outputText value="#{controller.excelImportFileName}" />
                 <p:separator />
-                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
+                    icon="ui-icon-close" />
                 <p:commandButton value="Import" styleClass="dialogButton" onclick="PF('statusDialog').show()" 
                     update=":menuform :#{formId}" oncomplete="PF('#{widgetName}').hide();PF('statusDialog').hide();" 
-                    action="#{controller.doImport()}" disabled="#{controller.excelImportFileName == null}" />
+                    action="#{controller.doImport()}" disabled="#{controller.excelImportFileName == null}" 
+                    icon="ui-icon-arrowthickstop-1-n" />
             </h:panelGroup>
         </p:dialog>
 
@@ -76,7 +78,7 @@
                 </p:row>
             </p:panelGrid>
             <p:commandButton value="Close" type="button" styleClass="dialogButton" 
-                    onclick="PF('importStatsDialog').hide();" />
+                    onclick="PF('importStatsDialog').hide();" icon="ui-icon-close" />
         </p:dialog>
 
         <p:dialog id="resultDialog" widgetVar="resultDialog" modal="true" style="max-width: 90%; max-height: 600px;" 
@@ -168,7 +170,7 @@
             </p:panelGrid>
 
             <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
-                    style="margin-top: 1ex;">
+                    style="margin-top: 1ex;" icon="ui-icon-close" >
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" 
                     update=":devicesForm:devicesTable :devicesForm:attributesDataTable:attributesDataTable" 
                     oncomplete="PF('devicesTableVar').clearFilters();PF('attributesDataTable').clearFilters();" />

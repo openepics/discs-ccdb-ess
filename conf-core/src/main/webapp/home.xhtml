@@ -275,12 +275,13 @@
                                                 or not securityPolicy.getUIHint('HIERARCHY_CREATE')}">
                                 <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();"
                                         actionListener="#{hierarchiesController.prepareContainerAddPopup}"
-                                        update=":addSlotForm"
+                                        update=":addSlotForm" icon="ui-icon-folder-collapsed"
                                         disabled="#{hierarchiesController.multipleNodesSelected
                                                         or hierarchiesController.selectedNodeSlot.hostingSlot}" />
                                 <p:menuitem value="Installation Slot" oncomplete="PF('addSlotDialog').show();"
                                         actionListener="#{hierarchiesController.prepareInstallationSlotPopup}"
-                                        update=":addSlotForm" disabled="#{not hierarchiesController.singleNodeSelected}" />
+                                        update=":addSlotForm" disabled="#{not hierarchiesController.singleNodeSelected}"
+                                        icon="ui-icon-wrench" />
                             </p:menuButton>
                         </div>
                         <div style="height: 2.75em;">
@@ -308,14 +309,14 @@
                                     action="#{hierarchiesController.checkPasteAction}"
                                     update=":pasteSlotsForm:pasteSlots" />
                             </p:menuButton>
-                            <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-minus"
+                            <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-folder-collapsed"
                                 style="float: right; margin: 0.25em 1ex 0 0;" title="Collapse Selected Items"
                                 action="#{hierarchiesController.collapseTreeNodes}" oncomplete="hierarchiesResizeAll();"                                    
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
                                         :hierarchies:hierarchyTabs:powersTree
                                         :hierarchies:hierarchyTabs:connectsTree"
                                 disabled="#{hierarchiesController.displayedTreeEmpty}" />
-                            <p:commandButton value="Expand" id="expandButton" icon="ui-icon-plus"
+                            <p:commandButton value="Expand" id="expandButton" icon="ui-icon-folder-open"
                                 style="float: right; margin: 0.25em 1ex 0 0;"  title="Expand Selected Items"
                                 action="#{hierarchiesController.expandTreeNodes}" oncomplete="hierarchiesResizeAll();"                                   
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
@@ -485,12 +486,12 @@
                             </div>
                             <p:commandButton title="Uninstall Selected Device" label="Uninstall" value="Uninstall" 
                                 type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn" 
-                                style="margin-top: 1em; float: right;" icon="ui-icon-cancel" 
+                                style="margin-top: 1em; float: right;" icon="ui-icon-eject" 
                                 disabled="#{not installationController.canUninstall() 
                                             or not securityPolicy.getUIHint('INSTALLATION')}" 
                                 update=":hierarchies:installationDetails :hierarchies:growl" />
                             <p:commandButton title="Install Device to the Selected Slot" id="installDeviceBtn"
-                                    value="Install" ajax="true" icon="ui-icon-check" 
+                                    value="Install" ajax="true" icon="ui-icon-play" 
                                     actionListener="#{installationController.prepareUninstalledDevices}"
                                     style="margin: 1em 1ex 0 0; float: right;" oncomplete="PF('installDevice').show();" 
                                     update=":hierarchies:installationDetails :installDeviceForm :installDeviceForm:installDevice"

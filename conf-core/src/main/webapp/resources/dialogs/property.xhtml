@@ -149,10 +149,11 @@
             </div>
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" 
-                        oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}" 
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}" icon="ui-icon-disk" 
                         action="#{propertyManager[submitHandler]}" update="grp #{updateComponents}" tabindex="10" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
-                        update="grp" resetValues="true" action="#{propertyManager.resetFields()}" tabindex="11"/>
+                        update="grp" resetValues="true" action="#{propertyManager.resetFields()}" tabindex="11" 
+                        icon="ui-icon-close" />
             </p:panel>
 
             <p:defaultCommand target="save" />

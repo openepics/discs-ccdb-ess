@@ -58,20 +58,22 @@
                 </p:row>
                 <p:row>
                     <p:column style="text-align: right; padding: 0 10px;">
-                        <p:commandButton value="#{empty relationshipController.editedRelationshipView.id ? 'Add' : 'Save'}" 
-                            styleClass="dialogButton defaultCommand" id="addButton"  
+                        <p:commandButton value="#{empty relationshipController.editedRelationshipView.id ? 'Add' : 'Save'}"
+                            icon="#{empty relationshipController.editedRelationshipView.id ? 'ui-icon-plus' : 'ui-icon-disk'}" 
+                            styleClass="dialogButton defaultCommand" id="addButton" 
                             disabled="#{empty relationshipController.editedRelationshipView.targetNode}" 
                             action="#{relationshipController.onRelationshipAdd}" 
                             oncomplete="PF('addSlotRelationship').hide(); hierarchiesResizeAll();" 
                             update=":addSlotRelationshipForm :hierarchies:relationshipTable :hierarchies:editRelationship 
                                     :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
-                        <p:commandButton value="Expand" id="expandButton" icon="ui-icon-plus" styleClass="dialogButton" 
+                        <p:commandButton value="Expand" id="expandButton" icon="ui-icon-folder-open" 
                             title="Expand Selected Items" action="#{relationshipController.expandTreeNodes}" 
-                            update=":addSlotRelationshipForm:relationshipTree" />
-                        <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-minus" styleClass="dialogButton" 
+                            styleClass="dialogButton" update=":addSlotRelationshipForm:relationshipTree" />
+                        <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-folder-collapsed" 
                             title="Collapse Selected Items" action="#{relationshipController.collapseTreeNodes}" 
-                            update=":addSlotRelationshipForm:relationshipTree" />                            
-                        <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="PF('addSlotRelationship').hide();" />
+                            styleClass="dialogButton" update=":addSlotRelationshipForm:relationshipTree" />                            
+                        <p:commandButton value="Cancel" styleClass="dialogButton" icon="ui-icon-close"
+                            oncomplete="PF('addSlotRelationship').hide();" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

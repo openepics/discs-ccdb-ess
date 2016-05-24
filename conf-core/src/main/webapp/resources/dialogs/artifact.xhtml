@@ -100,14 +100,14 @@
                 </div>
 
                 <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
-                    <p:commandButton value="Save" styleClass="dialogButton defaultCommand" id="saveButton" 
+                    <p:commandButton value="Save" styleClass="dialogButton defaultCommand" id="saveButton" icon="ui-icon-disk" 
                             oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                             action="#{controller[submitHandler]}" tabindex="5" update="#{componentToUpdate} grp" 
                             disabled="#{not controller.dialogAttrArtifact.artifactBeingModified 
                                         and controller.dialogAttrArtifact.artifactInternal 
                                         and empty controller.dialogAttrArtifact.name}" />
                     <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide(); #{resetFilter}" 
-                            update="grp" resetValues="true" tabindex="6" action="#{controller.resetFields}" />
+                            update="grp" resetValues="true" tabindex="6" action="#{controller.resetFields}" icon="ui-icon-close" />
                 </p:panel>
 
                 <p:defaultCommand target="saveButton" />

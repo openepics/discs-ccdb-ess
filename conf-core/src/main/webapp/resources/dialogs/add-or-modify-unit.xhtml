@@ -60,12 +60,12 @@
             
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" tabindex="4" 
-                        action="#{unitManager[submitHandler]}" 
+                        action="#{unitManager[submitHandler]}" icon="ui-icon-disk" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { closeDialogActions('#{widgetName}');}" 
                         update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton :unitsForm:exportButton
                                 :unitsForm:duplicateButton grp :unitsForm:growl" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
-                        update="grp" resetValues="true" tabindex="5" />
+                        update="grp" resetValues="true" tabindex="5" icon="ui-icon-close" />
             </p:panel>
 
             <p:defaultCommand target="save" />

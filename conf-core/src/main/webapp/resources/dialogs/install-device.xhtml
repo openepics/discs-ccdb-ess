@@ -52,10 +52,10 @@
                             <p:commandButton id="installButton" styleClass="dialogButton defaultCommand" title="Install" 
                                 label="Install" disabled="#{empty installationController.deviceToInstall}" value="Install" 
                                 action="#{installationController.installDevice()}" update="#{componentToUpdate} :#{formId}" 
-                                oncomplete="PF('#{widgetName}').hide();hierarchiesResizeAll();" />
+                                oncomplete="PF('#{widgetName}').hide();hierarchiesResizeAll();" icon="ui-icon-play" />
                             <p:commandButton title="Cancel" styleClass="dialogButton" label="Cancel" value="Cancel" 
                                 onclick="PF('#{widgetName}').hide();" resetValues="true" update=":#{formId}" 
-                                action="#{installationController.setDeviceToInstall(null)}" />
+                                action="#{installationController.setDeviceToInstall(null)}" icon="ui-icon-close" />
                         </p:panel>
 
                         <p:defaultCommand target="installButton" />

@@ -78,12 +78,13 @@
             </p:panel>
 
             <p:panel style="text-align: right; padding: 0 1.5em 0 0; border: 0;" styleClass="dialogButtonPanel">
-                <p:commandButton value="Save" id="save" styleClass="dialogButton" 
+                <p:commandButton value="Save" id="save" styleClass="dialogButton" icon="ui-icon-disk" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
                         action="#{comptypeAttributesController[submitHandler]}" update="#{componentToUpdate} propertySelect" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" update=" #{componentToUpdate} propertySelect" 
                         resetValues="true" action="#{comptypeAttributesController.resetPropertySelection(formId)}" 
-                        oncomplete="PF('#{widgetName}').hide(); PF('#{formId}_propSelectTable').clearFilters(); #{resetFilter}" />
+                        oncomplete="PF('#{widgetName}').hide(); PF('#{formId}_propSelectTable').clearFilters(); #{resetFilter}" 
+                        icon="ui-icon-close" />
             </p:panel>
         </p:dialog>
     </h:form>

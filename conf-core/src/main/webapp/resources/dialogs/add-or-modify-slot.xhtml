@@ -91,11 +91,11 @@
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Save" styleClass="dialogButton defaultCommand" id="save" tabindex="4" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide();hierarchiesResizeAll();}" 
-                        action="#{hierarchiesController[submitHandler]}" 
+                        action="#{hierarchiesController[submitHandler]}" icon="ui-icon-disk" 
                         update=":hierarchies:hierarchyTabs:tree :hierarchies:slotAttributes grp 
                                 :hierarchies:deleteButton :hierarchies:installationDetails :hierarchies:growl" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
-                        resetValues="true" tabindex="5" />
+                        resetValues="true" tabindex="5" icon="ui-icon-close" />
             </p:panel>
 
             <p:defaultCommand target="save" />
