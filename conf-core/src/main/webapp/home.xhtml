@@ -430,10 +430,10 @@
                                 disabled="#{empty relationshipController.selectedRelationships 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}" />
                             <p:commandButton value="Edit" id="editRelationship" icon="ui-icon-pencil" 
-                                oncomplete="PF('addSlotRelationship').show()" style="margin: 1em 1ex 0 0; float: right;" 
+                                oncomplete="PF('editSlotRelationship').show()" style="margin: 1em 1ex 0 0; float: right;" 
                                 disabled="#{not relationshipController.canRelationshipBeEdited() 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}"
-                                update=":addSlotRelationshipForm:addSlotRelationship"
+                                update=":editSlotRelationshipForm:editSlotRelationship"
                                 actionListener="#{relationshipController.prepareEditRelationshipPopup}" />                                
                             <p:commandButton value="Add" id="addRelationship" icon="ui-icon-plus" 
                                 oncomplete="PF('addSlotRelationship').show()" style="margin: 1em 1ex 0 0; float: right;" 
@@ -699,7 +699,18 @@
             <ui:param name="tableFile" value="#{hierarchiesController.simpleTableDialog.exportedTable}" />
         </ui:include>
 
-        <ui:include src="/resources/dialogs/add-relationship.xhtml" />
+        <ui:include src="/resources/dialogs/add-relationship.xhtml">
+            <ui:param name="formId" value="addSlotRelationshipForm" />
+            <ui:param name="widgetName" value="addSlotRelationship" />
+            <ui:param name="selectProperty" value="#{relationshipController.containsTree.selectedNodesArray}" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/add-relationship.xhtml">
+            <ui:param name="formId" value="editSlotRelationshipForm" />
+            <ui:param name="widgetName" value="editSlotRelationship" />
+            <ui:param name="selectProperty" value="#{relationshipController.editedRelationshipView.targetNode}" />
+        </ui:include>
+
         <ui:include src="/resources/dialogs/linkdialog.xhtml" />
         <script type="text/javascript">
             //<![CDATA[

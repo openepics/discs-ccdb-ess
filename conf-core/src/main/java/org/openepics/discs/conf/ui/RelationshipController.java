@@ -53,6 +53,7 @@ import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -86,6 +87,8 @@ public class RelationshipController implements Serializable {
 
     private SlotRelationshipTree containsTree;
 
+    private boolean editExistingRelationship;
+
     public RelationshipController() {}
 
     /** Java EE post construct life-cycle method. */
@@ -115,6 +118,7 @@ public class RelationshipController implements Serializable {
             public int compare(SlotRelation o1, SlotRelation o2) {
                 return o1.getNameAsString().compareTo(o2.getNameAsString());
             }});
+        // LinkedHashMap preserves the ordering. Important for UI.
         slotRelationBySlotRelationStringName = new LinkedHashMap<>();
         for (final SlotRelation slotRelation : slotRelations) {
             immutableListBuilder.add(new SelectItem(slotRelation.getNameAsString(), slotRelation.getNameAsString()));
@@ -252,6 +256,7 @@ public class RelationshipController implements Serializable {
     public void prepareEditRelationshipPopup() {
         Preconditions.checkState((selectedRelationships != null) && (selectedRelationships.size() == 1));
 
+        editExistingRelationship = true;
         // setups the dialog
         SlotRelationshipView v = selectedRelationships.get(0);
         editedRelationshipView = new SlotRelationshipView(v.getSlotPair(), v.getSourceSlot());
@@ -265,11 +270,12 @@ public class RelationshipController implements Serializable {
                 .filter(e -> !e.getValue().getName().equals(SlotRelationName.CONTAINS)).map(Entry::getKey).collect(Collectors.toList());
     }
 
-    /** Prepares data for adding new relationship */
+    /** Prepares data for adding new relationship(s) */
     public void prepareAddRelationshipPopup() {
         Preconditions.checkNotNull(hierarchiesController.getSelectedNodeSlot());
         Preconditions.checkState(hierarchiesController.isSingleNodeSelected());
 
+        editExistingRelationship = false;
         // clear the previous dialog selection in case the dialog was already used before
         editedRelationshipView = new SlotRelationshipView(null, hierarchiesController.getSelectedNodeSlot());
         editedRelationshipView.setRelationshipName(SlotRelationName.CONTAINS.toString());
@@ -290,16 +296,100 @@ public class RelationshipController implements Serializable {
      */
     public void onRelationshipAdd() {
         try {
-            final SlotRelation slotRelation =
-                                slotRelationBySlotRelationStringName.get(editedRelationshipView.getRelationshipName());
+            if (editExistingRelationship) {
+                editExistingRelationship();
+            } else {
+                addNewRelationships();
+            }
+        } finally {
+            onRelationshipPopupClose();
+        }
+    }
+
+    private void editExistingRelationship() {
+        Preconditions.checkNotNull(editedRelationshipView.getSlotPair());
+        final SlotRelation slotRelation =
+                slotRelationBySlotRelationStringName.get(editedRelationshipView.getRelationshipName());
+        final Slot parentSlot;
+        final Slot childSlot;
+        if (slotRelation.getNameAsString().equals(editedRelationshipView.getRelationshipName())) {
+            childSlot =  editedRelationshipView.getTargetNode().getData().getSlot();
+            parentSlot = editedRelationshipView.getSourceSlot();
+        } else {
+            childSlot = editedRelationshipView.getSourceSlot();
+            parentSlot = editedRelationshipView.getTargetNode().getData().getSlot();
+        }
+
+        if (childSlot.equals(parentSlot)) {
+            UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
+                    "The installation slot cannot be in relationship with itself.");
+            return;
+        }
+
+        final SlotPair editedSlotPair = editedRelationshipView.getSlotPair();
+        if (editedSlotPair.getChildSlot().equals(childSlot) &&
+                editedSlotPair.getParentSlot().equals(parentSlot) &&
+                editedSlotPair.getSlotRelation().equals(slotRelation)) {
+            // nothing to do, relationship not modified
+            return;
+        }
+
+        if (!slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(),
+                slotRelation.getName()).isEmpty()) {
+            UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
+                    "This relationship already exists.");  // XXX why is this message not show?!
+            return;
+        }
+
+        editedSlotPair.setChildSlot(childSlot);
+        editedSlotPair.setParentSlot(parentSlot);
+        editedSlotPair.setSlotRelation(slotRelation);
+
+        if (slotPairEJB.slotPairCreatesLoop(editedSlotPair, childSlot)) {
+            RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
+            return;
+        }
+
+        slotPairEJB.save(editedSlotPair);
+        relationships.remove(selectedRelationships.get(0));
+        relationships.add(new SlotRelationshipView(slotPairEJB.refreshEntity(editedSlotPair),
+                                                selectedRelationships.get(0).getSourceSlot()));
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                "Relationship modified.");
+        selectedRelationships = null;
+
+        final boolean isContainsAdded = (slotRelation.getName() == SlotRelationName.CONTAINS);
+        hierarchiesController.refreshTrees(new HashSet<>(Arrays.asList(childSlot.getId(), parentSlot.getId())));
+
+        if (isContainsAdded && (parentSlot == hierarchiesController.getSelectedNodeSlot())) {
+            hierarchiesController.expandFirstSelectedNode();
+        }
+    }
+
+    private void addNewRelationships() {
+        // we will create new entities in memory and check all of them. Then we will add them in a single transaction
+        Preconditions.checkArgument(!containsTree.getSelectedNodes().isEmpty());
+        final SlotRelation slotRelation =
+                slotRelationBySlotRelationStringName.get(editedRelationshipView.getRelationshipName());
+        final boolean isForwardRelation = slotRelation.getNameAsString().equals(editedRelationshipView.getRelationshipName());
+
+        final Slot sourceSlot = hierarchiesController.getSelectedNodeSlot();
+
+        final List<SlotPair> newRelationships = Lists.newArrayList();
+        final HashSet<Long> refreshList = new HashSet<Long>();
+        refreshList.add(editedRelationshipView.getSourceSlot().getId());
+
+        for (final TreeNode selectedNode : containsTree.getSelectedNodes()) {
             final Slot parentSlot;
             final Slot childSlot;
-            if (slotRelation.getNameAsString().equals(editedRelationshipView.getRelationshipName())) {
-                childSlot =  editedRelationshipView.getTargetNode().getData().getSlot();
-                parentSlot = editedRelationshipView.getSourceSlot();
+            if (isForwardRelation) {
+                childSlot = ((SlotView) selectedNode.getData()).getSlot();
+                parentSlot = sourceSlot;
+                refreshList.add(childSlot.getId());
             } else {
-                childSlot = editedRelationshipView.getSourceSlot();
-                parentSlot = editedRelationshipView.getTargetNode().getData().getSlot();
+                childSlot = sourceSlot;
+                parentSlot = ((SlotView) selectedNode.getData()).getSlot();
+                refreshList.add(parentSlot.getId());
             }
 
             if (childSlot.equals(parentSlot)) {
@@ -308,25 +398,13 @@ public class RelationshipController implements Serializable {
                 return;
             }
 
-            final SlotPair newSlotPair;
-            if (editedRelationshipView.getSlotPair() != null) {
-                newSlotPair = editedRelationshipView.getSlotPair();
-                if (newSlotPair.getChildSlot().equals(childSlot) &&
-                        newSlotPair.getParentSlot().equals(parentSlot) &&
-                        newSlotPair.getSlotRelation().equals(slotRelation)) {
-                    // nothing to do, relationship not modified
-                    return;
-                }
-            } else {
-                newSlotPair = new SlotPair();
-            }
-
             if (!slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(),
                     slotRelation.getName()).isEmpty()) {
                 UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                         "This relationship already exists.");  // XXX why is this message not show?!
                 return;
             }
+            final SlotPair newSlotPair = new SlotPair();
 
             newSlotPair.setChildSlot(childSlot);
             newSlotPair.setParentSlot(parentSlot);
@@ -335,33 +413,26 @@ public class RelationshipController implements Serializable {
             if (slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
                 RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
                 return;
-            }
+               }
 
-            if (editedRelationshipView.getSlotPair() == null) {
-                slotPairEJB.add(newSlotPair);
-                relationships.add(new SlotRelationshipView(slotPairEJB.refreshEntity(newSlotPair),
-                                                hierarchiesController.getSelectedNodeSlot()));
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                        "Relationship added.");
-            } else {
-                slotPairEJB.save(newSlotPair);
-                relationships.remove(selectedRelationships.get(0));
-                relationships.add(new SlotRelationshipView(slotPairEJB.refreshEntity(newSlotPair),
-                                                                selectedRelationships.get(0).getSourceSlot()));
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                        "Relationship modified.");
-                selectedRelationships = null;
-            }
-
-            final boolean isContainsAdded = (slotRelation.getName() == SlotRelationName.CONTAINS);
-            hierarchiesController.refreshTrees(new HashSet<>(Arrays.asList(childSlot.getId(), parentSlot.getId())));
-
-            if (isContainsAdded && (parentSlot == hierarchiesController.getSelectedNodeSlot())) {
-                hierarchiesController.expandFirstSelectedNode();
-            }
-        } finally {
-            onRelationshipPopupClose();
+            newRelationships.add(newSlotPair);
         }
+        slotPairEJB.add(newRelationships);
+
+        relationships.addAll(newRelationships.stream().map(e -> new SlotRelationshipView(e, sourceSlot)).
+                collect(Collectors.toList()));
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                "Added " + newRelationships.size() + " relationships.");
+
+        hierarchiesController.refreshTrees(refreshList);
+
+        // expand tree if a single node gained new CONTAINS child(ren)
+        final boolean isContainsAdded = (slotRelation.getName() == SlotRelationName.CONTAINS);
+        if (isContainsAdded && (newRelationships.size() == 1) && isForwardRelation) {
+            hierarchiesController.expandFirstSelectedNode();
+        }
+
+        containsTree.unselectAllTreeNodes();
     }
 
     /** Expands the selected node or entire tree */
@@ -439,5 +510,10 @@ public class RelationshipController implements Serializable {
     /**@return the contains tree */
 	public SlotRelationshipTree getContainsTree() {
 		return containsTree;
+	}
+
+	/** @return is existing relationship being edited */
+	public boolean isEditExistingRelationship() {
+	    return editExistingRelationship;
 	}
 }
