@@ -6,16 +6,16 @@
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="content">
-    
+
         <script type="text/javascript">
-            //<![CDATA[                        
+            //<![CDATA[
             function closeDialogActions(widgetVar) {
                 if (widgetVar != null) PF(widgetVar).hide();
-                PF('propertiesTableVar').clearFilters();                
+                PF('propertiesTableVar').clearFilters();
             }
             // ]]>
         </script>
-        
+
         <h:form id="propertiesForm">
             <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:fieldset id="propertiesFieldset" legend="Properties" style="box-sizing: border-box; height: calc(100vh - 7em);">
@@ -31,17 +31,22 @@
                                 :propertiesForm:duplicateButton" />
                         <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
                                 :propertiesForm:duplicateButton" />
-        
+
                         <p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" 
                                 filterMatchMode="contains" styleClass="tableColWidth20">
                             <h:outputText value="#{property.name}" />
                         </p:column>
-        
+
                         <p:column id="descCol" headerText="Description" sortBy="#{property.description}" filterBy="#{property.description}" 
                                 filterStyle="width: 20em;" filterMatchMode="contains" styleClass="tableColWidth60">
                             <h:outputText value="#{property.description}" />
                         </p:column>
-        
+
+                        <p:column headerText="Data Type" sortBy="#{property.dataType.name}" 
+                                filterBy="#{property.dataType.name}" filterMatchMode="contains" styleClass="tableColWidth10">
+                            <h:outputText value="#{property.dataType.name}" />
+                        </p:column>
+
                         <p:column id="uniCol" headerText="Unit" sortBy="#{property.unit.name}" 
                                 filterBy="#{property.unit.name}" filterMatchMode="contains" styleClass="tableColWidth10">
                             <h:outputLink rendered="#{!empty property.unit}" 
@@ -50,18 +55,13 @@
                             </h:outputLink>
                             <h:outputText value="-" rendered="#{empty property.unit}" />
                         </p:column>
-        
-                        <p:column headerText="Data Type" sortBy="#{property.dataType.name}" 
-                                filterBy="#{property.dataType.name}" filterMatchMode="contains" styleClass="tableColWidth10">
-                            <h:outputText value="#{property.dataType.name}" />
-                        </p:column>
                     </p:dataTable>
                 </div>
-    
+
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected" 
                     style="float: right; margin-top: 1em;" 
                     disabled="#{empty propertyManager.selectedProperties or not securityPolicy.getUIHint('PROP_CREATE')}" 
-                    oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                    
+                    oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportProperties').show();" 
                     disabled="#{propertyManager.isDataTableEmpty()}" update=":exportPropForm:exportProperties" 
@@ -88,7 +88,7 @@
             <script type="text/javascript">
                 // <![CDATA[
                 jQuery(document).ready(function() {
-                    var $this = PF("propertiesTableVar");            
+                    var $this = PF("propertiesTableVar");
 
                     $this.sortableColumns.on("click.dataTable", function(e, metaKeyOn) {
                         $this.scrollBody.scrollTop(1);
@@ -111,7 +111,8 @@
             <ui:param name="filteredDialogList" value="#{propertyManager.filteredDialogProperties}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
-                                                :propertiesForm:editButton :propertiesForm:exportButton :propertiesForm:duplicateButton :propertiesForm:growl" />
+                                                :propertiesForm:editButton :propertiesForm:exportButton 
+                                                :propertiesForm:duplicateButton :propertiesForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="properties" />
             <ui:param name="entityName" value="Property" />
@@ -122,7 +123,8 @@
             <ui:param name="controller" value="#{propertyManager}" />
             <ui:param name="duplicateList" value="#{propertyManager.selectedProperties}" />
             <ui:param name="filteredDuplicateList" value="#{propertyManager.filteredDialogProperties}" />
-            <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:editButton :propertiesForm:deleteButton :propertiesForm:growl" />
+            <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:editButton 
+                                                :propertiesForm:deleteButton :propertiesForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="properties" />
             <ui:param name="entityName" value="Property" />
@@ -131,8 +133,8 @@
         <ui:include src="/resources/dialogs/property.xhtml">
             <ui:param name="formId" value="modifyPropertyForm" />
             <ui:param name="dialogTitle" value="Edit Property" />
-            <ui:param name="updateComponents" 
-                value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton :propertiesForm:growl" />
+            <ui:param name="updateComponents" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+                                                    :propertiesForm:editButton :propertiesForm:growl" />
             <ui:param name="widgetName" value="modifyProperty" />
             <ui:param name="submitHandler" value="onModify" />
             <ui:param name="saveAction" value="closeDialogActions('modifyProperty');" />
@@ -142,7 +144,8 @@
             <ui:param name="formId" value="addPropertyForm" />
             <ui:param name="dialogTitle" value="Add Property" />
             <ui:param name="updateComponents" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
-                                                :propertiesForm:editButton :propertiesForm:exportButton :propertiesForm:duplicateButton :propertiesForm:growl" />
+                                                :propertiesForm:editButton :propertiesForm:exportButton 
+                                                :propertiesForm:duplicateButton :propertiesForm:growl" />
             <ui:param name="widgetName" value="addProperty" />
             <ui:param name="batchCreation" value="true" />
             <ui:param name="submitHandler" value="onAdd" />
@@ -158,8 +161,8 @@
             <ui:param name="relatedDialog" value="addProperty" />
             <ui:param name="controller" value="#{propertyManager}" />
             <ui:param name="submitHandler" value="creationProceed" />
-            <ui:param name="formToUpdate" 
-                value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton :propertiesForm:growl" />
+            <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+                                                :propertiesForm:editButton :propertiesForm:growl" />
             <ui:param name="saveActions" value="closeDialogActions(null);" />
         </ui:include>
 
