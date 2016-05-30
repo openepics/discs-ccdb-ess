@@ -387,7 +387,7 @@
                                 <p:dataTable value="#{relationshipController.relationships}" id="relationshipTable"
                                         var="relationship" emptyMessage="No records found."
                                         scrollable="true" scrollWidth="100%" scrollHeight="100%" 
-                                        class="hierarchies-attributes-cell"
+                                        class="hierarchies-attributes-cell" resizableColumns="true" 
                                         filteredValue="#{relationshipController.filteredRelationships}"
                                         selectionMode="multiple" rowKey="#{relationship.id}"
                                         selection="#{relationshipController.selectedRelationships}"
@@ -451,7 +451,7 @@
                                 style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="installationTable" value="#{installationController.installationRecords}"
-                                        var="installationRecord" widgetVar="installationWidget"
+                                        var="installationRecord" widgetVar="installationWidget"  resizableColumns="true" 
                                         selectionMode="multiple" selection="#{installationController.selectedInstallationViews}"
                                         emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
                                         filteredValue="#{installationController.filteredInstallationRecords}"
