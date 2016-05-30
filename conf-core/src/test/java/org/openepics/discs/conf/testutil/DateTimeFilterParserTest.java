@@ -21,6 +21,7 @@ package org.openepics.discs.conf.testutil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
 import org.junit.Assert;
@@ -56,13 +57,13 @@ public class DateTimeFilterParserTest {
                     startOfMonth,
                     UiUtility.processUIDateTime("1"));
         }
-        // test for number above today's date, skipped if today is the last day of the month, ...
+        // test for number above today's date, skipped if today is 'above' the last day of previous month, ...
         //   but then this is already covered by the 'today' test
-        if (today.getDayOfMonth() < today.lengthOfMonth()) {
-            final LocalDateTime tomorrow = LocalDate.of(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth() + 1).
-                                                    atStartOfDay();
-            Assert.assertEquals("'tomorrow' should return '" + tomorrow.format(dateTimeFormat) +"'",
-                    tomorrow,
+        if (today.getDayOfMonth() < today.minus(Period.ofMonths(1)).lengthOfMonth()) {
+            final LocalDateTime prevMonthFromTomorrow = today.plus(Period.ofDays(1)).minus(Period.ofMonths(1)).
+                                                atStartOfDay();
+            Assert.assertEquals("'tomorrow' should return '" + prevMonthFromTomorrow.format(dateTimeFormat) +"'",
+                    prevMonthFromTomorrow,
                     UiUtility.processUIDateTime(Integer.toString(today.getDayOfMonth() + 1)));
         }
 
