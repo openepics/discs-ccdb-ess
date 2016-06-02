@@ -105,9 +105,10 @@
                             action="#{controller[submitHandler]}" tabindex="5" update="#{componentToUpdate} grp" 
                             disabled="#{not controller.dialogAttrArtifact.artifactBeingModified 
                                         and controller.dialogAttrArtifact.artifactInternal 
-                                        and empty controller.dialogAttrArtifact.name}" />
-                    <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide(); #{resetFilter}" 
-                            update="grp" resetValues="true" tabindex="6" action="#{controller.resetFields}" icon="ui-icon-close" />
+                                        and empty controller.dialogAttrArtifact.name}" title="Save" />
+                    <p:commandButton value="Cancel" styleClass="dialogButton" update="grp" resetValues="true" 
+                            onclick="PF('#{widgetName}').hide(); #{resetFilter}" title="Cancel" 
+                            tabindex="6" action="#{controller.resetFields}" icon="ui-icon-close" />
                 </p:panel>
 
                 <p:defaultCommand target="saveButton" />

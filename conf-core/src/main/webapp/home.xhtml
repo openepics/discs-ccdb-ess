@@ -45,7 +45,7 @@
                                         :hierarchies:hierarchyTabs:connectsTree :hierarchies:clipboardOperations
                                         :hierarchies:slotExport :hierarchies:collapseButton :hierarchies:expandButton"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
-                                <p:tab id="INCLUDES" title="Contains" style="height: 100%">
+                                <p:tab id="INCLUDES" title="Contains" style="height: 100%" titletip="Show 'Contains' Hierarchy Tree">
                                     <p:inputText id="filterContainsTree" value="#{hierarchiesController.containsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
                                         <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.containsTree.applyFilter()}"
@@ -101,7 +101,7 @@
                                         </p:treeTable>                                            
                                     </div>                                    
                                 </p:tab>
-                                <p:tab id="CONTROLS" title="Controls" style="height: 100%">
+                                <p:tab id="CONTROLS" title="Controls" style="height: 100%" titletip="Show 'Controls' Hierarchy Tree">
                                     <p:inputText id="filterControlsTree" value="#{hierarchiesController.controlsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
                                         <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.controlsTree.applyFilter()}"
@@ -144,7 +144,7 @@
                                         </p:treeTable>
                                     </div>
                                 </p:tab>
-                                <p:tab id="POWERS" title="Powers" style="height: 100%">
+                                <p:tab id="POWERS" title="Powers" style="height: 100%" titletip="Show 'Powers' Hierarchy Tree">
                                     <p:inputText id="filterPowersTree" value="#{hierarchiesController.powersTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
                                         <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.powersTree.applyFilter()}"
@@ -187,7 +187,8 @@
                                         </p:treeTable>
 	                               </div>
                                 </p:tab>
-                                <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}">
+                                <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}" 
+                                        titletip="Show 'Connects' Hierarchy Tree">
                                     <p:inputText id="filterConnectsTree" value="#{hierarchiesController.connectsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
                                         <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.connectsTree.applyFilter()}"
@@ -274,11 +275,13 @@
                                                 or hierarchiesController.multipleNodesSelected
                                                 or not securityPolicy.getUIHint('HIERARCHY_CREATE')}">
                                 <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();"
+                                        title="Add a Container to the Selected Container"
                                         actionListener="#{hierarchiesController.prepareContainerAddPopup}"
                                         update=":addSlotForm" icon="ui-icon-folder-collapsed"
                                         disabled="#{hierarchiesController.multipleNodesSelected
                                                         or hierarchiesController.selectedNodeSlot.hostingSlot}" />
                                 <p:menuitem value="Installation Slot" oncomplete="PF('addSlotDialog').show();"
+                                        title="Add an Instalaltion Slot to the Selected Item"
                                         actionListener="#{hierarchiesController.prepareInstallationSlotPopup}"
                                         update=":addSlotForm" disabled="#{not hierarchiesController.singleNodeSelected}"
                                         icon="ui-icon-wrench" />
@@ -323,8 +326,8 @@
                                         :hierarchies:hierarchyTabs:powersTree
                                         :hierarchies:hierarchyTabs:connectsTree"
                                 disabled="#{hierarchiesController.displayedTreeEmpty}" />
-                            <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move Down"
-                                style="float: right; margin: 0.25em 1ex 0 0;"
+                            <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" 
+                                title="Move Down" style="float: right; margin: 0.25em 1ex 0 0;"
                                 oncomplete="hierarchiesResizeAll(); scrollSelectedIntoView(PF('hierarchyWidget'));"
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:downButton :hierarchies:upButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
@@ -353,28 +356,28 @@
                                     updateButtons=":hierarchies:deleteAttrButton :hierarchies:editAttrButton"
                                     parentName="Container/Slot" />
                             </div>
-                            <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
+                            <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" title="Delete Attribute"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show();"
                                 disabled="#{not slotAttributeController.canDeleteAttributes() 
                                             or not securityPolicy.getUIHint('HIERARCHY_DELETE')}" />
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil"
                                 action="#{slotAttributeController.prepareModifyPropertyPopUp}" 
-                                style="float: right; margin: 1em 1ex 0 0;" 
+                                style="float: right; margin: 1em 1ex 0 0;" title="Edit Attribute"
                                 disabled="#{not slotAttributeController.singleAttributeSelected or
                                             not slotAttributeController.canEdit(slotAttributeController.selectedAttributes.get(0))
                                             or not securityPolicy.getUIHint('HIERARCHY_MODIFY')}" />
                             <p:menuButton id="addAttrButton" value="Add" style="margin: 1em 1ex 0 0; float: right;"
                                     disabled="#{not hierarchiesController.singleNodeSelected
                                                 or not securityPolicy.getUIHint('HIERARCHY_CREATE')}">
-                                <p:menuitem value="Container property" oncomplete="PF('addPropertyValue').show();"
+                                <p:menuitem value="Container Property" oncomplete="PF('addPropertyValue').show();"
                                         actionListener="#{slotAttributeController.prepareForPropertyValueAdd}"
                                         disabled="#{hierarchiesController.selectedNodeSlot.hostingSlot}"
-                                        update=":addPropertyValueForm:addPropertyValue" />
+                                        update=":addPropertyValueForm:addPropertyValue" title="Add a Property"/>
                                 <p:menuitem value="Tag" oncomplete="PF('containerTag').show();" update=":containerTagForm"
-                                        actionListener="#{slotAttributeController.prepareForTagAdd}" />
+                                        actionListener="#{slotAttributeController.prepareForTagAdd}" title="Add a Tag"/>
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();"
                                         actionListener="#{slotAttributeController.prepareForArtifactAdd}"
-                                        update=":addArtifactForm:addArtifact" />
+                                        update=":addArtifactForm:addArtifact" title="Add an Artifact" />
                             </p:menuButton>
                         </p:fieldset>
                         <p:spacer height="20" />
@@ -425,17 +428,17 @@
                                 </p:dataTable>
                             </div>
 
-                            <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash"
+                            <p:commandButton id="deleteRelationship" value="Delete" title="Delete Relationship" icon="ui-icon-trash"
                                 style="margin-top: 1em; float: right;" oncomplete="PF('deleteRelationship').show();" 
                                 disabled="#{empty relationshipController.selectedRelationships 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}" />
-                            <p:commandButton value="Edit" id="editRelationship" icon="ui-icon-pencil" 
+                            <p:commandButton value="Edit" id="editRelationship" icon="ui-icon-pencil" title="Edit Relationship"
                                 oncomplete="PF('editSlotRelationship').show()" style="margin: 1em 1ex 0 0; float: right;" 
                                 disabled="#{not relationshipController.canRelationshipBeEdited() 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}"
                                 update=":editSlotRelationshipForm:editSlotRelationship"
                                 actionListener="#{relationshipController.prepareEditRelationshipPopup}" />                                
-                            <p:commandButton value="Add" id="addRelationship" icon="ui-icon-plus" 
+                            <p:commandButton value="Add" id="addRelationship" icon="ui-icon-plus" title="Add Relationship"
                                 oncomplete="PF('addSlotRelationship').show()" style="margin: 1em 1ex 0 0; float: right;" 
                                 disabled="#{not hierarchiesController.singleNodeSelected 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}"
@@ -514,7 +517,7 @@
                     <h:outputText value="There was an error connecting to the naming service." />
                 </h:panelGroup>
                 <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
-                    <p:commandButton value="Ok" id="confirm" styleClass="dialogButton defaultCommand" 
+                    <p:commandButton value="Ok" title="Ok" id="confirm" styleClass="dialogButton defaultCommand" 
                         onclick="PF('namingServiceError').hide();" />
                 </p:panel>
                 <p:defaultCommand target="confirm" />

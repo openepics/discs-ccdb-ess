@@ -29,8 +29,9 @@
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Yes" id="confirm" styleClass="dialogButton defaultCommand" icon="ui-icon-check" 
                     update="#{formsToUpdate}" onstart=" PF('duplicateDialog').hide(); PF('statusDialog').show();" 
-                    oncomplete="PF('statusDialog').hide(); #{closeDialogActions}" action="#{controller.duplicate}" />
-                <p:commandButton value="No" styleClass="dialogButton" icon="ui-icon-close" 
+                    oncomplete="PF('statusDialog').hide(); #{closeDialogActions}" action="#{controller.duplicate}" 
+                    title="Yes" />
+                <p:commandButton value="No" styleClass="dialogButton" icon="ui-icon-close" title="No" 
                     onclick="PF('duplicateDialog').hide(); #{closeDialogActions}" />
             </p:panel>
 

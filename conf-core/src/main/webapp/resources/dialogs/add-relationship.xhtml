@@ -59,7 +59,7 @@
                         <p:commandButton value="#{relationshipController.editExistingRelationship ? 'Save' : 'Add'}"
                             icon="#{relationshipController.editExistingRelationship ? 'ui-icon-disk' : 'ui-icon-plus'}" 
                             styleClass="dialogButton defaultCommand" id="addButton" disabled="#{empty selectProperty}" 
-                            action="#{relationshipController.onRelationshipAdd}" 
+                            action="#{relationshipController.onRelationshipAdd}" title="Save" 
                             oncomplete="PF('#{widgetName}').hide(); hierarchiesResizeAll();" 
                             update=":#{formId} :hierarchies:relationshipTable :hierarchies:editRelationship 
                                     :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
@@ -70,7 +70,7 @@
                             title="Collapse Selected Items" action="#{relationshipController.collapseTreeNodes}" 
                             styleClass="dialogButton" update=":#{formId}:relationshipTree" />                            
                         <p:commandButton value="Cancel" styleClass="dialogButton" icon="ui-icon-close"
-                            oncomplete="PF('#{widgetName}').hide();" />
+                            oncomplete="PF('#{widgetName}').hide();" title="Cancel" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

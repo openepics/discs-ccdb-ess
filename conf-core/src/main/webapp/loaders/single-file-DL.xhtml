@@ -79,7 +79,7 @@
                     </p:column>
                 </p:row>
             </p:panelGrid>
-            <p:commandButton value="Close" type="button" styleClass="dialogButton" 
+            <p:commandButton value="Close" type="button" styleClass="dialogButton" title="Close" 
                     onclick="PF('importStatsDialog').hide();" icon="ui-icon-close" />
         </p:dialog>
 
@@ -172,7 +172,7 @@
             </p:panelGrid>
 
             <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
-                    style="margin-top: 1ex;" icon="ui-icon-close" >
+                    style="margin-top: 1ex;" icon="ui-icon-close" title="Close">
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" 
                     update=":devicesForm:devicesTable :devicesForm:attributesDataTable:attributesDataTable" 
                     oncomplete="PF('devicesTableVar').clearFilters();PF('attributesDataTable').clearFilters();" />

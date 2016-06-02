@@ -37,8 +37,8 @@
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Yes" id="deleteAttr" styleClass="dialogButton defaultCommand" update="#{formsToUpdate}" 
                     rendered="#{empty deletePreventionList}" oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
-                    action="#{controller[submitHandler]}" icon="ui-icon-check" />
-                <p:commandButton value="#{empty deletePreventionList ? 'No' : 'Close'}" id="cancel"
+                    action="#{controller[submitHandler]}" icon="ui-icon-check" title="Yes" />
+                <p:commandButton value="#{empty deletePreventionList ? 'No' : 'Close'}" id="cancel" title="Close"
                     styleClass="dialogButton #{not empty deletePreventionList ? 'defaultCommand' : ''}" 
                     onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" icon="ui-icon-close" />
             </p:panel>

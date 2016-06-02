@@ -40,9 +40,9 @@
                                 :deviceTypesForm:addButton :deviceTypesForm:editAttrButton 
                                 :deviceTypesForm:deleteAttrButton"  icon="ui-icon-disk" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('deviceTypeTableVar').clearFilters(); PF('attributesDataTable').clearFilters(); }" 
-                        action="#{componentTypeManager[submitHandler]}" />
+                        action="#{componentTypeManager[submitHandler]}" title="Save" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
-                        update="grp" resetValues="true" tabindex="4" icon="ui-icon-close" />
+                        update="grp" resetValues="true" tabindex="4" icon="ui-icon-close" title="Cancel"/>
             </p:panel>
 
             <p:defaultCommand target="save" />

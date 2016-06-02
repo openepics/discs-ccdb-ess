@@ -148,12 +148,12 @@
                 </p:panelGrid>
             </div>
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
-                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" 
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" title="Save" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}" icon="ui-icon-disk" 
                         action="#{propertyManager[submitHandler]}" update="grp #{updateComponents}" tabindex="10" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
                         update="grp" resetValues="true" action="#{propertyManager.resetFields()}" tabindex="11" 
-                        icon="ui-icon-close" />
+                        icon="ui-icon-close" title="Cancel" />
             </p:panel>
 
             <p:defaultCommand target="save" />

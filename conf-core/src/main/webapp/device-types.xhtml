@@ -43,8 +43,8 @@
                                 </p:dataTable>
                             </div>
 
-                            <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected"
-                                style="float: right; margin-top: 1em;" 
+                            <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" 
+                                title="Duplicate Selected" style="float: right; margin-top: 1em;" 
                                 disabled="#{empty componentTypeManager.selectedDeviceTypes or not securityPolicy.getUIHint('DEVTYPE_CREATE')}"
                                 oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                           
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export"
@@ -81,12 +81,12 @@
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteAttributes').show()"
-                                update=":deleteAttributesForm:deleteAttributes"
+                                update=":deleteAttributesForm:deleteAttributes" title="Delete Attribute"
                                 actionListener="#{comptypeAttributesController.checkAttributesForDeletion()}"
                                 disabled="#{empty comptypeAttributesController.selectedAttributes 
                                                 or not securityPolicy.getUIHint('DEVTYPE_DELETE')}" />
 
-                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil"
+                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" title="Edit Attribute"
                                 action="#{comptypeAttributesController.prepareModifyPropertyPopUp()}"
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm"
                                 disabled="#{not comptypeAttributesController.singleAttributeSelected or
@@ -98,18 +98,19 @@
                                             or not securityPolicy.getUIHint('DEVTYPE_CREATE')}">
                                 <p:menuitem value="Device Type Property" oncomplete="PF('addPropertyValue').show();"
                                     actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}"
-                                    update=":addPropertyValueForm:addPropertyValue" />
+                                    update=":addPropertyValueForm:addPropertyValue" title="Add a Device Type Property" />
                                 <p:menuitem value="Device Property" oncomplete="PF('deviceInstanceProperty').show();"
                                     actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd}"
-                                    update=":deviceInstancePropertyForm:deviceInstanceProperty" />
+                                    update=":deviceInstancePropertyForm:deviceInstanceProperty" title="Add a Device Property"/>
                                 <p:menuitem value="Installation Slot Property" oncomplete="PF('installationSlotProperty').show();"
                                     actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd}"
-                                    update=":installationSlotPropertyForm:installationSlotProperty" />
+                                    update=":installationSlotPropertyForm:installationSlotProperty"
+                                    title="Add an Installation Slot Property" />
                                 <p:menuitem value="Tag" oncomplete="PF('deviceTypeTag').show();" update=":deviceTypeTagForm"
-                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" />
+                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" title="Add a Tag" />
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();"
                                     actionListener="#{comptypeAttributesController.prepareForArtifactAdd}"
-                                    update=":addArtifactForm:addArtifact" />
+                                    update=":addArtifactForm:addArtifact" title="Add an Artifact" />
                             </p:menuButton>
                         </p:fieldset>
                     </p:column>

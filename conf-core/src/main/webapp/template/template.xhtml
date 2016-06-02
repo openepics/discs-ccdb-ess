@@ -66,8 +66,9 @@
                     </h:panelGroup>
                 </p:panelGrid>
                 <p:separator />
-                <p:commandButton id="loginButton" value="Sign In" update=":loginDialogForm :top :content" 
-                        action="#{loginManager.onLogin}" style="float: left" />                
+                <p:commandButton id="loginButton" value="Sign In" title="Sign In" update=":loginDialogForm :top :content" 
+                        action="#{loginManager.onLogin}" style="float: right;" styleClass="dialogButton defaultCommand" />                
+                <p:defaultCommand target="loginButton" />
             </p:dialog>
             <p:blockUI block="loginDialog" trigger="loginButton" />
         </h:form>

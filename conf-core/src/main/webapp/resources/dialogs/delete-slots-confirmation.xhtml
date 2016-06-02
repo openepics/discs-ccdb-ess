@@ -28,9 +28,9 @@
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Yes" id="confirm" styleClass="dialogButton defaultCommand" ajax="true" 
                         update="#{formsToUpdate}" oncomplete="PF('#{widgetName}').hide(); #{resetFilter}; #{resizeContent}" 
-                        action="#{controller[submitHandler]}" tabindex="1" icon="ui-icon-check" />
+                        action="#{controller[submitHandler]}" tabindex="1" icon="ui-icon-check" title="Yes" />
                 <p:commandButton value="No" styleClass="dialogButton" onclick="PF('#{widgetName}').hide(); #{resetFilter}" 
-                        tabindex="2" icon="ui-icon-close" />
+                        tabindex="2" icon="ui-icon-close" title="No" />
             </p:panel>
 
             <p:defaultCommand target="confirm" />

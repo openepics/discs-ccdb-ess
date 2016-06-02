@@ -71,10 +71,10 @@
             </div>
             
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
-                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" tabindex="7"
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" tabindex="7" title="Save" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{saveAction}}"
                     action="#{devicesController[submitHandler]}" update="#{updateComponents} grp" icon="ui-icon-disk" />
-                <p:commandButton value="Cancel" styleClass="dialogButton" update="grp" resetValues="true" 
+                <p:commandButton value="Cancel" styleClass="dialogButton" update="grp" resetValues="true" title="Cancel"
                     onclick="PF('#{widgetName}').hide(); #{saveAction}" tabindex="8" icon="ui-icon-close" />
             </p:panel>
             

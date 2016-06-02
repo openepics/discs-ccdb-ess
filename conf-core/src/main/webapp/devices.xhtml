@@ -99,12 +99,12 @@
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttributes').show();"
-                                update=":deleteAttributesForm:deleteAttributes" 
+                                update=":deleteAttributesForm:deleteAttributes" title="Delete Attribute"
                                 actionListener="#{deviceAttributesController.checkAttributesForDeletion()}"
                                 disabled="#{empty deviceAttributesController.selectedAttributes 
                                             or not securityPolicy.getUIHint('DEVICES_DELETE')}" />
 
-                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
+                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" title="Edit Attribute"
                                 action="#{deviceAttributesController.prepareModifyPropertyPopUp()}" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
                                 disabled="#{not deviceAttributesController.singleAttributeSelected or 
@@ -115,10 +115,10 @@
                                     disabled="#{not devicesController.singleDeviceSelected 
                                                 or not securityPolicy.getUIHint('DEVICES_CREATE')}">
                                 <p:menuitem value="Tag" oncomplete="PF('addDeviceTag').show()" update=":addDeviceTagForm:addDeviceTag" 
-                                        actionListener="#{deviceAttributesController.prepareForTagAdd}" />
+                                        actionListener="#{deviceAttributesController.prepareForTagAdd}" title="Add a Tag" />
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show()" 
                                         actionListener="#{deviceAttributesController.prepareForArtifactAdd}" 
-                                        update=":addArtifactForm:addArtifact" />
+                                        update=":addArtifactForm:addArtifact" title="Add an Artifact"/>
                             </p:menuButton>
                         </p:fieldset>
     	            </p:column>
