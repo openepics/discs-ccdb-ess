@@ -50,6 +50,7 @@ import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
 import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.ui.util.UiUtility;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
@@ -256,6 +257,7 @@ public class RelationshipController implements Serializable {
     public void prepareEditRelationshipPopup() {
         Preconditions.checkState((selectedRelationships != null) && (selectedRelationships.size() == 1));
 
+        containsTree.unselectAllTreeNodes();
         editExistingRelationship = true;
         // setups the dialog
         SlotRelationshipView v = selectedRelationships.get(0);
@@ -275,6 +277,7 @@ public class RelationshipController implements Serializable {
         Preconditions.checkNotNull(hierarchiesController.getSelectedNodeSlot());
         Preconditions.checkState(hierarchiesController.isSingleNodeSelected());
 
+        containsTree.unselectAllTreeNodes();
         editExistingRelationship = false;
         // clear the previous dialog selection in case the dialog was already used before
         editedRelationshipView = new SlotRelationshipView(null, hierarchiesController.getSelectedNodeSlot());
@@ -437,21 +440,37 @@ public class RelationshipController implements Serializable {
 
     /** Expands the selected node or entire tree */
     public void expandTreeNodes() {
-        final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
-        if (selectedNode == null) {
-            expandOrCollapseNode(containsTree.getRootNode(), true);
+        if (editExistingRelationship) {
+            final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
+            if (selectedNode == null) {
+                expandOrCollapseNode(containsTree.getRootNode(), true);
+            } else {
+                expandOrCollapseNode(selectedNode, true);
+            }
+        } if (!Utility.isNullOrEmpty(containsTree.getSelectedNodes())) {
+            for (final FilteredTreeNode<SlotView> selectedSlotView : containsTree.getSelectedNodes()) {
+                expandOrCollapseNode(selectedSlotView, true);
+            }
         } else {
-            expandOrCollapseNode(selectedNode, true);
+            expandOrCollapseNode(containsTree.getRootNode(), true);
         }
     }
 
     /** Collapses the selected node or entire tree */
     public void collapseTreeNodes() {
-        final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
-        if (selectedNode == null) {
-            expandOrCollapseNode(containsTree.getRootNode(), false);
+        if (editExistingRelationship) {
+            final FilteredTreeNode<SlotView> selectedNode = editedRelationshipView.getTargetNode();
+            if (selectedNode == null) {
+                expandOrCollapseNode(containsTree.getRootNode(), false);
+            } else {
+                expandOrCollapseNode(selectedNode, false);
+            }
+        } if (!Utility.isNullOrEmpty(containsTree.getSelectedNodes())) {
+            for (final FilteredTreeNode<SlotView> selectedSlotView : containsTree.getSelectedNodes()) {
+                expandOrCollapseNode(selectedSlotView, false);
+            }
         } else {
-            expandOrCollapseNode(selectedNode, false);
+            expandOrCollapseNode(containsTree.getRootNode(), false);
         }
     }
 
