@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}" enctype="multipart/form-data">
-        <p:dialog widgetVar="#{widgetName}" modal="true" resizable="false" width="35%">
+        <p:dialog widgetVar="#{widgetName}" modal="true" resizable="false" width="35%" closeOnEscape="true">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -19,11 +19,13 @@
                 <p:separator />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
                     icon="ui-icon-close" />
-                <p:commandButton value="Import" styleClass="dialogButton" onclick="PF('statusDialog').show()" 
+                <p:commandButton value="Import" styleClass="dialogButton defaultCommand" id="importButton" 
                     update=":menuform :#{formId}" oncomplete="PF('#{widgetName}').hide();PF('statusDialog').hide();" 
                     action="#{controller.doImport()}" disabled="#{controller.excelImportFileName == null}" 
-                    icon="ui-icon-arrowthickstop-1-n" />
+                    onclick="PF('statusDialog').show()" icon="ui-icon-arrowthickstop-1-n" />
             </h:panelGroup>
+            
+            <p:defaultCommand target="importButton" />
         </p:dialog>
 
         <p:dialog id="importStatsDialog" widgetVar="importStatsDialog" modal="true" resizable="false">
