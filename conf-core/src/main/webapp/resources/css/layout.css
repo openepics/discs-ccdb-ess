@@ -379,3 +379,7 @@ legend {
 	border-style: dotted;
 	border-width: thin;
 }
+
+.noScrollTable .ui-datatable-scrollable-header, .noScrollTable .ui-datatable-scrollable-body {
+	width: 100% !important;
+}
