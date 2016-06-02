@@ -370,9 +370,6 @@ public class DeviceEJB extends DAO<Device> {
             final @Nullable String slotName, @Nullable Date installDate) {
         final List<Predicate> predicates = Lists.newArrayList();
 
-        // implicit "join" predicate
-        predicates.add(cb.isNull(deviceInstallationRecord.get(InstallationRecord_.uninstallDate)));
-
         if (deviceType != null) {
             final Subquery<ComponentType> deviceTypeQuery = cq.subquery(ComponentType.class);
             final Root<ComponentType> deviceTypeRecord = deviceTypeQuery.from(ComponentType.class);
