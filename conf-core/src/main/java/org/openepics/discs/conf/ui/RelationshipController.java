@@ -447,7 +447,7 @@ public class RelationshipController implements Serializable {
             } else {
                 expandOrCollapseNode(selectedNode, true);
             }
-        } if (!Utility.isNullOrEmpty(containsTree.getSelectedNodes())) {
+        } else if (!Utility.isNullOrEmpty(containsTree.getSelectedNodes())) {
             for (final FilteredTreeNode<SlotView> selectedSlotView : containsTree.getSelectedNodes()) {
                 expandOrCollapseNode(selectedSlotView, true);
             }
@@ -465,7 +465,7 @@ public class RelationshipController implements Serializable {
             } else {
                 expandOrCollapseNode(selectedNode, false);
             }
-        } if (!Utility.isNullOrEmpty(containsTree.getSelectedNodes())) {
+        } else if (!Utility.isNullOrEmpty(containsTree.getSelectedNodes())) {
             for (final FilteredTreeNode<SlotView> selectedSlotView : containsTree.getSelectedNodes()) {
                 expandOrCollapseNode(selectedSlotView, false);
             }
