@@ -10,26 +10,57 @@ var CCDB = {
 		"jumpToElementOnLoadHandler" : function(xhr, target) {
 			selectEntityInTable(CCDB.dataLoaderInternal.dataKey, CCDB.dataLoaderInternal.tableVarName);
         },
-        "dataLoaderInternal" : {}
+        "dataLoaderInternal" : {},
+        "oldABHandler" : null,
+        "disabledAjaxButton" : null,
+        "newABHandler" : function(a, c) {
+        	if (a.s) {
+        		var sourceId = PrimeFaces.escapeClientId(a.s);
+        		var widget = $(sourceId);
+        		if (widget.hasClass("ui-button") && (CCDB.disabledAjaxButton == null)) {
+        			CCDB.disabledAjaxButton = widget;
+        			widget.removeClass('ui-state-hover ui-state-focus ui-state-active').addClass('ui-state-disabled')
+        				.attr('disabled', 'disabled');        			
+                	jQuery(document).on("pfAjaxError", CCDB.ajaxButtonHandler);
+                	jQuery(document).on("pfAjaxSuccess", CCDB.ajaxButtonHandler);
+                	jQuery(document).on("pfAjaxComplete", CCDB.ajaxButtonHandler);
+        		}
+        	}
+    		CCDB.oldABHandler.call(this, a, c);
+        },
+        "takeOverAb" : function() {
+        	if (!CCDB.oldABHandler) {
+        		CCDB.oldABHandler = PrimeFaces.ab;
+        		PrimeFaces.ab = CCDB.newABHandler;
+        	}
+        },
+        "ajaxButtonHandler" : function(xhr, target, errorThrown) {
+        	CCDB.disabledAjaxButton.removeClass('ui-state-disabled').removeAttr('disabled');
+        	CCDB.disabledAjaxButton = null;
+        	jQuery(document).off("pfAjaxError", CCDB.ajaxButtonHandler);
+        	jQuery(document).off("pfAjaxSuccess", CCDB.ajaxButtonHandler);
+        	jQuery(document).off("pfAjaxComplete", CCDB.ajaxButtonHandler);
+        }
 }
 
+
 function removeParametersFromUrl() {
-    if (window.location.search != '') {
-        window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
+    if (window.location.search != "") {
+        window.history.pushState("", "", window.location.href.replace(window.location.search, ""));
     }
 }
 
 function emHeight() {
-    return $('#top').outerHeight(true) - $('#top').outerHeight();
+    return $("#top").outerHeight(true) - $("#top").outerHeight();
 }
 
 function adjustFooterPosition() {
-    var footerWidth = $('.footer-message').outerWidth(true);
-    $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2});
+    var footerWidth = $(".footer-message").outerWidth(true);
+    $(".footer-message").css({"left":(window.innerWidth-footerWidth)/2});
 }
 
 function startDownload() {
-    PF('statusDialog').show();
+    PF("statusDialog").show();
 }
 
 function scrollSelectedIntoView(tableWidget) {
@@ -62,12 +93,12 @@ function selectEntityInTable(dataKey, tableVarName) {
 	bootstrapDataLoader(dataKey, tableVarName);
     var tableWidget = PF(tableVarName);
     // search for entity
-    var lineRef = $('#' + tableWidget.id.replace(':', '\\:') + ' tr[data-rk=' + dataKey + ']');
+    var lineRef = $(tableWidget.jqId + " tr[data-rk='" + dataKey + "']");
     
     if (lineRef.length > 0) {
     	// entity found
-    	jQuery(document).off('pfAjaxComplete', CCDB.jumpToElementOnLoadHandler);
-    	var rowNumber = Number(lineRef[0].getAttribute('data-ri'));
+    	jQuery(document).off("pfAjaxComplete", CCDB.jumpToElementOnLoadHandler);
+    	var rowNumber = Number(lineRef[0].getAttribute("data-ri"));
         tableWidget.selectRow(rowNumber);
         scrollSelectedIntoView(tableWidget);
     } else if (!tableWidget.allLoadedLiveScroll) {
@@ -75,7 +106,7 @@ function selectEntityInTable(dataKey, tableVarName) {
         tableWidget.loadLiveRows();
     } else {
     	// entity not found
-    	jQuery(document).off('pfAjaxComplete', CCDB.jumpToElementOnLoadHandler);
+    	jQuery(document).off("pfAjaxComplete", CCDB.jumpToElementOnLoadHandler);
     }
 }
 
@@ -87,7 +118,7 @@ function bootstrapDataLoader(dataKey, tableVarName) {
 				"dataKey" : dataKey,
 				"tableVarName" : tableVarName
 		}
-		jQuery(document).on('pfAjaxComplete', CCDB.jumpToElementOnLoadHandler);
+		jQuery(document).on("pfAjaxComplete", CCDB.jumpToElementOnLoadHandler);
 	}
 }
 
@@ -102,3 +133,4 @@ function resizeDeleteList(deleteDialogId) {
 	}
 	deleteTable.css({"height":calculatedHeight});
 }
+

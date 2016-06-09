@@ -37,7 +37,7 @@
                                     </p:column>
                                     <p:column>
                                     <p:commandButton value="#{msgs.loginLogoutBtn}" process="@this"
-                                            update="@form #{cc.attrs.update}"
+                                            update="@form #{cc.attrs.update}" onclick="startDownload();"
                                             action="#{loginManager.onLogout()}" ajax="#{cc.attrs.ajax}"/>
                                     </p:column>
                                 </p:row>
