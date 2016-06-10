@@ -24,7 +24,7 @@ var CCDB = {
                 	jQuery(document).on("pfAjaxComplete", CCDB.ajaxButtonHandler);
         		}
         	}
-    		CCDB.oldABHandler.call(this, a, c);
+    		CCDB.oldABHandler.call(PrimeFaces, a, c);
         },
         "takeOverAb" : function() {
         	if (!CCDB.oldABHandler) {

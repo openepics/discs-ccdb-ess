@@ -186,8 +186,8 @@
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable"
                     oncomplete="PF('unitsTableVar').clearFilters();" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'home.xhtml')}" 
-                    update=":hierarchies:hierarchyTabs :hierarchies:attributesDataTable:attributesDataTable 
-                            :hierarchies:relationsTable :hierarchies:installationDetails" 
+                    update=":hierarchies:hierarchyTabs :hierarchies:content:attributesDataTable:attributesDataTable 
+                            :hierarchies:content:relationsTable :hierarchies:content:installationDetails" 
                     oncomplete="hierarchiesResizeAll();" />
             </p:commandButton>
             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
