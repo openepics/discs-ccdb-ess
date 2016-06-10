@@ -21,8 +21,6 @@ var CCDB = {
         			CCDB.disabledAjaxButton = widget;
         			widget.removeClass('ui-state-hover ui-state-focus ui-state-active').addClass('ui-state-disabled')
         				.attr('disabled', 'disabled');        			
-                	jQuery(document).on("pfAjaxError", CCDB.ajaxButtonHandler);
-                	jQuery(document).on("pfAjaxSuccess", CCDB.ajaxButtonHandler);
                 	jQuery(document).on("pfAjaxComplete", CCDB.ajaxButtonHandler);
         		}
         	}
@@ -37,8 +35,6 @@ var CCDB = {
         "ajaxButtonHandler" : function(xhr, target, errorThrown) {
         	CCDB.disabledAjaxButton.removeClass('ui-state-disabled').removeAttr('disabled');
         	CCDB.disabledAjaxButton = null;
-        	jQuery(document).off("pfAjaxError", CCDB.ajaxButtonHandler);
-        	jQuery(document).off("pfAjaxSuccess", CCDB.ajaxButtonHandler);
         	jQuery(document).off("pfAjaxComplete", CCDB.ajaxButtonHandler);
         }
 }
