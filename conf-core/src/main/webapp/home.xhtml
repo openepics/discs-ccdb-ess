@@ -365,13 +365,12 @@
                     </div>
                 </p:fieldset>
                 <p:accordionPanel id="content" multiple="true" widgetVar="ContentAccordion">
-                    <p:tab id="slotAttributes" title="Properties">
-                        <div style="box-sizing: border-box; height: calc(33.33vh - 4em)">
-                            <div style="height: calc(100% - 3em)">
-                                <rc:new-attribute-table id="attributesDataTable" controllerBean="#{slotAttributeController}"
-                                    updateButtons=":hierarchies:content:deleteAttrButton :hierarchies:content:editAttrButton"
-                                    parentName="Container/Slot" />
-                            </div>
+                    <p:tab title="Properties">
+                        <p:panel id="slotAttributes" style="padding: 0; border:0; height: calc(33.33vh - 8em)"  >
+                            <rc:new-attribute-table id="attributesDataTable" controllerBean="#{slotAttributeController}"
+                                updateButtons=":hierarchies:content:deleteAttrButton :hierarchies:content:editAttrButton"
+                                parentName="Container/Slot" />
+
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" title="Delete Attribute"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show();"
                                 disabled="#{not slotAttributeController.canDeleteAttributes() 
@@ -395,52 +394,50 @@
                                         actionListener="#{slotAttributeController.prepareForArtifactAdd}"
                                         update=":addArtifactForm:addArtifact" title="Add an Artifact" />
                             </p:menuButton>
-                        </div>
+                        </p:panel>
                     </p:tab>
-                    <p:tab id="relationsTable" title="Relationships">
-                        <div style="box-sizing: border-box; height: calc(33.33vh - 4em)">
-                            <div style="height: calc(100% - 3em)">
-                                <p:dataTable value="#{relationshipController.relationships}" id="relationshipTable"
-                                        var="relationship" emptyMessage="No records found."
-                                        scrollable="true" scrollWidth="100%" scrollHeight="100%" 
-                                        class="hierarchies-attributes-cell" resizableColumns="true" 
-                                        filteredValue="#{relationshipController.filteredRelationships}"
-                                        selectionMode="multiple" rowKey="#{relationship.id}"
-                                        selection="#{relationshipController.selectedRelationships}"
-                                        widgetVar="relationshipsWidget">
-                                    <p:ajax event="rowSelect" update=":hierarchies:content:editRelationship :hierarchies:content:deleteRelationship" />
-                                    <p:ajax event="rowUnselect" update=":hierarchies:content:editRelationship :hierarchies:content:deleteRelationship" />                                
-                                    
-                                    <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
-                                            filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
-                                        <h:outputText value="#{relationship.sourceSlotName}" />
-                                    </p:column>
-    
-                                    <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}"
-                                            filterOptions="#{relationshipController.relationshipTypes}"
-                                            filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
-                                        <h:outputText value="#{relationship.relationshipName}" />
-                                    </p:column>
-    
-                                    <p:column headerText="Target" sortBy="#{relationship.targetSlotName}"
-                                            filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
-                                        <p:commandLink action="#{hierarchiesController.selectNode(relationship.targetSlot)}"
-                                                rendered="#{hierarchiesController.includesActive}"
-                                                update=":hierarchies:content:relationsTable :hierarchies:deleteButton 
-                                                    :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton 
-                                                    :hierarchies:addButton :hierarchies:content:installationDetails 
-                                                    :hierarchies:content:slotAttributes :hierarchies:content:addRelationship 
-                                                    :hierarchies:content:editRelationship :hierarchies:hierarchyTabs:tree"
-                                                oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());
-                                                PF('relationshipsWidget').clearFilters();PF('attributesDataTable').clearFilters();">
-                                            <h:outputText value="#{relationship.targetSlotName}"
-                                                style="text-decoration: underline;" />
-                                        </p:commandLink>
+                    <p:tab title="Relationships">
+                        <p:panel id="relationsTable" style="padding: 0; border:0; height: calc(33.33vh - 8em)">
+                            <p:dataTable value="#{relationshipController.relationships}" id="relationshipTable"
+                                    var="relationship" emptyMessage="No records found."
+                                    scrollable="true" scrollWidth="100%" scrollHeight="100%" 
+                                    class="hierarchies-attributes-cell" resizableColumns="true" 
+                                    filteredValue="#{relationshipController.filteredRelationships}"
+                                    selectionMode="multiple" rowKey="#{relationship.id}"
+                                    selection="#{relationshipController.selectedRelationships}"
+                                    widgetVar="relationshipsWidget">
+                                <p:ajax event="rowSelect" update=":hierarchies:content:editRelationship :hierarchies:content:deleteRelationship" />
+                                <p:ajax event="rowUnselect" update=":hierarchies:content:editRelationship :hierarchies:content:deleteRelationship" />                                
+                                
+                                <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
+                                        filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
+                                    <h:outputText value="#{relationship.sourceSlotName}" />
+                                </p:column>
+
+                                <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}"
+                                        filterOptions="#{relationshipController.relationshipTypes}"
+                                        filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
+                                    <h:outputText value="#{relationship.relationshipName}" />
+                                </p:column>
+
+                                <p:column headerText="Target" sortBy="#{relationship.targetSlotName}"
+                                        filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
+                                    <p:commandLink action="#{hierarchiesController.selectNode(relationship.targetSlot)}"
+                                            rendered="#{hierarchiesController.includesActive}"
+                                            update=":hierarchies:content:relationsTable :hierarchies:deleteButton 
+                                                :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton 
+                                                :hierarchies:addButton :hierarchies:content:installationDetails 
+                                                :hierarchies:content:slotAttributes :hierarchies:content:addRelationship 
+                                                :hierarchies:content:editRelationship :hierarchies:hierarchyTabs:tree"
+                                            oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());
+                                            PF('relationshipsWidget').clearFilters();PF('attributesDataTable').clearFilters();">
                                         <h:outputText value="#{relationship.targetSlotName}"
-                                            rendered="#{not hierarchiesController.includesActive}" />
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
+                                            style="text-decoration: underline;" />
+                                    </p:commandLink>
+                                    <h:outputText value="#{relationship.targetSlotName}"
+                                        rendered="#{not hierarchiesController.includesActive}" />
+                                </p:column>
+                            </p:dataTable>
 
                             <p:commandButton id="deleteRelationship" value="Delete" title="Delete Relationship" icon="ui-icon-trash"
                                 style="margin-top: 1em; float: right;" oncomplete="PF('deleteRelationship').show();" 
@@ -458,45 +455,44 @@
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}"
                                 update=":addSlotRelationshipForm:addSlotRelationship"
                                 actionListener="#{relationshipController.prepareAddRelationshipPopup}" />
-                        </div>
+                        </p:panel>
                     </p:tab>
-                    <p:tab id="installationDetails" title="Installation">
-                        <div style="box-sizing: border-box; height: calc(33.33vh - 4em)">
-                            <div style="height: calc(100% - 3em)">
-                                <p:dataTable id="installationTable" value="#{installationController.installationRecords}"
-                                        var="installationRecord" widgetVar="installationWidget" resizableColumns="true" 
-                                        selectionMode="multiple" selection="#{installationController.selectedInstallationViews}"
-                                        emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
-                                        filteredValue="#{installationController.filteredInstallationRecords}"
-                                        scrollable="true" scrollWidth="100%" scrollHeight="100%" class="hierarchies-attributes-cell">
-    
-                                    <p:ajax event="rowSelect" update=":hierarchies:content:installDeviceBtn :hierarchies:content:uninstallDeviceBtn" />
-                                    <p:ajax event="rowUnselect" update=":hierarchies:content:installDeviceBtn :hierarchies:content:uninstallDeviceBtn" />                                
-                                    
-                                    <p:column headerText="Slot" sortBy="#{installationRecord.slotName}" 
-                                            filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
-                                        <h:outputText value="#{installationRecord.slotName}" />
-                                    </p:column>
-                                    <p:column headerText="Inventory ID" 
-                                            sortBy="#{installationRecord.deviceInventoryId}" 
-                                            filterBy="#{installationRecord.deviceInventoryId}">
-                                        <h:link outcome="deviceManager" value="#{installationRecord.deviceInventoryId}"
-                                                class="link" rendered="#{installationRecord.deviceInstalled}">
-                                            <f:param name="id" value="#{installationRecord.installationRecord.device.id}" />
-                                        </h:link>
-                                        <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
-                                    </p:column>
-                                    <p:column headerText="Timestamp" sortBy="#{installationRecord.installDate}"
-                                            filterBy="#{installationRecord.installDate}" filterMatchMode="contains">
-                                        <h:outputText value="#{installationRecord.installDate}"
-                                                rendered="#{installationRecord.deviceInstalled}">
-                                            <f:convertDateTime pattern="#{msgs.timestampFormat}" />
-                                        </h:outputText>
-                                        <h:outputText value="-"
-                                                rendered="#{not installationRecord.deviceInstalled}" />
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
+                    <p:tab title="Installation">
+                        <p:panel id="installationDetails" style="padding: 0; border:0; height: calc(33.33vh - 8em)">
+                            <p:dataTable id="installationTable" value="#{installationController.installationRecords}"
+                                    var="installationRecord" widgetVar="installationWidget" resizableColumns="true" 
+                                    selectionMode="multiple" selection="#{installationController.selectedInstallationViews}"
+                                    emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
+                                    filteredValue="#{installationController.filteredInstallationRecords}"
+                                    scrollable="true" scrollWidth="100%" scrollHeight="100%" class="hierarchies-attributes-cell">
+
+                                <p:ajax event="rowSelect" update=":hierarchies:content:installDeviceBtn :hierarchies:content:uninstallDeviceBtn" />
+                                <p:ajax event="rowUnselect" update=":hierarchies:content:installDeviceBtn :hierarchies:content:uninstallDeviceBtn" />                                
+                                
+                                <p:column headerText="Slot" sortBy="#{installationRecord.slotName}" 
+                                        filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
+                                    <h:outputText value="#{installationRecord.slotName}" />
+                                </p:column>
+                                <p:column headerText="Inventory ID" 
+                                        sortBy="#{installationRecord.deviceInventoryId}" 
+                                        filterBy="#{installationRecord.deviceInventoryId}">
+                                    <h:link outcome="deviceManager" value="#{installationRecord.deviceInventoryId}"
+                                            class="link" rendered="#{installationRecord.deviceInstalled}">
+                                        <f:param name="id" value="#{installationRecord.installationRecord.device.id}" />
+                                    </h:link>
+                                    <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
+                                </p:column>
+                                <p:column headerText="Timestamp" sortBy="#{installationRecord.installDate}"
+                                        filterBy="#{installationRecord.installDate}" filterMatchMode="contains">
+                                    <h:outputText value="#{installationRecord.installDate}"
+                                            rendered="#{installationRecord.deviceInstalled}">
+                                        <f:convertDateTime pattern="#{msgs.timestampFormat}" />
+                                    </h:outputText>
+                                    <h:outputText value="-"
+                                            rendered="#{not installationRecord.deviceInstalled}" />
+                                </p:column>
+                            </p:dataTable>
+
                             <p:commandButton title="Uninstall Selected Device" label="Uninstall" value="Uninstall" 
                                 type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn" 
                                 style="margin-top: 1em; float: right;" icon="ui-icon-eject" 
@@ -510,7 +506,7 @@
                                     update=":hierarchies:content:installationDetails :installDeviceForm :installDeviceForm:installDevice"
                                     disabled="#{not installationController.canInstall() 
                                                 or not securityPolicy.getUIHint('INSTALLATION')}" />
-                        </div>
+                        </p:panel>
                     </p:tab>
                 </p:accordionPanel>
             </p:panelGrid>
