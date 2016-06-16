@@ -61,7 +61,7 @@
                             styleClass="dialogButton defaultCommand" id="addButton" disabled="#{empty selectProperty}" 
                             action="#{relationshipController.onRelationshipAdd}" title="Save" 
                             oncomplete="PF('#{widgetName}').hide(); hierarchiesResizeAll();" 
-                            update=":#{formId} :hierarchies:relationshipTable :hierarchies:editRelationship 
+                            update=":#{formId} :hierarchies:content:relationshipTable :hierarchies:content:editRelationship 
                                     :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
                         <p:commandButton value="Expand" id="expandButton" icon="ui-icon-folder-open" 
                             title="Expand Selected Items" action="#{relationshipController.expandTreeNodes}" 

@@ -92,8 +92,8 @@
                 <p:commandButton value="Save" styleClass="dialogButton defaultCommand" id="save" tabindex="4" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide();hierarchiesResizeAll();}" 
                         action="#{hierarchiesController[submitHandler]}" icon="ui-icon-disk" title="Save" 
-                        update=":hierarchies:hierarchyTabs:tree :hierarchies:slotAttributes grp 
-                                :hierarchies:deleteButton :hierarchies:installationDetails :hierarchies:growl" />
+                        update=":hierarchies:hierarchyTabs:tree :hierarchies:content:slotAttributes grp 
+                                :hierarchies:deleteButton :hierarchies:content:installationDetails :hierarchies:growl" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
                         resetValues="true" tabindex="5" icon="ui-icon-close" title="Cancel" />
             </p:panel>
