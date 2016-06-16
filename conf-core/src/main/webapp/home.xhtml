@@ -11,6 +11,7 @@
                 //<![CDATA[                         
                 function hierarchiesResizeAll() {
                 	clearRelatedFilters();
+                	calculateContentHeight();
                 }
                 function getVisibleTree() {
                     var visibleTreeTable = PF('hierarchyWidget');
@@ -60,7 +61,7 @@
                                                             :hierarchies:addButton :hierarchies:content:installationDetails 
                                                             :hierarchies:content:slotAttributes :hierarchies:content:addRelationship 
                                                             :hierarchies:content:editRelationship :hierarchies:hierarchyTabs:tree                                                        
-                                                            :hierarchies:clipboardOperations"/>                                                 
+                                                            :hierarchies:clipboardOperations" oncomplete="hierarchiesResizeAll();" />                                                 
                                         </p:inputText>
                                         <div style="height: calc(100% - 2em)">
                                             <p:treeTable id="tree" value="#{hierarchiesController.containsTree.rootNode}" var="installationSlot"
@@ -119,7 +120,8 @@
                                                             :hierarchies:addButton :hierarchies:content:installationDetails 
                                                             :hierarchies:content:slotAttributes  :hierarchies:content:addRelationship 
                                                             :hierarchies:content:editRelationship :hierarchies:hierarchyTabs:controlsTree                                                         
-                                                            :hierarchies:clipboardOperations"/>
+                                                            :hierarchies:clipboardOperations" 
+                                                    oncomplete="hierarchiesResizeAll();" />
                                         </p:inputText>
                                         <div style="height: calc(100% - 2em)">
                                             <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsTree.rootNode}" var="ctrlSlot"
@@ -165,7 +167,8 @@
                                                             :hierarchies:addButton :hierarchies:content:installationDetails 
                                                             :hierarchies:content:slotAttributes :hierarchies:content:addRelationship 
                                                             :hierarchies:content:editRelationship :hierarchies:hierarchyTabs:powersTree                                                        
-                                                            :hierarchies:clipboardOperations"/>                                                 
+                                                            :hierarchies:clipboardOperations"
+                                                    oncomplete="hierarchiesResizeAll();" />                                                 
                                         </p:inputText>
 
                                         <div style="height: calc(100% - 2em)">
@@ -212,7 +215,8 @@
                                                             :hierarchies:addButton :hierarchies:content:installationDetails 
                                                             :hierarchies:content:slotAttributes :hierarchies:content:addRelationship 
                                                             :hierarchies:content:editRelationship :hierarchies:hierarchyTabs:connectsTree                                                        
-                                                            :hierarchies:clipboardOperations"/>                                                 
+                                                            :hierarchies:clipboardOperations"
+                                                    oncomplete="hierarchiesResizeAll();" />                                                 
                                         </p:inputText>                                
                                         <div style="height: calc(100% - 2em)">
                                             <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsTree.rootNode}" var="connectsSlot"
@@ -287,7 +291,6 @@
                                                 or not securityPolicy.getUIHint('HIERARCHY_MODIFY')}"
                                     oncomplete="PF('editSlotDialog').show();"
                                     actionListener="#{hierarchiesController.prepareEditPopup()}" />
-
                                 <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;"
                                         disabled="#{not hierarchiesController.includesActive
                                                     or hierarchiesController.multipleNodesSelected
@@ -367,10 +370,10 @@
                             </div>
                         </p:fieldset>
                     </p:column>
-                    <p:column style="width: 100%;">
-                        <p:accordionPanel id="content" widgetVar="ContentAccordion">
+                    <p:column style="width: 100%; padding: 0;" id="contentColumn">
+                        <p:accordionPanel id="content" widgetVar="ContentAccordion" multiple="true" activeIndex="0,1,2">
                             <p:tab title="Properties">
-                                <p:panel id="slotAttributes" style="padding: 0; border:0; height: calc(100vh - 18.5em);"  >
+                                <p:panel id="slotAttributes" style="padding: 0; border:0; height: calc((100vh - 6em) / 3);"  >
                                     <rc:new-attribute-table id="attributesDataTable" controllerBean="#{slotAttributeController}"
                                         updateButtons=":hierarchies:content:deleteAttrButton :hierarchies:content:editAttrButton"
                                         parentName="Container/Slot" />
@@ -401,7 +404,7 @@
                                 </p:panel>
                             </p:tab>
                             <p:tab title="Relationships">
-                                <p:panel id="relationsTable" style="padding: 0; border:0; height: calc(100vh - 18.5em);">
+                                <p:panel id="relationsTable" style="padding: 0; border:0; height: calc((100vh - 6em) / 3);">
                                     <p:dataTable value="#{relationshipController.relationships}" id="relationshipTable"
                                             var="relationship" emptyMessage="No records found."
                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" 
@@ -462,7 +465,7 @@
                                 </p:panel>
                             </p:tab>
                             <p:tab title="Installation">
-                                <p:panel id="installationDetails" style="padding: 0; border:0; height: calc(100vh - 18.5em);">
+                                <p:panel id="installationDetails" style="padding: 0; border:0; height: calc((100vh - 6em) / 3);">
                                     <p:dataTable id="installationTable" value="#{installationController.installationRecords}"
                                             var="installationRecord" widgetVar="installationWidget" resizableColumns="true" 
                                             selectionMode="multiple" selection="#{installationController.selectedInstallationViews}"
@@ -599,7 +602,7 @@
             <ui:param name="submitHandler" value="deleteAttributes" />
             <ui:param name="formsToUpdate" value=":hierarchies:content:slotAttributes :hierarchies:growl" />
             <ui:param name="entityType" value="selected attribute" />
-            <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters();" />
+            <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters(); hierarchiesResizeAll();" />
             <ui:param name="entityType" value="properties" />
             <ui:param name="entityName" value="Property" />            
             <ui:param name="deleteList" value="#{slotAttributeController.selectedAttributes}" />          
@@ -612,7 +615,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":hierarchies:content:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); hierarchiesResizeAll();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
@@ -622,7 +625,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="addPropertyValue" />
             <ui:param name="componentToUpdate" value=":hierarchies:content:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); hierarchiesResizeAll();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/tag.xhtml" >
@@ -632,7 +635,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":hierarchies:content:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); hierarchiesResizeAll();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml" >
@@ -642,7 +645,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":hierarchies:content:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); hierarchiesResizeAll();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml">
@@ -652,7 +655,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":hierarchies:content:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); hierarchiesResizeAll();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml">
@@ -666,7 +669,7 @@
             <ui:param name="entityType" value="selected relationships" />
             <ui:param name="entityName" value="Relationship" />
             <ui:param name="entityProperty" value="targetSlotName" />
-            <ui:param name="closeDialogActions" value="PF('relationshipsWidget').clearFilters();" />
+            <ui:param name="closeDialogActions" value="PF('relationshipsWidget').clearFilters(); hierarchiesResizeAll();" />
             <ui:param name="deleteList" value="#{relationshipController.selectedRelationships}" />
         </ui:include>
 
@@ -737,7 +740,61 @@
             jQuery(document).ready(function() {
                 hierarchiesResizeAll();
                 scrollSelectedIntoView(PF('hierarchyWidget'));
+                takeOverAccordion();
             });
+            function calculateContentHeight(activeHeadersNum) {
+                var containerHeight = window.innerHeight - $("#top").outerHeight(true) - emHeight() * 2;
+                var acc = PF("ContentAccordion");
+                var headersNum = acc.headers.length;
+                if (activeHeadersNum === undefined) activeHeadersNum = acc.cfg.active.length;
+                var headersHeight = $($(PrimeFaces.escapeClientId("hierarchies:content") + " h3")[0]).outerHeight(true) * headersNum;
+                var buttonHeight = $($(PrimeFaces.escapeClientId("hierarchies:content:slotAttributes") + " button")[0]).outerHeight(true);
+
+                var availableHeight = containerHeight - headersHeight;
+                var openTabHeight = availableHeight / activeHeadersNum;
+                var clientAreaHeight = openTabHeight - buttonHeight - (emHeight() / 2);
+                
+                var cssHeight = clientAreaHeight + "px"; 
+                $(PrimeFaces.escapeClientId("hierarchies:content:slotAttributes")).css("height", cssHeight);
+                $(PrimeFaces.escapeClientId("hierarchies:content:relationsTable")).css("height", cssHeight);
+                $(PrimeFaces.escapeClientId("hierarchies:content:installationDetails")).css("height", cssHeight);
+
+                for (activeTabIndex in acc.cfg.active) {
+                	adjustTableScrollers(acc.cfg.active[activeTabIndex]);
+                }
+            }
+            function takeOverAccordion() {
+                var events = jQuery._data(PF("ContentAccordion").headers[0], "events");
+                CCDB.oldAccordionHandler = events.click[0].handler;
+                events.click[0].handler = newAcordionHandler;
+                events = jQuery._data(PF("ContentAccordion").headers[1], "events");
+                events.click[0].handler = newAcordionHandler;
+                events = jQuery._data(PF("ContentAccordion").headers[2], "events");
+                events.click[0].handler = newAcordionHandler;
+            }
+            function newAcordionHandler(event) {
+                var element = $(this);
+                if(!element.hasClass('ui-state-disabled')) {
+                    if(element.hasClass('ui-state-active')) {
+                    	CCDB.oldAccordionHandler.call(this, event);
+                        calculateContentHeight();
+                    }
+                    else {
+                        calculateContentHeight(PF("ContentAccordion").cfg.active.length + 1);
+                        CCDB.oldAccordionHandler.call(this, event);
+                        calculateContentHeight();
+                    }                    
+                }
+                event.preventDefault();
+            }
+            function adjustTableScrollers(activeTabIndex) {
+                var acc = PF("ContentAccordion");
+                var activeTabId = PrimeFaces.escapeClientId(acc.panels[activeTabIndex].id);
+                var availableHeight = $(activeTabId + " .ui-panel").outerHeight();
+                var headerHeight = $(activeTabId + " .ui-datatable-scrollable-header").outerHeight();
+                $(activeTabId + " .ui-datatable-scrollable").css("overflow", "visible");
+                $(activeTabId + " .ui-datatable-scrollable-body").css("height", (availableHeight - headerHeight) + "px");
+            }
             // PrimeFaces Shift-select workaround. Event is triggered on the last node. This is not a propert solution!
             PrimeFaces.widget.TreeTable.prototype.selectNodesInRange = function(node) {
                 if (this.cursorNode) {
