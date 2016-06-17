@@ -747,9 +747,11 @@
                 var acc = PF("ContentAccordion");
                 var headersNum = acc.headers.length;
                 if (activeHeadersNum === undefined) activeHeadersNum = acc.cfg.active.length;
+                if (activeHeadersNum < 1) return;
                 var headersHeight = $($(PrimeFaces.escapeClientId("hierarchies:content") + " h3")[0]).outerHeight(true) * headersNum;
-                var buttonHeight = $($(PrimeFaces.escapeClientId("hierarchies:content:slotAttributes") + " button")[0]).outerHeight(true);
-
+                var activePanelIndex = acc.cfg.active[0];
+                var buttons = $(PF("ContentAccordion").panels[activePanelIndex]).find("button");
+                var buttonHeight = $(buttons[0]).outerHeight(true);
                 var availableHeight = containerHeight - headersHeight;
                 var openTabHeight = availableHeight / activeHeadersNum;
                 var clientAreaHeight = openTabHeight - buttonHeight - (emHeight() / 2);
