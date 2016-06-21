@@ -5,7 +5,7 @@
     <persistence-unit name="org.openepics.discs.conf.data" transaction-type="JTA">
         <jta-data-source>java:/org.openepics.discs.conf.data</jta-data-source>
 
-        <jar-file>ccdb-model-1.0.0.jar</jar-file>
+        <jar-file>${ccdb.model.jar.name}</jar-file>
 
         <class>org.openepics.discs.conf.ent.AlignmentArtifact</class>
         <class>org.openepics.discs.conf.ent.AlignmentPropertyValue</class>
@@ -23,35 +23,27 @@
         <class>org.openepics.discs.conf.ent.Device</class>
         <class>org.openepics.discs.conf.ent.DeviceArtifact</class>
         <class>org.openepics.discs.conf.ent.DevicePropertyValue</class>
-        <class>org.openepics.discs.conf.ent.EntityType</class>
-        <class>org.openepics.discs.conf.ent.EntityTypeOperation</class>
-        <class>org.openepics.discs.conf.ent.EntityWithArtifacts</class>
-        <class>org.openepics.discs.conf.ent.EntityWithProperties</class>
-        <class>org.openepics.discs.conf.ent.EntityWithTags</class>
         <class>org.openepics.discs.conf.ent.InstallationArtifact</class>
         <class>org.openepics.discs.conf.ent.InstallationRecord</class>
-        <class>org.openepics.discs.conf.ent.NamedEntity</class>
         <class>org.openepics.discs.conf.ent.PositionInformation</class>
         <class>org.openepics.discs.conf.ent.Privilege</class>
         <class>org.openepics.discs.conf.ent.Property</class>
         <class>org.openepics.discs.conf.ent.PropertyValue</class>
-        <class>org.openepics.discs.conf.ent.PropertyValueUniqueness</class>
         <class>org.openepics.discs.conf.ent.Report</class>
         <class>org.openepics.discs.conf.ent.ReportAction</class>
-        <class>org.openepics.discs.conf.ent.ReportFilterAction</class>
         <class>org.openepics.discs.conf.ent.Role</class>
         <class>org.openepics.discs.conf.ent.Slot</class>
         <class>org.openepics.discs.conf.ent.SlotArtifact</class>
         <class>org.openepics.discs.conf.ent.SlotPair</class>
         <class>org.openepics.discs.conf.ent.SlotPropertyValue</class>
         <class>org.openepics.discs.conf.ent.SlotRelation</class>
-        <class>org.openepics.discs.conf.ent.SlotRelationName</class>
         <class>org.openepics.discs.conf.ent.Tag</class>
         <class>org.openepics.discs.conf.ent.Unit</class>
         <class>org.openepics.discs.conf.ent.User</class>
         <class>org.openepics.discs.conf.ent.UserRole</class>
 
         <properties>
+            <property name="hibernate.hbm2ddl.auto" value="validate" />
             <property name="hibernate.enable_lazy_load_no_trans" value="true" />
         </properties>
     </persistence-unit>

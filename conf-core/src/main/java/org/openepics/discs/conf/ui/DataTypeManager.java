@@ -47,12 +47,15 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.lazymodels.CCDBLazyModel;
+import org.openepics.discs.conf.ui.lazymodels.DataTypeLazyModel;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
+import org.primefaces.model.LazyDataModel;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -73,12 +76,11 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @DataTypeLoader private DataLoader enumsDataLoader;
 
-    private List<UserEnumerationView> dataTypeViews;
-    private List<UserEnumerationView> filteredDataTypesViews;
+    private CCDBLazyModel<UserEnumerationView> lazyModel;
+
     private List<UserEnumerationView> selectedEnums;
     private List<UserEnumerationView> usedEnums;
     private List<UserEnumerationView> filteredDialogEnums;
-    private List<DataType> dataTypes;
     private List<String> builtInDataTypeNames;
 
     private UserEnumerationView dialogEnum;
@@ -105,7 +107,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<UserEnumerationView> exportData = filteredDataTypesViews;
+            final List<UserEnumerationView> exportData = lazyModel.load(0, Integer.MAX_VALUE,
+                                        lazyModel.getSortField(), lazyModel.getSortOrder(), lazyModel.getFilters());
             for (final UserEnumerationView enumeration : exportData) {
                 exportTable.addDataRow(DataLoader.CMD_UPDATE, enumeration.getName(), enumeration.getDescription(),
                         String.join(", ",  enumeration.getDefinitionList()));
@@ -134,13 +137,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         super.init();
         try {
             simpleTableExporterDialog = new ExportSimpleEnumTableDialog();
-
-            Builder<String> builtInDataTypeBuilder = ImmutableList.builder();
-            for (BuiltInDataType type : BuiltInDataType.values()) {
-                builtInDataTypeBuilder.add(type.toString());
-            }
-            builtInDataTypeNames = builtInDataTypeBuilder.build();
-
+            prepareBuiltInDataTypes();
             refreshUserDataTypes();
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
@@ -153,34 +150,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /**
-     * @return A list of all {@link DataType} entities in the database that are user defined enumerations.
-     * The list members are wrapped into the {@link UserEnumerationView}.
-     */
-    public List<UserEnumerationView> getDataTypeViews() {
-        return dataTypeViews;
-    }
-
-    /** @return A list of all {@link DataType} entities in the database */
-    public List<DataType> getDataTypes() {
-        return dataTypes;
-    }
-
-    /** Getter for PrimeFaces filtering functionality.
-     * @return A list of data types as filtered by the UI
-     */
-    public List<UserEnumerationView> getFilteredDataTypeViews() {
-        return filteredDataTypesViews;
-    }
-
-    /** Setter for PrimeFaces filtering functionality.
-     * @param filteredDataTypeViews A list of filtered properties, set b PrimeFaces based on user filters.
-     */
-    public void setFilteredDataTypeViews(List<UserEnumerationView> filteredDataTypeViews) {
-        this.filteredDataTypesViews = filteredDataTypeViews;
-    }
-
-    /** The validator for the UI input field for user defined enumeration name.
-     * Called when saving enumeration.
+     * The validator for the UI input field for user defined enumeration name. Called when saving enumeration.
+     *
      * @param ctx {@link javax.faces.context.FacesContext}
      * @param component {@link javax.faces.component.UIComponent}
      * @param value The value
@@ -205,12 +176,17 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     private void refreshUserDataTypes() {
-        dataTypes = ImmutableList.copyOf(dataTypeEJB.findAll());
-
-        dataTypeViews = dataTypes.stream().filter(dt -> !builtInDataTypeNames.contains(dt.getName()))
-                .map(UserEnumerationView::new).collect(Collectors.toList());
-        filteredDataTypesViews = dataTypeViews;
+        lazyModel = new DataTypeLazyModel(dataTypeEJB, builtInDataTypeNames);
         selectedEnums = null;
+        filteredDialogEnums = null;
+    }
+
+    private void prepareBuiltInDataTypes() {
+        Builder<String> builtInDataTypeBuilder = ImmutableList.builder();
+        for (BuiltInDataType type : BuiltInDataType.values()) {
+            builtInDataTypeBuilder.add(type.toString());
+        }
+        builtInDataTypeNames = builtInDataTypeBuilder.build();
     }
 
     /** This method clears all input fields used in the "Add enumeration" dialog. */
@@ -236,7 +212,6 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         } finally {
             dialogEnum = null;
             refreshUserDataTypes();
-
         }
     }
 
@@ -329,7 +304,34 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         }
     }
 
-    /* * * * * * * * * * * * * * * * * getters and setters * * * * * * * * * * * * * * * * */
+    @Override
+    public void doImport() {
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            setLoaderResult(dataLoaderHandler.loadData(inputStream, enumsDataLoader));
+            refreshUserDataTypes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //
+    //* * * * * * * * * * * * * * * * * getters and setters * * * * * * * * * * * * * * * * *
+    //
+
+    /** @return a list of all {@link DataType}s */
+    public List<DataType> getDataTypes() {
+        return ImmutableList.copyOf(dataTypeEJB.findAll());
+    }
+
+    /** @return the lazy loading data model */
+    public LazyDataModel<UserEnumerationView> getLazyModel() {
+        return lazyModel;
+    }
+
+    /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
+    public boolean isDataTableEmpty() {
+        return lazyModel.isEmpty();
+    }
 
     /** @return The {@link DataType}s selected in the table */
     public List<UserEnumerationView> getSelectedEnums() {
@@ -348,16 +350,6 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
-    }
-
-    @Override
-    public void doImport() {
-        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
-            setLoaderResult(dataLoaderHandler.loadData(inputStream, enumsDataLoader));
-            refreshUserDataTypes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /** @return the filteredDialogEnums */

@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -91,7 +92,6 @@ import com.google.common.collect.Lists;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
  */
 @Named
 @ViewScoped
@@ -167,6 +167,19 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private List<SlotView> filteredSlotsToDelete;
     private boolean detectNamingStatus;
     private boolean restrictToConventionNames;
+
+    /* Thread local storage is used for preventing circular injection loop in case you get to this screen
+     * requesting an installation slot gets selected (id or name parameter in the URL).
+     */
+    private static ThreadLocal<AtomicBoolean> ignoreUrlParams = new ThreadLocal<AtomicBoolean>() {
+        private AtomicBoolean accessed;
+
+        @Override
+        protected AtomicBoolean initialValue() {
+            accessed = new AtomicBoolean(false);
+            return accessed;
+        }
+    };
 
     // variables from the installation slot / containers editing merger.
     private String name;
@@ -280,6 +293,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void navigateToUrlSelectedSlot() {
         // navigate to slot based on ID or name
+        if (ignoreUrlParams.get().get()) {
+            return;
+        }
+        // next time you enter this method in the same thread, skip it
+        ignoreUrlParams.get().set(true);
         final String slotIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                                                                                     getRequest()).getParameter("id");
         Slot slot = null;
@@ -309,6 +327,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             RequestContext.getCurrentInstance().update("cannotFindSlotForm:cannotFindSlot");
             RequestContext.getCurrentInstance().execute("PF('cannotFindSlot').show();");
         }
+        // we're done processing URL params (if any), reset the value for the next time this bean will be used.
+        ignoreUrlParams.get().set(false);
     }
 
     private NamingStatus getNamingStatus(final String name) {

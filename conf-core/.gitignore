@@ -22,3 +22,5 @@ src/main/webapp/WEB-INF/jboss-web.xml
 
 !src/main/webapp/*.pdf
 !src/main/webapp/**/*.pdf
+/target/
+/target

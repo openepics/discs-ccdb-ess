@@ -21,14 +21,25 @@ package org.openepics.discs.conf.ejb;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.ent.Unit_;
+import org.openepics.discs.conf.ent.fields.UnitFields;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.SortOrder;
 import org.openepics.discs.conf.util.Utility;
+
+import com.google.common.collect.Lists;
 
 /**
  *
@@ -65,7 +76,8 @@ public class UnitEJB extends DAO<Unit> {
      * @return the list of properties, where the unit is used
      */
     public List<Property> findProperties(Unit unit, int maxResults) {
-        return em.createNamedQuery("Property.findByUnit", Property.class).setParameter("unit", unit).setMaxResults(maxResults).getResultList();
+        return em.createNamedQuery("Property.findByUnit", Property.class).setParameter("unit", unit).
+                setMaxResults(maxResults).getResultList();
     }
 
     /**
@@ -87,5 +99,81 @@ public class UnitEJB extends DAO<Unit> {
             ++duplicated;
         }
         return duplicated;
+    }
+
+    /**
+     * Returns only a subset of data based on sort column, sort order and filtered by all the fields.
+     *
+     * @param first the index of the first result to return
+     * @param pageSize the number of results
+     * @param sortField the field by which to sort
+     * @param sortOrder ascending/descending
+     * @param name the {@link Unit} name
+     * @param description the {@link Unit} description
+     * @param symbol the {@link Unit} symbol
+     * @return The required entities.
+     */
+    public List<Unit> findLazy(final int first, final int pageSize,
+            final @Nullable UnitFields sortField, final @Nullable SortOrder sortOrder,
+            final @Nullable String name, final @Nullable String description, final @Nullable String symbol) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Unit> cq = cb.createQuery(getEntityClass());
+        final Root<Unit> unitRecord = cq.from(getEntityClass());
+
+        addSortingOrder(sortField, sortOrder, cb, cq, unitRecord);
+
+        final Predicate[] predicates = buildPredicateList(cb, unitRecord, name, description, symbol);
+        cq.where(predicates);
+
+        final TypedQuery<Unit> query = em.createQuery(cq);
+        query.setFirstResult(first);
+        query.setMaxResults(pageSize);
+
+        return query.getResultList();
+    }
+
+    private void addSortingOrder(final UnitFields sortField, final SortOrder sortOrder, final CriteriaBuilder cb,
+            final CriteriaQuery<Unit> cq, final Root<Unit> unitRecord) {
+        if ((sortField != null) && (sortOrder != null) && (sortOrder != SortOrder.UNSORTED)) {
+            switch (sortField) {
+            case NAME:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(unitRecord.get(Unit_.name)))
+                                : cb.desc(cb.lower(unitRecord.get(Unit_.name))));
+                break;
+            case DESCRIPTION:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(unitRecord.get(Unit_.description)))
+                                : cb.desc(cb.lower(unitRecord.get(Unit_.description))));
+                break;
+            case SYMBOL:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(unitRecord.get(Unit_.symbol)))
+                                : cb.desc(cb.lower(unitRecord.get(Unit_.symbol))));
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    private Predicate[] buildPredicateList(final CriteriaBuilder cb, final Root<Unit> unitRecord,
+            final @Nullable String name, final @Nullable String description, final @Nullable String symbol) {
+        final List<Predicate> predicates = Lists.newArrayList();
+
+        if (name != null) {
+            predicates.add(cb.like(cb.lower(unitRecord.get(Unit_.name)),
+                                                        "%" + escapeDbString(name).toLowerCase() + "%", '\\'));
+        }
+        if (description != null) {
+            predicates.add(cb.like(cb.lower(unitRecord.get(Unit_.description)),
+                                                        "%" + escapeDbString(description).toLowerCase() + "%", '\\'));
+        }
+        if (symbol != null) {
+            predicates.add(cb.like(cb.lower(unitRecord.get(Unit_.symbol)),
+                                                        "%" + escapeDbString(symbol).toLowerCase() + "%", '\\'));
+        }
+
+        return predicates.toArray(new Predicate[] {});
     }
 }

@@ -14,12 +14,12 @@
                         <p:fieldset id="deviceFieldset" legend="Devices" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="devicesTable" var="device" widgetVar="devicesTableVar" 
-                                        style="overflow: hidden" value="#{devicesController.devices}" 
-                                        resizableColumns="true" scrollable="true" scrollHeight="100%" scrollWidth="100%" 
-                                        filteredValue="#{devicesController.filteredDevices}" 
-                                        tableStyle="word-wrap: break-word;" emptyMessage="No records found." 
-                                        selection="#{devicesController.selectedDevices}" 
-                                        selectionMode="multiple" rowKey="#{device.device.id}">
+                                        value="#{devicesController.lazyModel}" scrollable="true" scrollWidth="100%" 
+                                        scrollHeight="100%" emptyMessage="No records found." 
+                                        selection="#{devicesController.selectedDevices}" selectionMode="multiple"
+                                        rowKey="#{device.device.id}" resizableColumns="true" 
+                                        tableStyle="word-wrap: break-word;" style="overflow: hidden"
+                                        lazy="true" liveScroll="true" scrollRows="50" rows="50">
                                     <p:ajax event="rowSelect" listener="#{devicesController.onRowSelect}" 
                                             oncomplete="PF('attributesDataTable').clearFilters();" 
                                             update=":devicesForm:deleteButton :devicesForm:editButton :devicesForm:addButton 
@@ -67,7 +67,7 @@
                                 oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportDevices').show();" 
-                                disabled="#{empty devicesController.devices}" update=":exportDevForm:exportDevices" 
+                                disabled="#{devicesController.isDataTableEmpty()}" update=":exportDevForm:exportDevices" 
                                 actionListener="#{devicesController.simpleTableDialog.prepareTableExportPopup}" />
                             <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Devices" 
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importDevices').show();" 
@@ -99,12 +99,12 @@
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttributes').show();"
-                                update=":deleteAttributesForm:deleteAttributes" 
+                                update=":deleteAttributesForm:deleteAttributes" title="Delete Attribute"
                                 actionListener="#{deviceAttributesController.checkAttributesForDeletion()}"
                                 disabled="#{empty deviceAttributesController.selectedAttributes 
                                             or not securityPolicy.getUIHint('DEVICES_DELETE')}" />
 
-                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
+                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" title="Edit Attribute"
                                 action="#{deviceAttributesController.prepareModifyPropertyPopUp()}" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
                                 disabled="#{not deviceAttributesController.singleAttributeSelected or 
@@ -115,15 +115,30 @@
                                     disabled="#{not devicesController.singleDeviceSelected 
                                                 or not securityPolicy.getUIHint('DEVICES_CREATE')}">
                                 <p:menuitem value="Tag" oncomplete="PF('addDeviceTag').show()" update=":addDeviceTagForm:addDeviceTag" 
-                                        actionListener="#{deviceAttributesController.prepareForTagAdd}" />
+                                        actionListener="#{deviceAttributesController.prepareForTagAdd}" title="Add a Tag" />
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show()" 
                                         actionListener="#{deviceAttributesController.prepareForArtifactAdd}" 
-                                        update=":addArtifactForm:addArtifact" />
+                                        update=":addArtifactForm:addArtifact" title="Add an Artifact"/>
                             </p:menuButton>
                         </p:fieldset>
     	            </p:column>
                 </p:row>
             </p:panelGrid>
+
+            <script type="text/javascript">
+                // <![CDATA[
+                jQuery(document).ready(function() {
+                    var $this = PF("devicesTableVar");            
+
+                    $this.sortableColumns.on("click.dataTable", function(e, metaKeyOn) {
+                        $this.scrollBody.scrollTop(1);
+                        $this.allLoadedLiveScroll = false;
+                        $this.scrollOffset = 0;
+                    });
+                });
+                // ]]>
+            </script>
+
         </h:form>
 
         <ui:include src="/resources/dialogs/device-add-or-modify-dialog.xhtml">
@@ -213,7 +228,7 @@
             <ui:param name="formId" value="duplicateForm" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="duplicateList" value="#{devicesController.selectedDevices}" />
-            <ui:param name="filteredDuplicateList" value="#{devicesController.filteredDevices}" />
+            <ui:param name="filteredDuplicateList" value="#{devicesController.filteredDialogDevices}" />
             <ui:param name="formsToUpdate" value=":devicesForm:devicesTable :devicesForm:duplicateButton :devicesForm:editButton 
                                   :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable :devicesForm:growl" />
             <ui:param name="closeDialogActions" 

@@ -49,6 +49,11 @@ public class NewPropertyView extends PropertyView implements Iterable<String> {
         setBatchSaveStage(BatchSaveStage.VALIDATION);
     }
 
+    public NewPropertyView(PropertyView oldPropertyView) {
+        super(oldPropertyView);
+        setBatchSaveStage(BatchSaveStage.VALIDATION);
+    }
+
     /** @return the isBatchCreation */
     public boolean isBatchCreation() {
         return isBatchCreation;

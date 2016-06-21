@@ -62,6 +62,16 @@ public class PropertyView implements Serializable {
         beingAdded = false;
     }
 
+    /**
+     * Copy constructor
+     * @param other the {@link PropertyView} to copy from
+     */
+    public PropertyView(final PropertyView other) {
+        this.prop = other.prop;
+        this.beingAdded = other.beingAdded;
+        this.usedBy = other.usedBy;
+    }
+
     /** @return the id */
     public Long getId() {
         return prop.getId();

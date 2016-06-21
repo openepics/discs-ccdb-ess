@@ -23,11 +23,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComponentType_;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
@@ -36,10 +43,12 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.fields.DeviceTypeFields;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
+import org.openepics.discs.conf.util.SortOrder;
 import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
@@ -221,4 +230,74 @@ public class ComptypeEJB extends DAO<ComponentType> {
             addChild(pv);
         }
     }
+
+    /**
+     * Returns only a subset of data based on sort column, sort order and filtered by all the fields.
+     *
+     * @param first the index of the first result to return
+     * @param pageSize the number of results
+     * @param sortField the field by which to sort
+     * @param sortOrder ascending/descending
+     * @param name the {@link ComponentType} name
+     * @param description the {@link ComponentType} description
+     * @return The required entities.
+     */
+    public List<ComponentType> findLazy(final int first, final int pageSize,
+            final @Nullable DeviceTypeFields sortField, final @Nullable SortOrder sortOrder,
+            final @Nullable String name, final @Nullable String description) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<ComponentType> cq = cb.createQuery(getEntityClass());
+        final Root<ComponentType> deviceTypeRecord = cq.from(getEntityClass());
+
+        addSortingOrder(sortField, sortOrder, cb, cq, deviceTypeRecord);
+
+        final Predicate[] predicates = buildPredicateList(cb, deviceTypeRecord, name, description);
+        cq.where(predicates);
+
+        final TypedQuery<ComponentType> query = em.createQuery(cq);
+        query.setFirstResult(first);
+        query.setMaxResults(pageSize);
+
+        return query.getResultList();
+    }
+
+    private void addSortingOrder(final DeviceTypeFields sortField, final SortOrder sortOrder, final CriteriaBuilder cb,
+            final CriteriaQuery<ComponentType> cq, final Root<ComponentType> deviceTypeRecord) {
+        if ((sortField != null) && (sortOrder != null) && (sortOrder != SortOrder.UNSORTED)) {
+            switch (sortField) {
+            case NAME:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(deviceTypeRecord.get(ComponentType_.name)))
+                                : cb.desc(cb.lower(deviceTypeRecord.get(ComponentType_.name))));
+                break;
+            case DESCRIPTION:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(deviceTypeRecord.get(ComponentType_.description)))
+                                : cb.desc(cb.lower(deviceTypeRecord.get(ComponentType_.description))));
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    private Predicate[] buildPredicateList(final CriteriaBuilder cb, final Root<ComponentType> deviceTypeRecord,
+            final @Nullable String name, final @Nullable String description) {
+        final List<Predicate> predicates = Lists.newArrayList();
+
+        predicates.add(cb.notEqual(deviceTypeRecord.get(ComponentType_.name), SlotEJB.ROOT_COMPONENT_TYPE));
+        predicates.add(cb.notEqual(deviceTypeRecord.get(ComponentType_.name), SlotEJB.GRP_COMPONENT_TYPE));
+
+        if (name != null) {
+            predicates.add(cb.like(cb.lower(deviceTypeRecord.get(ComponentType_.name)),
+                                                        "%" + escapeDbString(name).toLowerCase() + "%", '\\'));
+        }
+        if (description != null) {
+            predicates.add(cb.like(cb.lower(deviceTypeRecord.get(ComponentType_.description)),
+                                                        "%" + escapeDbString(description).toLowerCase() + "%", '\\'));
+        }
+
+        return predicates.toArray(new Predicate[] {});
+    }
+
 }

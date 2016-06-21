@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}" enctype="multipart/form-data">
-        <p:dialog widgetVar="#{widgetName}" modal="true" resizable="false" width="35%">
+        <p:dialog widgetVar="#{widgetName}" modal="true" resizable="false" width="35%" closeOnEscape="true">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -17,11 +17,15 @@
                     rendered="#{controller.excelImportFileName == null}" />
                 <h:outputText value="#{controller.excelImportFileName}" />
                 <p:separator />
-                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" />
-                <p:commandButton value="Import" styleClass="dialogButton" onclick="PF('statusDialog').show()" 
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
+                    icon="ui-icon-close" />
+                <p:commandButton value="Import" styleClass="dialogButton defaultCommand" id="importButton" 
                     update=":menuform :#{formId}" oncomplete="PF('#{widgetName}').hide();PF('statusDialog').hide();" 
-                    action="#{controller.doImport()}" disabled="#{controller.excelImportFileName == null}" />
+                    action="#{controller.doImport()}" disabled="#{controller.excelImportFileName == null}" 
+                    onclick="PF('statusDialog').show()" icon="ui-icon-arrowthickstop-1-n" />
             </h:panelGroup>
+            
+            <p:defaultCommand target="importButton" />
         </p:dialog>
 
         <p:dialog id="importStatsDialog" widgetVar="importStatsDialog" modal="true" resizable="false">
@@ -75,8 +79,8 @@
                     </p:column>
                 </p:row>
             </p:panelGrid>
-            <p:commandButton value="Close" type="button" styleClass="dialogButton" 
-                    onclick="PF('importStatsDialog').hide();" />
+            <p:commandButton value="Close" type="button" styleClass="dialogButton" title="Close" 
+                    onclick="PF('importStatsDialog').hide();" icon="ui-icon-close" />
         </p:dialog>
 
         <p:dialog id="resultDialog" widgetVar="resultDialog" modal="true" style="max-width: 90%; max-height: 600px;" 
@@ -168,7 +172,7 @@
             </p:panelGrid>
 
             <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
-                    style="margin-top: 1ex;">
+                    style="margin-top: 1ex;" icon="ui-icon-close" title="Close">
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" 
                     update=":devicesForm:devicesTable :devicesForm:attributesDataTable:attributesDataTable" 
                     oncomplete="PF('devicesTableVar').clearFilters();PF('attributesDataTable').clearFilters();" />
@@ -182,8 +186,8 @@
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable"
                     oncomplete="PF('unitsTableVar').clearFilters();" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'home.xhtml')}" 
-                    update=":hierarchies:hierarchyTabs :hierarchies:attributesDataTable:attributesDataTable 
-                            :hierarchies:relationsTable :hierarchies:installationDetails" 
+                    update=":hierarchies:hierarchyTabs :hierarchies:content:attributesDataTable:attributesDataTable 
+                            :hierarchies:content:relationsTable :hierarchies:content:installationDetails" 
                     oncomplete="hierarchiesResizeAll();" />
             </p:commandButton>
             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 

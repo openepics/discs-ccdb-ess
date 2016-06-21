@@ -14,13 +14,12 @@
                         <p:fieldset legend="Device Type" id="devTypeFieldset" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="deviceTypeTable" widgetVar="deviceTypeTableVar" var="deviceType"
-                                        value="#{componentTypeManager.deviceTypes}" resizableColumns="true"
-                                        scrollable="true" scrollWidth="100%" scrollHeight="100%" 
-                                        filteredValue="#{componentTypeManager.filteredDeviceTypes}" 
-                                        tableStyle="word-wrap: break-word;" emptyMessage="No records found." 
-                                        selection="#{componentTypeManager.selectedDeviceTypes}" 
-                                        selectionMode="multiple" rowKey="#{deviceType.id}" style="overflow: hidden">
-                                    <p:ajax event="filter" ignoreAutoUpdate="true" />
+                                        value="#{componentTypeManager.lazyModel}" scrollable="true" scrollWidth="100%" 
+                                        scrollHeight="100%" emptyMessage="No records found." rowKey="#{deviceType.id}" 
+                                        selection="#{componentTypeManager.selectedDeviceTypes}" selectionMode="multiple" 
+                                        resizableColumns="true" tableStyle="word-wrap: break-word;"  
+                                        lazy="true" liveScroll="true" scrollRows="50" rows="50" style="overflow: hidden">
+                                    <p:ajax event="filter" ignoreAutoUpdate="true" update="deviceTypesForm:exportButton" />
                                     <p:ajax event="rowSelect" oncomplete="PF('attributesDataTable').clearFilters();"
                                         listener="#{componentTypeManager.onRowSelect}"
                                         update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:addButton
@@ -32,7 +31,7 @@
                                             :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton
                                             :deviceTypesForm:deleteAttrButton :deviceTypesForm:duplicateButton" />
     
-                                    <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}"
+                                    <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}"
                                             filterMatchMode="contains">
                                         <h:outputText value="#{deviceType.name}" />
                                     </p:column>
@@ -44,13 +43,13 @@
                                 </p:dataTable>
                             </div>
 
-                            <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected"
-                                style="float: right; margin-top: 1em;" 
+                            <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" 
+                                title="Duplicate Selected" style="float: right; margin-top: 1em;" 
                                 disabled="#{empty componentTypeManager.selectedDeviceTypes or not securityPolicy.getUIHint('DEVTYPE_CREATE')}"
                                 oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                           
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportDevTypes').show();"
-                                disabled="#{empty componentTypeManager.deviceTypes}" update=":exportDevTypesForm:exportDevTypes"
+                                disabled="#{componentTypeManager.isDataTableEmpty()}" update=":exportDevTypesForm:exportDevTypes"
                                 actionListener="#{componentTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                             <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Device Types" 
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importCompTypes').show();" 
@@ -82,12 +81,12 @@
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteAttributes').show()"
-                                update=":deleteAttributesForm:deleteAttributes"
+                                update=":deleteAttributesForm:deleteAttributes" title="Delete Attribute"
                                 actionListener="#{comptypeAttributesController.checkAttributesForDeletion()}"
                                 disabled="#{empty comptypeAttributesController.selectedAttributes 
                                                 or not securityPolicy.getUIHint('DEVTYPE_DELETE')}" />
 
-                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil"
+                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" title="Edit Attribute"
                                 action="#{comptypeAttributesController.prepareModifyPropertyPopUp()}"
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm"
                                 disabled="#{not comptypeAttributesController.singleAttributeSelected or
@@ -99,23 +98,39 @@
                                             or not securityPolicy.getUIHint('DEVTYPE_CREATE')}">
                                 <p:menuitem value="Device Type Property" oncomplete="PF('addPropertyValue').show();"
                                     actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}"
-                                    update=":addPropertyValueForm:addPropertyValue" />
+                                    update=":addPropertyValueForm:addPropertyValue" title="Add a Device Type Property" />
                                 <p:menuitem value="Device Property" oncomplete="PF('deviceInstanceProperty').show();"
                                     actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd}"
-                                    update=":deviceInstancePropertyForm:deviceInstanceProperty" />
+                                    update=":deviceInstancePropertyForm:deviceInstanceProperty" title="Add a Device Property"/>
                                 <p:menuitem value="Installation Slot Property" oncomplete="PF('installationSlotProperty').show();"
                                     actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd}"
-                                    update=":installationSlotPropertyForm:installationSlotProperty" />
+                                    update=":installationSlotPropertyForm:installationSlotProperty"
+                                    title="Add an Installation Slot Property" />
                                 <p:menuitem value="Tag" oncomplete="PF('deviceTypeTag').show();" update=":deviceTypeTagForm"
-                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" />
+                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" title="Add a Tag" />
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();"
                                     actionListener="#{comptypeAttributesController.prepareForArtifactAdd}"
-                                    update=":addArtifactForm:addArtifact" />
+                                    update=":addArtifactForm:addArtifact" title="Add an Artifact" />
                             </p:menuButton>
                         </p:fieldset>
                     </p:column>
                 </p:row>
             </p:panelGrid>
+
+            <script type="text/javascript">
+                // <![CDATA[
+                jQuery(document).ready(function() {
+                    var $this = PF("deviceTypeTableVar");            
+
+                    $this.sortableColumns.on("click.dataTable", function(e, metaKeyOn) {
+                        $this.scrollBody.scrollTop(1);
+                        $this.allLoadedLiveScroll = false;
+                        $this.scrollOffset = 0;
+                    });
+                });
+                // ]]>
+            </script>
+
         </h:form>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
@@ -143,7 +158,7 @@
             <ui:param name="formId" value="duplicateForm" />
             <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="duplicateList" value="#{componentTypeManager.selectedDeviceTypes}" />
-            <ui:param name="filteredDuplicateList" value="#{componentTypeManager.filteredDeviceTypes}" />
+            <ui:param name="filteredDuplicateList" value="#{componentTypeManager.filteredDialogTypes}" />
             <ui:param name="formsToUpdate" value=":deviceTypesForm:deviceTypeTable :deviceTypesForm:growl 
                                                 :deviceTypesForm:attributesDataTable:attributesDataTable
                                                 :deviceTypesForm:addButton" />

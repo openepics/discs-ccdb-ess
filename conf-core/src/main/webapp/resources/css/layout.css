@@ -379,3 +379,19 @@ legend {
 	border-style: dotted;
 	border-width: thin;
 }
+
+.noScrollTable .ui-datatable-scrollable-header, .noScrollTable .ui-datatable-scrollable-body {
+	width: 100% !important;
+}
+
+#hierarchies\:content .ui-accordion-content {
+	padding: 0 0 0.5em 0;
+}
+
+#hierarchies\:content\:slotAttributes .ui-panel-content, 
+#hierarchies\:content\:relationsTable .ui-panel-content, 
+#hierarchies\:content\:installationDetails .ui-panel-content {
+	height: 100%;
+	padding: 0;
+}
+

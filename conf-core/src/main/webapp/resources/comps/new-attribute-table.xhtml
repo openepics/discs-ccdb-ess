@@ -13,10 +13,10 @@
 
     <cc:implementation>
         <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}"
-                selection="#{cc.attrs.controllerBean.selectedAttributes}" selectionMode="multiple"
+                selection="#{cc.attrs.controllerBean.selectedAttributes}" selectionMode="multiple" liveScroll="true"
                 rowKey="#{attribute.id}" style="overflow: hidden" scrollHeight="100%" emptyMessage="No records found." 
                 scrollable="true" resizableColumns="true" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}"
-                tableStyle="word-wrap: break-word;" widgetVar="attributesDataTable">
+                tableStyle="word-wrap: break-word;" widgetVar="attributesDataTable" scrollRows="20">
             <p:ajax event="filter" ignoreAutoUpdate="true" />
             <p:ajax event="rowSelect" update="#{cc.attrs.updateButtons}" />
             <p:ajax event="rowUnselect" update="#{cc.attrs.updateButtons}" />

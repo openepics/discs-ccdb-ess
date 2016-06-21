@@ -21,29 +21,48 @@ package org.openepics.discs.conf.ejb;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComponentType_;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.Device_;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.ent.InstallationRecord_;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.Slot_;
+import org.openepics.discs.conf.ent.fields.DeviceFields;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.SortOrder;
 import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 /**
  * DAO service for accessing device instances.
@@ -269,5 +288,114 @@ public class DeviceEJB extends DAO<Device> {
                     .setParameter("propValue", value).setMaxResults(2).getResultList();
         // value is unique if there is no property value with the same value, or the only one found us the entity itself
         return (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
+    }
+
+    /**
+     * Returns only a subset of data based on sort column, sort order and filtered by all the fields.
+     *
+     * @param first the index of the first result to return
+     * @param pageSize the number of results
+     * @param sortField the field by which to sort
+     * @param sortOrder ascending/descending
+     * @param deviceType the {@link ComponentType} name
+     * @param serialNumber the {@link Device} serial number
+     * @param slotName the {@link Slot} name
+     * @param installationDate the installation date
+     * @return The required entities.
+     */
+    public List<Device> findLazy(final int first, final int pageSize,
+            final @Nullable DeviceFields sortField, final @Nullable SortOrder sortOrder,
+            final @Nullable String deviceType, final @Nullable String serialNumber,
+            final @Nullable String slotName, final @Nullable Date installationDate) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Device> cq = cb.createQuery(getEntityClass());
+        final Root<Device> deviceRoot = cq.from(getEntityClass());
+        //final Root<InstallationRecord> installationRoot = cq.from(InstallationRecord.class);
+        final Join<Device, InstallationRecord> installationRecord =
+                                                        deviceRoot.join(Device_.installationRecordList, JoinType.LEFT);
+        final Join<InstallationRecord, Slot> slot = installationRecord.join(InstallationRecord_.slot, JoinType.LEFT);
+
+        cq.select(deviceRoot);
+
+        addSortingOrder(sortField, sortOrder, cb, cq, deviceRoot, installationRecord, slot);
+
+        final Predicate[] predicates = buildPredicateList(cb, cq, deviceRoot, installationRecord,
+                                                            deviceType, serialNumber, slotName, installationDate);
+        cq.where(predicates);
+
+        final TypedQuery<Device> query = em.createQuery(cq);
+        query.setFirstResult(first);
+        query.setMaxResults(pageSize);
+
+        return query.getResultList();
+    }
+
+    private void addSortingOrder(final DeviceFields sortField, final SortOrder sortOrder, final CriteriaBuilder cb,
+            final CriteriaQuery<Device> cq, final Root<Device> deviceRecord,
+            final Join<Device, InstallationRecord> installationRecord,
+            final Join<InstallationRecord, Slot> slot) {
+        if ((sortField != null) && (sortOrder != null) && (sortOrder != SortOrder.UNSORTED)) {
+            switch (sortField) {
+            case SERIAL_NUMBER:
+                // required
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(deviceRecord.get(Device_.serialNumber)))
+                                : cb.desc(cb.lower(deviceRecord.get(Device_.serialNumber))));
+                break;
+            case DEVICE_TYPE:
+                // required - component type != NULL
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(deviceRecord.get(Device_.componentType).get(ComponentType_.name)))
+                                : cb.desc(cb.lower(deviceRecord.get(Device_.componentType).get(ComponentType_.name))));
+                break;
+            case INSTALLATION_SLOT:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(slot.get(Slot_.name)))
+                                : cb.desc(cb.lower(slot.get(Slot_.name))));
+                break;
+            case TIMESTAMP:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(installationRecord.get(InstallationRecord_.installDate))
+                                : cb.desc(installationRecord.get(InstallationRecord_.installDate)));
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    private Predicate[] buildPredicateList(final CriteriaBuilder cb, final CriteriaQuery<Device> cq,
+            final Root<Device> deviceRecord, final Join<Device, InstallationRecord> deviceInstallationRecord,
+            final @Nullable String deviceType, final @Nullable String serialNumber,
+            final @Nullable String slotName, @Nullable Date installDate) {
+        final List<Predicate> predicates = Lists.newArrayList();
+
+        if (deviceType != null) {
+            final Subquery<ComponentType> deviceTypeQuery = cq.subquery(ComponentType.class);
+            final Root<ComponentType> deviceTypeRecord = deviceTypeQuery.from(ComponentType.class);
+            deviceTypeQuery.select(deviceTypeRecord);
+            deviceTypeQuery.where(cb.like(cb.lower(deviceTypeRecord.get(ComponentType_.name)),
+                                                        "%" + escapeDbString(deviceType).toLowerCase() + "%", '\\'));
+            predicates.add(cb.equal(deviceRecord.get(Device_.componentType), cb.any(deviceTypeQuery)));
+        }
+        if (serialNumber != null) {
+            predicates.add(cb.like(cb.lower(deviceRecord.get(Device_.serialNumber)),
+                                                        "%" + escapeDbString(serialNumber).toLowerCase() + "%", '\\'));
+        }
+        if (slotName != null) {
+            final Subquery<Slot> slotQuery = cq.subquery(Slot.class);
+            final Root<Slot> slotRecord = slotQuery.from(Slot.class);
+            slotQuery.select(slotRecord);
+            slotQuery.where(cb.like(cb.lower(slotRecord.get(Slot_.name)),
+                                                        "%" + escapeDbString(slotName).toLowerCase() + "%", '\\'));
+            predicates.add(cb.equal(deviceInstallationRecord.get(InstallationRecord_.slot), cb.any(slotQuery)));
+        }
+        if (installDate != null) {
+            predicates.add(cb.and(
+                    cb.greaterThanOrEqualTo(deviceInstallationRecord.get(InstallationRecord_.installDate), installDate),
+                    cb.isNull(deviceInstallationRecord.get(InstallationRecord_.uninstallDate))));
+        }
+
+        return predicates.toArray(new Predicate[] {});
     }
 }

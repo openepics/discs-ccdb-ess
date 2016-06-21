@@ -26,7 +26,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.ent.EntityWithId;
 
@@ -95,8 +97,35 @@ public abstract class ReadOnlyDAO<T extends EntityWithId> {
     }
 
     /**
+     * @return the number of elements in the table
+     */
+    public long getRowCount() {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final Root<T> root = cq.from(getEntityClass());
+
+        cq.select(cb.count(root));
+        return em.createQuery(cq).getSingleResult();
+    }
+
+    /**
      * Implementation sub-classes should override this to return the encapsulated entity class.
      * @return the {@link Class} of the entity this DAO is for
      */
     protected abstract Class<T> getEntityClass();
+
+    /**
+     * Escapes the characters that have a special meaning in the database LIKE query, '%' and '_'.
+     *
+     * @param dbString the string to escape
+     * @return the escaped string
+     */
+    protected String escapeDbString(final String dbString) {
+        return dbString.
+                replaceAll("%", "\\\\%").
+                replaceAll("_", "\\\\_").
+                replaceAll("\\[", "\\\\[").
+                replaceAll("]", "\\\\]");
+    }
+
 }

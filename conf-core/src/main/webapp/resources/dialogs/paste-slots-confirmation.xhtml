@@ -33,11 +33,11 @@
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Yes" id="confirm" styleClass="dialogButton defaultCommand" 
                     update="#{formsToUpdate}" rendered="#{empty hierarchiesController.pasteErrors}" 
-                    oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
-                    action="#{hierarchiesController.pasteTreeNodes}" />
+                    oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" title="Yes" 
+                    action="#{hierarchiesController.pasteTreeNodes}" icon="ui-icon-check" />
                 <p:commandButton value="#{empty hierarchiesController.pasteErrors ? 'No' : 'Close'}" id="cancel" 
                     styleClass="dialogButton #{not empty hierarchiesController.pasteErrors ? 'defaultCommand' : ''}" 
-                    onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" />
+                    onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" icon="ui-icon-close" title="Close" />
             </p:panel>
 
             <p:defaultCommand target="cancel" rendered="#{not empty hierarchiesController.pasteErrors}" />

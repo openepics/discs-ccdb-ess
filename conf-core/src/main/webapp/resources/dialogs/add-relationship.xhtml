@@ -3,8 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html">
 
-    <h:form id="addSlotRelationshipForm" rendered="#{not empty empty relationshipController.editedRelationshipView}">
-        <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="45em" resizable="false" 
+    <h:form id="#{formId}" rendered="#{not empty empty relationshipController.editedRelationshipView}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" width="45em" resizable="false" 
                 closable="false" dynamic="true" closeOnEscape="true">
             <p:ajax event="close" resetValues="true" update=":hierarchies:hierarchyTabs:tree" 
                 listener="#{relationshipController.onRelationshipPopupClose}" oncomplete="hierarchiesResizeAll();" />
@@ -35,12 +35,10 @@
                 <p:row>
                     <p:column>
                         <p:tree value="#{relationshipController.containsTree.rootNode}" id="relationshipTree" dynamic="true" 
-                                selectionMode="single" var="slotView" style="width: 100%; height: 27em; overflow: auto;"
-                                selection="#{relationshipController.editedRelationshipView.targetNode}">
-                            <p:ajax event="select" 
-                                update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
-                            <p:ajax event="unselect" 
-                                update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
+                                selectionMode="#{relationshipController.editExistingRelationship ? 'single' : 'multiple'}" 
+                                var="slotView" style="width: 100%; height: 27em; overflow: auto;" selection="#{selectProperty}">
+                            <p:ajax event="select" update=":#{formId}:relationshipTypeSelect :#{formId}:addButton" />
+                            <p:ajax event="unselect" update=":#{formId}:relationshipTypeSelect :#{formId}:addButton" />
 
                             <p:treeNode>
                                 <h:outputText value="" 
@@ -58,20 +56,21 @@
                 </p:row>
                 <p:row>
                     <p:column style="text-align: right; padding: 0 10px;">
-                        <p:commandButton value="#{empty relationshipController.editedRelationshipView.id ? 'Add' : 'Save'}" 
-                            styleClass="dialogButton defaultCommand" id="addButton"  
-                            disabled="#{empty relationshipController.editedRelationshipView.targetNode}" 
-                            action="#{relationshipController.onRelationshipAdd}" 
-                            oncomplete="PF('addSlotRelationship').hide(); hierarchiesResizeAll();" 
-                            update=":addSlotRelationshipForm :hierarchies:relationshipTable :hierarchies:editRelationship 
+                        <p:commandButton value="#{relationshipController.editExistingRelationship ? 'Save' : 'Add'}"
+                            icon="#{relationshipController.editExistingRelationship ? 'ui-icon-disk' : 'ui-icon-plus'}" 
+                            styleClass="dialogButton defaultCommand" id="addButton" disabled="#{empty selectProperty}" 
+                            action="#{relationshipController.onRelationshipAdd}" title="Save" 
+                            oncomplete="PF('#{widgetName}').hide(); hierarchiesResizeAll();" 
+                            update=":#{formId} :hierarchies:content:relationshipTable :hierarchies:content:editRelationship 
                                     :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
-                        <p:commandButton value="Expand" id="expandButton" icon="ui-icon-plus" styleClass="dialogButton" 
+                        <p:commandButton value="Expand" id="expandButton" icon="ui-icon-folder-open" 
                             title="Expand Selected Items" action="#{relationshipController.expandTreeNodes}" 
-                            update=":addSlotRelationshipForm:relationshipTree" />
-                        <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-minus" styleClass="dialogButton" 
+                            styleClass="dialogButton" update=":#{formId}:relationshipTree" />
+                        <p:commandButton value="Collapse" id="collapseButton" icon="ui-icon-folder-collapsed" 
                             title="Collapse Selected Items" action="#{relationshipController.collapseTreeNodes}" 
-                            update=":addSlotRelationshipForm:relationshipTree" />                            
-                        <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="PF('addSlotRelationship').hide();" />
+                            styleClass="dialogButton" update=":#{formId}:relationshipTree" />                            
+                        <p:commandButton value="Cancel" styleClass="dialogButton" icon="ui-icon-close"
+                            oncomplete="PF('#{widgetName}').hide();" title="Cancel" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

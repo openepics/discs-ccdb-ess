@@ -98,12 +98,12 @@ public class SlotPairEJB extends DAO<SlotPair> {
     }
 
     @Override
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
     public void add(SlotPair entity) {
         Preconditions.checkNotNull(entity);
-        final Slot parentSlot = em.find( Slot.class, entity.getParentSlot().getId());
+        final Slot parentSlot = em.find(Slot.class, entity.getParentSlot().getId());
         final Slot childSlot = em.find(Slot.class, entity.getChildSlot().getId());
         entity.setParentSlot(parentSlot);
         entity.setChildSlot(childSlot);
@@ -136,7 +136,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
      * a loop will be created.
      *
      * @param slotPair {@link SlotPair} that should be added
-     * @param childSlot child {@link Slot} in this relationship
+     * @param childSlot child {@link Slot} in to chekc (Used in recursion)
      * @return {@link Boolean} true if by adding this {@link SlotPair} loop will be created, false otherwise
      */
     public boolean slotPairCreatesLoop(SlotPair slotPair, Slot childSlot) {
@@ -222,7 +222,8 @@ public class SlotPairEJB extends DAO<SlotPair> {
                                             .setParameter("order", mySlotPair.getSlotOrder())
                                             .getResultList();
         if (relevantPairs.isEmpty()) {
-            return; // nothing to do
+            // nothing to do
+            return;
         }
 
         SlotPair swapPair = relevantPairs.get(0);
@@ -248,6 +249,35 @@ public class SlotPairEJB extends DAO<SlotPair> {
             final SlotPair freshPair = refreshEntity(relationship);
             delete(freshPair);
             explicitAuditLog(freshPair, EntityTypeOperation.UPDATE);
+        }
+    }
+
+    /**
+     * Adds new relationships in one transaction.
+     * @param entities the list of SlotPairs (relationships) to add
+     */
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    @Authorized
+    public void add(List<SlotPair> entities) {
+        Preconditions.checkNotNull(entities);
+        for (final SlotPair entity : entities) {
+            final Slot parentSlot = em.find(Slot.class, entity.getParentSlot().getId());
+            final Slot childSlot = em.find(Slot.class, entity.getChildSlot().getId());
+            entity.setParentSlot(parentSlot);
+            entity.setChildSlot(childSlot);
+            final int highestOrderNumberForNewPair;
+            final Integer maxResult = em.createNamedQuery("SlotPair.findMaxPairOrder", Integer.class)
+                    .setParameter("parentSlot", parentSlot).getSingleResult();
+            if (maxResult == null) {
+                highestOrderNumberForNewPair = 1;
+            } else {
+                highestOrderNumberForNewPair = maxResult.intValue() + 1;
+            }
+            entity.setSlotOrder(highestOrderNumberForNewPair);
+            childSlot.getPairsInWhichThisSlotIsAChildList().add(entity);
+            parentSlot.getPairsInWhichThisSlotIsAParentList().add(entity);
+            super.add(entity);
         }
     }
 }

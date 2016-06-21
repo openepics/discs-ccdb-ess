@@ -34,6 +34,9 @@
  */
 package org.openepics.discs.conf.ui.util;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +49,9 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.primefaces.model.SortOrder;
 
 import com.google.common.collect.Lists;
 
@@ -156,5 +161,259 @@ public class UiUtility {
         }
     }
 
+    public static org.openepics.discs.conf.util.SortOrder translateToCCDBSortOrder(SortOrder sortOrder) {
+        switch (sortOrder) {
+        case ASCENDING:
+            return org.openepics.discs.conf.util.SortOrder.ASCENDING;
+        case DESCENDING:
+            return org.openepics.discs.conf.util.SortOrder.DESCENDING;
+        case UNSORTED:
+            return org.openepics.discs.conf.util.SortOrder.UNSORTED;
+        default:
+            throw new UnhandledCaseException();
+        }
+    }
 
+    /**
+     * The method tries to parse the string using the following rules. If input contains
+     * <ol>
+     * <li>illegal characters (legal: [0-9\-: ]) then 1970-01-01 at midnight is assumed</li>
+     * <li>a number less than current date (day number in month), the day of this month is assumed</li>
+     * <li>a number (XX) above current day (date) and under the number of days of previous month,
+     *         the day of previous month is assumed</li>
+     * <li> a number above the valid day number (see previous two lines) and below 99,
+     *         the first day of 19XX or 20XX is assumed (depending on current year; 20XX will start after 2032)</li>
+     * <li>a number above 1900, then the first day of that year is assumed</li>
+     * <li>start of a date yyyy-m or yyyy-m-d, then start of the input year is assumed. In this case the year must
+     * be above 1900 and month and day must be correct.</li>
+     * <li>start of an hour (HH:m or HH:m:s) then the current day is assumed. 24 hour format.</li>
+     * <li>the "time" can be preceded by "date". They are separated by a space character</li>
+     * </ol>
+     *
+     * The returned string is normalized to be parse-able by the standard formatter.
+     *
+     * @param inDateTime the user input we're trying to parse into date and time
+     * @return date time string represented by the input, or today at midnight if input is invalid.
+     */
+    public static LocalDateTime processUIDateTime(final String inDateTime) {
+        final String trimmedInput = inDateTime.trim().replaceAll(" +", " ");
+        final String[] inputChunks = trimmedInput.split(" ");
+        if ((inputChunks.length > 2) || (inputChunks.length < 1)) {
+            return LocalDate.ofEpochDay(0).atStartOfDay();
+        }
+
+        final LocalDate dateOut = tryParsingDate(inputChunks[0]);
+        final LocalTime timeOut;
+
+        if (inputChunks.length == 2) {
+            timeOut = tryParsingTime(inputChunks[1]);
+        } else if (dateOut == null) {
+            // we don't have date, time parsing must succeed
+            timeOut = tryParsingTime(inputChunks[0]);
+        } else {
+            timeOut = LocalTime.of(0, 0);
+        }
+
+        // date and time parsing have failed
+        if (timeOut == null) {
+            return LocalDate.ofEpochDay(0).atStartOfDay();
+        }
+
+        return LocalDateTime.of(dateOut != null ? dateOut : LocalDate.now(), timeOut);
+    }
+
+    private static LocalDate tryParsingDate(final String inputDate) {
+        if (inputDate.isEmpty() || inputDate.matches("(^-.*)|(.*[^0-9\\-].*)")) {
+            return null;
+        }
+
+        if (!inputDate.contains("-")) {
+            return parseSingleDateInput(inputDate);
+        } else {
+            return parseMultiDateInput(inputDate);
+        }
+    }
+
+    private static LocalDate parseSingleDateInput(final String inputDate) {
+        final LocalDate today = LocalDate.now();
+        final int currentMillenium = today.getYear() / 1000 * 1000;
+
+        final int inputNumber = Integer.valueOf(inputDate);
+        if (inputNumber == 0) {
+            // year
+            return LocalDate.of(currentMillenium, 1, 1);
+        } else if (inputNumber <= today.getDayOfMonth()) {
+            // day in this month
+            return LocalDate.of(today.getYear(), today.getMonthValue(), inputNumber);
+        } else if (inputNumber <= today.minusMonths(1).lengthOfMonth()) {
+            // day in previous month
+            return LocalDate.of(today.minusMonths(1).getYear(), today.minusMonths(1).getMonthValue(), inputNumber);
+        } else if (inputNumber < 100) {
+            // year in the century
+            if (currentMillenium + inputNumber > today.getYear()) {
+                return LocalDate.of(currentMillenium - 100 + inputNumber, 1, 1);
+            } else {
+                // year in this century
+                return LocalDate.of(currentMillenium + inputNumber, 1, 1);
+            }
+        } else if (inputNumber < 1900) {
+            // error in year
+            return null;
+        } else {
+            // it's a year
+            return LocalDate.of(inputNumber, 1, 1);
+        }
+    }
+
+    private static LocalDate parseMultiDateInput(final String inputDate) {
+        final String[] dateChunks = inputDate.split("-");
+
+        if (dateChunks.length > 3) {
+            return null;
+        }
+
+        final Integer year = parseYear(dateChunks);
+        final Integer month = parseMonth(dateChunks);
+
+        if (year == null || month == null) {
+            return null;
+        }
+
+        final LocalDate testDate = LocalDate.of(year, month, 1);
+        final Integer day = parseDay(dateChunks, testDate.lengthOfMonth());
+        if (day == null) {
+            return null;
+        }
+
+        return LocalDate.of(year, month, day);
+    }
+
+    private static Integer parseYear(final String[] dateChunks) {
+        final LocalDate today = LocalDate.now();
+        final int currentMillenium = today.getYear() / 1000 * 1000;
+
+        final int inputYear = Integer.valueOf(dateChunks[0]);
+        if (inputYear < 100) {
+            // year in the century
+            if (currentMillenium + inputYear > today.getYear()) {
+                // year in previous century
+                return currentMillenium - 100 + inputYear;
+            } else {
+                // year in this century
+                return currentMillenium + inputYear;
+            }
+        } else if (inputYear < 1900) {
+            // error in year
+            return null;
+        } else {
+            // it's a year
+            return inputYear;
+        }
+    }
+
+    private static Integer parseMonth(final String[] dateChunks) {
+        if ((dateChunks.length > 1) && !dateChunks[1].isEmpty()) {
+            final int inputMonth = Integer.valueOf(dateChunks[1]);
+            if ((inputMonth < 1) || (inputMonth > 12)) {
+                return null;
+            } else {
+                return inputMonth;
+            }
+        } else {
+            return 1;
+        }
+    }
+
+    private static Integer parseDay(final String[] dateChunks, final int lastDayOfMonth) {
+        if ((dateChunks.length > 2) && !dateChunks[2].isEmpty()) {
+            final int inputDay = Integer.valueOf(dateChunks[2]);
+            if ((inputDay < 1) || (inputDay > lastDayOfMonth)) {
+                return null;
+            } else {
+                return inputDay;
+            }
+        } else {
+            return 1;
+        }
+    }
+
+    private static LocalTime tryParsingTime(final String inputTime) {
+        if (inputTime.matches("(^:.*)|(.*[^0-9:].*)") || !inputTime.contains(":")) {
+            return null;
+        }
+
+        final String[] timeChunks = inputTime.split(":");
+        if (timeChunks.length > 3) {
+            return null;
+        }
+
+        final Integer hours = parseHours(timeChunks[0]);
+        final Integer minutes = parseMinutesOrSeconds(timeChunks, 1);
+        final Integer seconds = parseMinutesOrSeconds(timeChunks, 2);
+
+        if (hours == null || minutes == null || seconds == null) {
+            return null;
+        }
+
+        return LocalTime.of(hours, minutes, seconds);
+    }
+
+    private static Integer parseHours(final String hour) {
+        if (!hour.isEmpty()) {
+            final int inputHour = Integer.valueOf(hour);
+            if ((inputHour < 0) || (inputHour > 23)) {
+                return null;
+            } else {
+                return inputHour;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private static Integer parseMinutesOrSeconds(final String[] timeChunks, final int index) {
+        if ((timeChunks.length > index) && !timeChunks[index].isEmpty()) {
+            final int inputNumber = Integer.valueOf(timeChunks[index]);
+            if ((inputNumber < 0) || (inputNumber > 59)) {
+                return null;
+            } else {
+                return inputNumber;
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * @param longStr the string to parse
+     * @return a number represented by the input string, <code>null</code> if there was an error.
+     */
+    public static Long processUILong(final String longStr) {
+        try {
+            if (longStr == null) {
+                return null;
+            }
+            return Long.valueOf(longStr);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * The method tries to parse the string into an enum constant.
+     *
+     * @param enumConstantName the enum constant name we're trying to parse
+     * @param enumClassToCheck the enum class that we're trying to construct
+     * @param <E> the enumeration to check for
+     * @return The enum constant E if successfully parsed, <code>null</code> otherwise.
+     */
+    @SuppressWarnings("unchecked")
+    public static <E extends Enum<E>> E parseIntoEnum(final String enumConstantName, Class<E> enumClassToCheck) {
+        for (final Enum<E> enumVal : enumClassToCheck.getEnumConstants()) {
+            if (enumVal.name().equalsIgnoreCase(enumConstantName)) {
+                return (E) enumVal;
+            }
+        }
+        return null;
+    }
 }

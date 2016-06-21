@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.openepics.discs</groupId>
         <artifactId>ccdb</artifactId>
-        <version>1.1.3-SNAPSHOT</version>
+        <version>1.1.4-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>5.3</version>
+            <version>6.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -148,6 +148,39 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>regex-property</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>ccdb.model.jar.name</name>
+                            <value>${org.openepics.discs:ccdb-model:jar}</value>
+                            <regex>.*[\\/](.*?)$</regex>
+                            <replacement>$1</replacement>
+                            <failIfNoMatch>true</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
@@ -193,6 +226,19 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <repositories>
+        <repository>
+            <id>org-primefaces-release-cadidates</id>
+            <url>https://artifactory01.esss.lu.se/artifactory/prime-repo/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <!-- This should be used to customize for Glassfish / JBoss -->
     <profiles>
@@ -512,6 +558,7 @@
                                 <resource>
                                     <directory>AS-specific-resources/jboss/${as.specific.source}</directory>
                                     <targetPath>WEB-INF/classes/META-INF</targetPath>
+                                    <filtering>true</filtering>
                                     <includes>
                                         <include>persistence.xml</include>
                                     </includes>                                    

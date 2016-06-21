@@ -23,11 +23,11 @@
             </div>
 
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
-                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" 
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" icon="ui-icon-disk" title="Save"
                         oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                         action="#{controller[submitHandler]}" tabindex="2" update="#{componentToUpdate} grp" />
-                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
-                        update="grp" resetValues="true" action="#{controller.resetFields}" tabindex="3" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" title="Cancel" 
+                        update="grp" resetValues="true" action="#{controller.resetFields}" tabindex="3" icon="ui-icon-close" />
             </p:panel>
 
             <p:defaultCommand target="save" />

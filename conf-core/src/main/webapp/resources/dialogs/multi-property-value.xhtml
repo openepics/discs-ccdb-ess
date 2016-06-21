@@ -15,10 +15,10 @@
 
             <p:messages id="inputValidationFail" showDetail="true" autoUpdate="true" />
             <p:panel style="border: 0; width: 80em;">
-                <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" 
-                        var="prop" editable="true" editMode="cell" scrollable="true" 
-                        tableStyle="word-wrap: break-word;" 
-                        widgetVar="#{formId}_propSelectTable" scrollHeight="350" scrollWidth="100%" 
+                <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" var="prop"  
+                        editable="true" editMode="cell" tableStyle="word-wrap: break-word;" resizableColumns="true" 
+                        styleClass="noScrollTable"
+                        widgetVar="#{formId}_propSelectTable" scrollHeight="350" scrollWidth="100%" scrollable="true" 
                         filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">                        
                     <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" 
                         update=":#{formId}:propertySelect" />
@@ -78,12 +78,13 @@
             </p:panel>
 
             <p:panel style="text-align: right; padding: 0 1.5em 0 0; border: 0;" styleClass="dialogButtonPanel">
-                <p:commandButton value="Save" id="save" styleClass="dialogButton" 
+                <p:commandButton value="Save" id="save" styleClass="dialogButton" icon="ui-icon-disk" title="Save" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
                         action="#{comptypeAttributesController[submitHandler]}" update="#{componentToUpdate} propertySelect" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" update=" #{componentToUpdate} propertySelect" 
                         resetValues="true" action="#{comptypeAttributesController.resetPropertySelection(formId)}" 
-                        oncomplete="PF('#{widgetName}').hide(); PF('#{formId}_propSelectTable').clearFilters(); #{resetFilter}" />
+                        oncomplete="PF('#{widgetName}').hide(); PF('#{formId}_propSelectTable').clearFilters(); #{resetFilter}" 
+                        icon="ui-icon-close" title="Cancel" />
             </p:panel>
         </p:dialog>
     </h:form>

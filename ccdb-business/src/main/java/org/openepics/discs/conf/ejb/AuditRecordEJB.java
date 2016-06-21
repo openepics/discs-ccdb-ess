@@ -20,12 +20,25 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.AuditRecord_;
 import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.fields.AuditRecordFields;
+import org.openepics.discs.conf.util.SortOrder;
+
+import com.google.common.collect.Lists;
 
 /**
  * DAO Service for accessing {@link AuditRecord}s
@@ -67,5 +80,123 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
                 .getResultList();
 
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
+    }
+
+    /**
+     * Returns only a subset of data based on sort column, sort order and filtered by all the fields.
+     *
+     * @param first the index of the first result to return
+     * @param pageSize the number of results
+     * @param sortField the field by which to sort
+     * @param sortOrder ascending/descending
+     * @param logTime timestamp
+     * @param user the user name
+     * @param oper operation
+     * @param entityName name of the entity
+     * @param entityType type of the entity
+     * @param entityId entity database ID
+     * @param entry the change description
+     * @return The required entities.
+     */
+    public List<AuditRecord> findLazy(final int first, final int pageSize, final @Nullable AuditRecordFields sortField,
+            final @Nullable SortOrder sortOrder, final @Nullable Date logTime, final @Nullable String user,
+            final @Nullable EntityTypeOperation oper, final @Nullable String entityName,
+            final @Nullable EntityType entityType, final @Nullable Long entityId, final @Nullable String entry) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<AuditRecord> cq = cb.createQuery(getEntityClass());
+        final Root<AuditRecord> auditRecord = cq.from(getEntityClass());
+
+        addSortingOrder(sortField, sortOrder, cb, cq, auditRecord);
+
+        final Predicate[] predicates = buildPredicateList(cb, auditRecord, logTime, user, oper, entityName, entityType,
+                entityId, entry);
+        cq.where(predicates);
+
+        final TypedQuery<AuditRecord> query = em.createQuery(cq);
+        query.setFirstResult(first);
+        query.setMaxResults(pageSize);
+
+        return query.getResultList();
+    }
+
+    private void addSortingOrder(final AuditRecordFields sortField, final SortOrder sortOrder, final CriteriaBuilder cb,
+            final CriteriaQuery<AuditRecord> cq, final Root<AuditRecord> auditRecord) {
+        if ((sortField != null) && (sortOrder != null) && (sortOrder != SortOrder.UNSORTED)) {
+            switch (sortField) {
+            case LOG_TIME:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(auditRecord.get(AuditRecord_.logTime))
+                                : cb.desc(auditRecord.get(AuditRecord_.logTime)));
+                break;
+            case USER:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(auditRecord.get(AuditRecord_.user)))
+                                : cb.desc(cb.lower(auditRecord.get(AuditRecord_.user))));
+                break;
+            case OPER:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(auditRecord.get(AuditRecord_.oper))
+                                : cb.desc(auditRecord.get(AuditRecord_.oper)));
+                break;
+            case ENTITY_ID:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(auditRecord.get(AuditRecord_.entityId))
+                                : cb.desc(auditRecord.get(AuditRecord_.entityId)));
+                break;
+            case ENTITY_TYPE:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(auditRecord.get(AuditRecord_.entityType))
+                                : cb.desc(auditRecord.get(AuditRecord_.entityType)));
+                break;
+            case ENTITY_KEY:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(cb.lower(auditRecord.get(AuditRecord_.entityKey)))
+                                : cb.desc(cb.lower(auditRecord.get(AuditRecord_.entityKey))));
+                break;
+            case ENTRY:
+                cq.orderBy(sortOrder == SortOrder.ASCENDING
+                                ? cb.asc(auditRecord.get(AuditRecord_.entry))
+                                : cb.desc(auditRecord.get(AuditRecord_.entry)));
+                break;
+            default:
+                break;
+            }
+        } else {
+            // default sort order
+            cq.orderBy(cb.desc(auditRecord.get(AuditRecord_.logTime)));
+        }
+    }
+
+    private Predicate[] buildPredicateList(final CriteriaBuilder cb, final Root<AuditRecord> auditRecord,
+            final Date logTime, final String user, final EntityTypeOperation oper,
+            final String entityName, final EntityType entityType, final Long entityId, final String entry) {
+        final List<Predicate> predicates = Lists.newArrayList();
+
+        if (logTime != null) {
+            predicates.add(cb.greaterThanOrEqualTo(auditRecord.get(AuditRecord_.logTime), logTime));
+        }
+        if (user != null) {
+            predicates.add(cb.like(cb.lower(auditRecord.get(AuditRecord_.user)),
+                                                        "%" + escapeDbString(user).toLowerCase() + "%", '\\'));
+        }
+        if (oper != null) {
+            predicates.add(cb.equal(auditRecord.get(AuditRecord_.oper), oper));
+        }
+        if (entityName != null) {
+            predicates.add(cb.like(cb.lower(auditRecord.get(AuditRecord_.entityKey)),
+                                                        "%" + escapeDbString(entityName).toLowerCase() + "%", '\\'));
+        }
+        if (entityType != null) {
+            predicates.add(cb.equal(auditRecord.get(AuditRecord_.entityType), entityType));
+        }
+        if (entityId != null) {
+            predicates.add(cb.equal(auditRecord.get(AuditRecord_.entityId), entityId));
+        }
+        if (entry != null) {
+            predicates.add(cb.like(cb.lower(auditRecord.get(AuditRecord_.entry)),
+                                                        "%" + escapeDbString(entry).toLowerCase() + "%", '\\'));
+        }
+
+        return predicates.toArray(new Predicate[] {});
     }
 }

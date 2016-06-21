@@ -33,13 +33,14 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
-import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.ui.lazymodels.AuditLazyModel;
+import org.openepics.discs.conf.ui.lazymodels.CCDBLazyModel;
+import org.primefaces.model.LazyDataModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
@@ -57,11 +58,9 @@ public class AuditManager implements Serializable, SimpleTableExporter {
     private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
 
     @Inject private AuditRecordEJB auditRecordEJB;
+    private CCDBLazyModel<AuditRecord> lazyModel;
 
-    private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;
-    private List<AuditRecord> auditRecords;
-    private List<AuditRecord> filteredAuditRecords;
     private List<SelectItem> auditOperations;
     private List<SelectItem> entityTypes;
     private String formattedDetails;
@@ -87,8 +86,8 @@ public class AuditManager implements Serializable, SimpleTableExporter {
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<AuditRecord> exportData = Utility.isNullOrEmpty(filteredAuditRecords) ? auditRecords
-                    : filteredAuditRecords;
+            final List<AuditRecord> exportData = lazyModel.load(0, Integer.MAX_VALUE,
+                    lazyModel.getSortField(), lazyModel.getSortOrder(), lazyModel.getFilters());
             for (final AuditRecord record : exportData) {
                 exportTable.addDataRow(record.getLogTime(), record.getUser(), record.getOper().toString(),
                         record.getEntityKey(), record.getEntityType().getLabel(), record.getEntityId(),
@@ -109,7 +108,6 @@ public class AuditManager implements Serializable, SimpleTableExporter {
         }
     }
 
-
     /**
      * Creates a new instance of AuditManager
      */
@@ -121,7 +119,7 @@ public class AuditManager implements Serializable, SimpleTableExporter {
      */
     @PostConstruct
     public void init() {
-        auditRecords = auditRecordEJB.findAllOrdered();
+        lazyModel = new AuditLazyModel(auditRecordEJB);
         simpleTableExporterDialog = new ExportSimpleAuditTableDialog();
         prepareAuditOperations();
         prepareEntityTypes();
@@ -178,54 +176,23 @@ public class AuditManager implements Serializable, SimpleTableExporter {
         return formatEntryDetails(displayRecord);
     }
 
-    /**
-     * The method sets the audit log list for the selected entity. This method is called from the table button "i" in
-     * the xhtml file.
-     * @param selectedEntity - the entity to set the audit log list for.
-     * @param entityType - the type of the entity. To set this parameter from xhtml, use a string representation of
-     * the enumeration constant.
-     */
-    public void selectEntityForLog(final ConfigurationEntity selectedEntity, final EntityType entityType) {
-        auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedEntity.getId(), entityType);
+    /** @return the lazy loading data model */
+    public LazyDataModel<AuditRecord> getLazyModel() {
+        return lazyModel;
     }
 
-    /**
-     * @return A list of audit log entries for a selected entity to show in the table.
-     */
-    public List<AuditRecord> getAuditRecordsForEntity() {
-        return auditRecordsForEntity;
-    }
-
-    /** @return the auditRecords */
-    public List<AuditRecord> getAuditRecords() {
-        return auditRecords;
-    }
-
-    /**
-     * @return the filteredAuditRecords
-     */
-    public List<AuditRecord> getFilteredAuditRecords() {
-        return filteredAuditRecords;
-    }
-
-    /**
-     * @param filteredAuditRecords the filteredAuditRecords to set
-     */
-    public void setFilteredAuditRecords(List<AuditRecord> filteredAuditRecords) {
-        this.filteredAuditRecords = filteredAuditRecords;
+    /** @return <code>true</code> if no data was found, <code>false</code> otherwise */
+    public boolean isDataTableEmpty() {
+        return lazyModel.isEmpty();
     }
 
     private void prepareAuditOperations() {
         if (auditOperations == null) {
             Builder<SelectItem> builder = ImmutableList.builder();
             builder.add(new SelectItem("", "Select one"));
-            EntityTypeOperation[] ops = new EntityTypeOperation[] {
-                    EntityTypeOperation.CREATE,
-                    EntityTypeOperation.UPDATE,
-                    EntityTypeOperation.DELETE };
-            for (EntityTypeOperation operation : ops) {
-                builder.add(new SelectItem(operation.toString(), operation.toString()));
-            }
+            builder.add(new SelectItem(EntityTypeOperation.CREATE.toString(), EntityTypeOperation.CREATE.toString()));
+            builder.add(new SelectItem(EntityTypeOperation.UPDATE.toString(), EntityTypeOperation.UPDATE.toString()));
+            builder.add(new SelectItem(EntityTypeOperation.DELETE.toString(), EntityTypeOperation.DELETE.toString()));
             auditOperations = builder.build();
         }
     }

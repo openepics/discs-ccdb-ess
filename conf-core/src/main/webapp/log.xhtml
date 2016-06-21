@@ -10,11 +10,11 @@
             <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:fieldset legend="Log" id="logFieldset" style="box-sizing: border-box; height: calc(100vh - 7em);">
                 <div style="height: calc(100% - 3em)">
-                    <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
+                    <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.lazyModel}" 
                             scrollable="true" scrollWidth="100%" scrollHeight="100%" 
                             resizableColumns="true" tableStyle="word-wrap: break-word;" emptyMessage="No records found." 
-                            filteredValue="#{auditManager.filteredAuditRecords}" liveScroll="true" scrollRows="50">
-                        <p:ajax event="filter" ignoreAutoUpdate="true"/>
+                            lazy="true" liveScroll="true" scrollRows="50" rows="50">
+                        <p:ajax event="filter" ignoreAutoUpdate="true" update=":logsForm:exportButton" />
     
                         <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
                                 sortBy="#{auditRecord.logTimeFormatted}" filterMatchMode="contains">
@@ -58,7 +58,7 @@
 
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportLogs').show();" 
-                    disabled="#{empty auditManager.auditRecords}" update=":exportLogsForm:exportLogs" 
+                    disabled="#{auditManager.isDataTableEmpty()}" update=":exportLogsForm:exportLogs" 
                     actionListener="#{auditManager.simpleTableDialog.prepareTableExportPopup}" />
             </p:fieldset>
 
@@ -70,6 +70,21 @@
                     </p:panel>
                 </p:outputPanel>
             </p:overlayPanel>
+
+            <script type="text/javascript">
+                // <![CDATA[
+                jQuery(document).ready(function() {
+                	var $this = PF("logTableVar");            
+
+                	$this.sortableColumns.on("click.dataTable", function(e, metaKeyOn) {
+                    	$this.scrollBody.scrollTop(1);
+                    	$this.allLoadedLiveScroll = false;
+                    	$this.scrollOffset = 0;
+                    });
+                });
+                // ]]>
+            </script>
+
         </h:form>
         <ui:include src="/resources/dialogs/export-table.xhtml">
             <ui:param name="formId" value="exportLogsForm" />
